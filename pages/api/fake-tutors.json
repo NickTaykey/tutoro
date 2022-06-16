@@ -1,0 +1,382 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "cluster": false,
+        "username": "rosaria30",
+        "name": "Evangelista Scarpa-Bonomo",
+        "sex": "F",
+        "address": "Incrocio Fausto, 5 Piano 5\n74013, Ginosa (TA)",
+        "mail": "paoloinnocenti@tiscali.it",
+        "birthdate": "1921-06-12"
+      },
+      "geometry": { "type": "Point", "coordinates": [8.88104, 45.79377] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cluster": false,
+        "username": "tcuzzocrea",
+        "name": "Patrizia Valier",
+        "sex": "F",
+        "address": "Contrada Puglisi, 933\n91028, Partanna (TP)",
+        "mail": "brogginiteresa@vodafone.it",
+        "birthdate": "2004-02-04"
+      },
+      "geometry": { "type": "Point", "coordinates": [17.58522, 40.53123] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cluster": false,
+        "username": "marcantonio36",
+        "name": "Beatrice Gatto-Cilibrasi",
+        "sex": "F",
+        "address": "Incrocio Polesel, 26\n98063, San Giorgio (ME)",
+        "mail": "toninelliantonino@libero.it",
+        "birthdate": "1931-09-27"
+      },
+      "geometry": { "type": "Point", "coordinates": [15.00913, 37.51803] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cluster": false,
+        "username": "atropea",
+        "name": "Filippa Jacuzzi",
+        "sex": "F",
+        "address": "Rotonda Nina, 5\n86077, Pozzilli (IS)",
+        "mail": "gioachinocicilia@yahoo.com",
+        "birthdate": "1983-04-13"
+      },
+      "geometry": { "type": "Point", "coordinates": [14.01481, 42.67164] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cluster": false,
+        "username": "raffaella10",
+        "name": "Mario Filzi",
+        "sex": "M",
+        "address": "Rotonda Stefani, 19 Appartamento 9\n58034, Castell'Azzara (GR)",
+        "mail": "orestebarzini@gmail.com",
+        "birthdate": "1906-12-28"
+      },
+      "geometry": { "type": "Point", "coordinates": [8.62118, 45.44694] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cluster": false,
+        "username": "hverdone",
+        "name": "Sig.ra Claudia Ajello",
+        "sex": "F",
+        "address": "Incrocio Lucia, 54\n98163, Messina (ME)",
+        "mail": "fiammaamato@poste.it",
+        "birthdate": "1969-02-19"
+      },
+      "geometry": { "type": "Point", "coordinates": [13.39954, 43.62558] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cluster": false,
+        "username": "annunziatabandello",
+        "name": "Amico Canova",
+        "sex": "M",
+        "address": "Vicolo Erika, 826\n12046, Monta' (CN)",
+        "mail": "ldruso@libero.it",
+        "birthdate": "1926-01-30"
+      },
+      "geometry": { "type": "Point", "coordinates": [14.30935, 40.92298] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cluster": false,
+        "username": "venezianovenancio",
+        "name": "Zaira Roero",
+        "sex": "F",
+        "address": "Canale Filippa, 746\n28825, Ponte Di Falmenta (VB)",
+        "mail": "fiammapezzali@tin.it",
+        "birthdate": "1990-02-17"
+      },
+      "geometry": { "type": "Point", "coordinates": [13.44275, 38.07789] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cluster": false,
+        "username": "favatadiana",
+        "name": "Laura Fiorucci",
+        "sex": "F",
+        "address": "Incrocio Gianni, 61 Appartamento 4\n63092, Palmiano (AP)",
+        "mail": "ymonteverdi@tin.it",
+        "birthdate": "1928-01-28"
+      },
+      "geometry": { "type": "Point", "coordinates": [17.80774, 40.55851] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cluster": false,
+        "username": "smaggioli",
+        "name": "Maria Pisano",
+        "sex": "F",
+        "address": "Via Gianmarco, 5\n10022, Cavalleri (TO)",
+        "mail": "mascagnipierpaolo@live.com",
+        "birthdate": "1907-08-16"
+      },
+      "geometry": { "type": "Point", "coordinates": [11.04979, 44.59445] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cluster": false,
+        "username": "ermenegildo92",
+        "name": "Michela Guarana",
+        "sex": "F",
+        "address": "Incrocio Venancio, 71 Piano 5\n10067, Vigone (TO)",
+        "mail": "nievoluigi@outlook.com",
+        "birthdate": "1954-02-22"
+      },
+      "geometry": { "type": "Point", "coordinates": [7.60872, 43.78956] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cluster": false,
+        "username": "fabrizia32",
+        "name": "Carla Tamburello",
+        "sex": "F",
+        "address": "Incrocio Guarato, 37\n25133, Brescia (BS)",
+        "mail": "brancacciogaspare@hotmail.com",
+        "birthdate": "1984-07-20"
+      },
+      "geometry": { "type": "Point", "coordinates": [14.39024, 42.22718] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cluster": false,
+        "username": "grassistefania",
+        "name": "Mattia Canetta",
+        "sex": "M",
+        "address": "Strada Donatello, 111 Appartamento 66\n85016, San Giorgio (PZ)",
+        "mail": "barraccorossana@fastwebnet.it",
+        "birthdate": "1965-06-09"
+      },
+      "geometry": { "type": "Point", "coordinates": [9.29109, 45.39402] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cluster": false,
+        "username": "filziantonietta",
+        "name": "Tiziano Trapani",
+        "sex": "M",
+        "address": "Borgo Perozzo, 516 Piano 1\n39044, Laghetti (BZ)",
+        "mail": "luciacundari@virgilio.it",
+        "birthdate": "1922-01-23"
+      },
+      "geometry": { "type": "Point", "coordinates": [14.43865, 40.87329] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cluster": false,
+        "username": "jacopo00",
+        "name": "Rosa Venditti",
+        "sex": "F",
+        "address": "Strada Gatto, 1\n25081, Campagnola (BS)",
+        "mail": "lidiaproietti@outlook.com",
+        "birthdate": "1917-04-10"
+      },
+      "geometry": { "type": "Point", "coordinates": [11.412, 45.50369] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cluster": false,
+        "username": "vanvitellileonardo",
+        "name": "Dott. Loredana Zecchini",
+        "sex": "F",
+        "address": "Contrada Depero, 19\n16138, Molassana (GE)",
+        "mail": "elladiogiacconi@vodafone.it",
+        "birthdate": "1994-11-29"
+      },
+      "geometry": { "type": "Point", "coordinates": [12.38878, 43.1122] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cluster": false,
+        "username": "benussifilippa",
+        "name": "Ippazio Scarlatti",
+        "sex": "M",
+        "address": "Contrada Enrico, 3\n85047, Moliterno (PZ)",
+        "mail": "bergogliofedele@libero.it",
+        "birthdate": "1981-07-18"
+      },
+      "geometry": { "type": "Point", "coordinates": [12.84052, 45.78071] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cluster": false,
+        "username": "fabrizia17",
+        "name": "Maura Cainero",
+        "sex": "F",
+        "address": "Vicolo Azeglio, 52 Piano 6\n92013, Menfi (AG)",
+        "mail": "ybotticelli@gmail.com",
+        "birthdate": "1953-01-25"
+      },
+      "geometry": { "type": "Point", "coordinates": [9.32241, 44.31771] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cluster": false,
+        "username": "licia79",
+        "name": "Silvestro Perozzo",
+        "sex": "M",
+        "address": "Contrada Goffredo, 3\n25031, Capriolo (BS)",
+        "mail": "giovanna28@tin.it",
+        "birthdate": "1923-10-10"
+      },
+      "geometry": { "type": "Point", "coordinates": [14.66737, 41.55947] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cluster": false,
+        "username": "guglielmo90",
+        "name": "Pompeo Barozzi",
+        "sex": "M",
+        "address": "Piazza Giuliano, 29\n37046, Minerbe (VR)",
+        "mail": "etoninelli@hotmail.com",
+        "birthdate": "2017-05-06"
+      },
+      "geometry": { "type": "Point", "coordinates": [12.6723, 41.72063] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cluster": false,
+        "username": "wbulzoni",
+        "name": "Ezio Campano",
+        "sex": "M",
+        "address": "Vicolo Dovara, 668 Appartamento 3\n81041, Bellona (CE)",
+        "mail": "ottonevigorelli@libero.it",
+        "birthdate": "1962-04-03"
+      },
+      "geometry": { "type": "Point", "coordinates": [12.70038, 45.9836] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cluster": false,
+        "username": "gentileschiemma",
+        "name": "Gabriele Travia",
+        "sex": "M",
+        "address": "Via Turrini, 5\n27058, Voghera (PV)",
+        "mail": "mbasso@alice.it",
+        "birthdate": "1935-11-05"
+      },
+      "geometry": { "type": "Point", "coordinates": [14.72443, 36.92574] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cluster": false,
+        "username": "angelicagargallo",
+        "name": "Sig. Geronimo Manzoni",
+        "sex": "M",
+        "address": "Vicolo Berengario, 3 Appartamento 9\n06047, Piedivalle (PG)",
+        "mail": "paola84@libero.it",
+        "birthdate": "1978-07-30"
+      },
+      "geometry": { "type": "Point", "coordinates": [14.34085, 40.87363] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cluster": false,
+        "username": "finettiannetta",
+        "name": "Giovanna Nicolini",
+        "sex": "F",
+        "address": "Stretto Fagiani, 811 Appartamento 1\n90034, Ficuzza (PA)",
+        "mail": "michelangelogiammusso@tiscali.it",
+        "birthdate": "1957-03-11"
+      },
+      "geometry": { "type": "Point", "coordinates": [16.50104, 41.24264] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cluster": false,
+        "username": "ranieribonomo",
+        "name": "Alberto Tanzini",
+        "sex": "M",
+        "address": "Stretto Luigina, 7\n98029, Guidomandri Marina (ME)",
+        "mail": "margheritaspallanzani@gmail.com",
+        "birthdate": "2003-01-19"
+      },
+      "geometry": { "type": "Point", "coordinates": [9.40531, 45.53069] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cluster": false,
+        "username": "rossigilberto",
+        "name": "Massimiliano Errani-Stefanelli",
+        "sex": "M",
+        "address": "Viale Orazio, 78 Piano 6\n13044, San Silvestro (VC)",
+        "mail": "tnitti@poste.it",
+        "birthdate": "2021-08-17"
+      },
+      "geometry": { "type": "Point", "coordinates": [8.86374, 44.89784] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cluster": false,
+        "username": "evangelistafalier",
+        "name": "Isa Saracino",
+        "sex": "F",
+        "address": "Piazza Ponti, 5\n98053, Bafia (ME)",
+        "mail": "ansaldo88@alice.it",
+        "birthdate": "1922-03-15"
+      },
+      "geometry": { "type": "Point", "coordinates": [8.55552, 40.72586] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cluster": false,
+        "username": "combonifiamma",
+        "name": "Natalia Nonis",
+        "sex": "F",
+        "address": "Rotonda Trupiano, 5 Piano 5\n88068, Soverato Superiore (CZ)",
+        "mail": "raimondovisintini@fastwebnet.it",
+        "birthdate": "1981-01-11"
+      },
+      "geometry": { "type": "Point", "coordinates": [13.57661, 37.31065] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "cluster": false,
+        "username": "donatonipatrizia",
+        "name": "Gianfranco Onio-Cattaneo",
+        "sex": "M",
+        "address": "Rotonda Mastroianni, 53\n89821, San Nicola Da Crissa (VV)",
+        "mail": "melina90@fastwebnet.it",
+        "birthdate": "1997-12-18"
+      },
+      "geometry": { "type": "Point", "coordinates": [15.07041, 37.49223] }
+    }
+  ]
+}
