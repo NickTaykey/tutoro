@@ -13,6 +13,7 @@ import {
   clusterCountLayer,
   unclusteredPointLayer,
 } from './layers';
+import TutorPopup from './TutorPopup';
 
 import type { MapRef, GeoJSONSource } from 'react-map-gl';
 import type { MapLayerMouseEvent } from 'mapbox-gl';
@@ -86,9 +87,7 @@ const ClusterMap: React.FC<{
           latitude={+popupInfo.geometry.coordinates[1]}
           onClose={() => setPopupInfo(null)}
         >
-          <div>
-            {popupInfo.properties.name}, {popupInfo.properties.username}
-          </div>
+          <TutorPopup popupInfo={popupInfo} />
         </Popup>
       )}
       <GeolocateControl position="top-left" />

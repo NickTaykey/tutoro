@@ -1,10 +1,10 @@
 import { render, screen, act } from '@testing-library/react';
-import fakeTutors from '../fake-tutors.json';
-import Home from '../pages/index';
+import fakeTutors from '../../fake-tutors.json';
+import Home from '../../pages/index';
 
-import type { FakeTutorsAPIResponseType } from '../types';
+import type { FakeTutorsAPIResponseType } from '../../types';
 
-jest.mock('../components/cluster-map/ClusterMap', () => {
+jest.mock('../../components/cluster-map/ClusterMap', () => {
   return () => <div data-testid="map" />;
 });
 
