@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import type { FakeTutorsAPIResponseType } from '../../types';
-import fakeTutors from '../../fake-tutors.json';
+import type { FakeTutorsAPIResponseType } from '../../../types';
+import fakeTutors from '../../../fake-tutors.json';
 
 export default function handler(
   req: NextApiRequest,

@@ -1,6 +1,7 @@
 export type TutorObjectGeoJSON = {
   type: 'Feature';
   properties: {
+    id: string;
     cluster: false;
     username: string;
     name: string;
@@ -8,8 +9,16 @@ export type TutorObjectGeoJSON = {
     mail: string;
     birthdate: string;
     address: string;
+    reviews: TutorReviewObject[];
   };
   geometry: { type: 'Point'; coordinates: number[] };
+};
+
+export type TutorReviewObject = {
+  id: string;
+  stars: number;
+  text: string;
+  username: string;
 };
 
 export type FakeTutorsAPIResponseType = {
