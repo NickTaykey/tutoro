@@ -2,6 +2,7 @@ import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { TutorObjectGeoJSON, TutorReviewObject } from '../../types';
 import { useEffect, useState } from 'react';
+import Review from '../../components/reviews/Review';
 
 const TutorPage: NextPage = () => {
   const router = useRouter();
@@ -23,11 +24,7 @@ const TutorPage: NextPage = () => {
         <h1>{tutor.properties.username}</h1>
         <h2>{tutor.properties.name}</h2>
         {tutor.properties.reviews.map((r: TutorReviewObject) => (
-          <article key={r.id}>
-            <div>{r.stars}</div>
-            <div>{r.username}</div>
-            <div>{r.text}</div>
-          </article>
+          <Review key={r.id} review={r} />
         ))}
       </>
     );
