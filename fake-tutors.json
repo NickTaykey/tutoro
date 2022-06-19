@@ -4,814 +4,814 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "a5f623fe-82d9-4d55-834a-ad06f69665ef",
+        "_id": "6ebf8305-9882-4cf0-8282-899d21ad9782",
         "cluster": false,
         "reviews": [
           {
-            "id": "5b11921d-e13e-4479-9716-0879d184c284",
-            "stars": 5,
+            "_id": "968e644f-e047-46d0-84be-a8ef9f1ae0b0",
+            "stars": 4,
             "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
             "username": "Nick"
           },
           {
-            "id": "06033f56-5f35-49f2-86d1-d91020371d2b",
+            "_id": "985f5ff3-a23a-4ee0-a772-f938602037b5",
             "stars": 4,
             "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
             "username": "Nick"
           }
         ],
-        "username": "antoniniuberto",
-        "name": "Girolamo Troisi",
+        "username": "umberto07",
+        "name": "Stefano Lovato",
         "sex": "M",
-        "address": "Piazza Cristina, 449 Appartamento 36\n84059, Camerota (SA)",
-        "mail": "zloredan@fastwebnet.it",
-        "birthdate": "1930-08-03"
-      },
-      "geometry": { "type": "Point", "coordinates": [16.50104, 41.24264] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "051666dc-5a79-41cb-91c2-b74ed6b7328a",
-        "cluster": false,
-        "reviews": [
-          {
-            "id": "04a79939-d058-4b4e-9772-9665794c7bdd",
-            "stars": 3,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          },
-          {
-            "id": "81abc092-e2b0-4127-9e9d-0749836cca42",
-            "stars": 5,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          }
-        ],
-        "username": "benitobertoni",
-        "name": "Daria Segr\u00e8",
-        "sex": "F",
-        "address": "Vicolo Amanda, 637 Piano 4\n20017, Terrazzano (MI)",
-        "mail": "desiocassandra@hotmail.com",
-        "birthdate": "1992-09-02"
-      },
-      "geometry": { "type": "Point", "coordinates": [8.62118, 45.44694] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "e0cf3a6c-94b7-4587-a55f-d3002800e09b",
-        "cluster": false,
-        "reviews": [
-          {
-            "id": "e7f2ade2-b44f-49b6-9b91-8e721b7a674d",
-            "stars": 4,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          },
-          {
-            "id": "9f968261-8839-4261-8340-428ccba88490",
-            "stars": 4,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          }
-        ],
-        "username": "istefanelli",
-        "name": "Sebastiano Desio",
-        "sex": "M",
-        "address": "Stretto Maurilio, 5 Piano 7\n09097, San Nicolo' D'Arcidano (OR)",
-        "mail": "ogritti@alice.it",
-        "birthdate": "1933-12-18"
-      },
-      "geometry": { "type": "Point", "coordinates": [9.32241, 44.31771] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "c26677ff-8a3d-416d-b00b-237492d3a0fd",
-        "cluster": false,
-        "reviews": [
-          {
-            "id": "7070c03a-1d40-4552-8c45-0d879353d240",
-            "stars": 3,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          },
-          {
-            "id": "3268b928-b52b-49c4-985f-4679070b0d6c",
-            "stars": 4,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          }
-        ],
-        "username": "ranieri44",
-        "name": "Sig.ra Bettina Benedetti",
-        "sex": "F",
-        "address": "Viale Ravaglioli, 25 Appartamento 42\n60040, Colleponi (AN)",
-        "mail": "giustinoventuri@tiscali.it",
-        "birthdate": "1934-05-31"
-      },
-      "geometry": { "type": "Point", "coordinates": [12.70038, 45.9836] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "c1d5ccbd-44b1-4937-9c48-661ceaaea30a",
-        "cluster": false,
-        "reviews": [
-          {
-            "id": "2ea262cd-4b16-4f1d-aa7c-5f46a3630855",
-            "stars": 4,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          },
-          {
-            "id": "952d2232-0625-4625-8329-b6dac0f07ffd",
-            "stars": 4,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          }
-        ],
-        "username": "perozzoedoardo",
-        "name": "Gioffre Calgari",
-        "sex": "M",
-        "address": "Piazza Grifeo, 41 Piano 0\n40020, Casalfiumanese (BO)",
-        "mail": "sonia25@gmail.com",
-        "birthdate": "2017-01-23"
-      },
-      "geometry": { "type": "Point", "coordinates": [14.30935, 40.92298] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "c421943f-3744-4f52-9c68-cd0ef313e317",
-        "cluster": false,
-        "reviews": [
-          {
-            "id": "db5cfd64-6d4a-4a86-b58c-c1e85c44a81f",
-            "stars": 5,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          },
-          {
-            "id": "b22486af-528d-463b-a5f2-39ebee34ea62",
-            "stars": 4,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          }
-        ],
-        "username": "leonebuscetta",
-        "name": "Luigina Corbo",
-        "sex": "F",
-        "address": "Vicolo Gioacchino, 3 Piano 3\n12062, Roreto (CN)",
-        "mail": "luchinomusatti@yahoo.com",
-        "birthdate": "1944-12-02"
-      },
-      "geometry": { "type": "Point", "coordinates": [17.80774, 40.55851] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "f6e57861-4d8a-4258-a2e5-7d3c4179758f",
-        "cluster": false,
-        "reviews": [
-          {
-            "id": "61f4af1a-fa18-4551-84e9-352e008dea15",
-            "stars": 5,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          },
-          {
-            "id": "ec248f4a-f996-4a00-9291-2330cf7f2c2a",
-            "stars": 5,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          }
-        ],
-        "username": "vincenza45",
-        "name": "Elena Columbo",
-        "sex": "F",
-        "address": "Vicolo Bertolucci, 35 Appartamento 43\n59015, Artimino (PO)",
-        "mail": "olga17@virgilio.it",
-        "birthdate": "1925-09-02"
-      },
-      "geometry": { "type": "Point", "coordinates": [13.44275, 38.07789] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "c57227cd-62c7-4789-a9e9-b9caea5dfda4",
-        "cluster": false,
-        "reviews": [
-          {
-            "id": "1dd77a20-c150-468a-87fc-a35288a1ff00",
-            "stars": 3,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          },
-          {
-            "id": "b53240b1-4b47-4b01-b0e8-0dece7ce2a29",
-            "stars": 3,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          }
-        ],
-        "username": "landocappelli",
-        "name": "Sig. Sebastiano Miniati",
-        "sex": "M",
-        "address": "Contrada Dossi, 4 Appartamento 5\n10065, Pramollo (TO)",
-        "mail": "gentileschiedoardo@tiscali.it",
-        "birthdate": "1912-08-28"
-      },
-      "geometry": { "type": "Point", "coordinates": [9.40531, 45.53069] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "7a0b4232-e145-4043-88ad-e95409edc728",
-        "cluster": false,
-        "reviews": [
-          {
-            "id": "881a2cd3-d13c-4989-9f40-40a0df5fb596",
-            "stars": 3,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          },
-          {
-            "id": "eda9f617-f173-446e-b9fe-37a1076d10d0",
-            "stars": 5,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          }
-        ],
-        "username": "ida94",
-        "name": "Augusto Colletti",
-        "sex": "M",
-        "address": "Incrocio Accardo, 136 Appartamento 4\n44043, Mirabello (FE)",
-        "mail": "bettina01@tele2.it",
-        "birthdate": "1941-02-05"
-      },
-      "geometry": { "type": "Point", "coordinates": [14.34085, 40.87363] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "fbd302cc-ddcc-4e9d-a5ae-e1b520ff6ea2",
-        "cluster": false,
-        "reviews": [
-          {
-            "id": "b2413500-bacf-42e4-9ad0-b0e33436fb2e",
-            "stars": 3,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          },
-          {
-            "id": "01a4f5b2-54a2-4ccc-8b8b-8c4f4449db31",
-            "stars": 3,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          }
-        ],
-        "username": "graziella36",
-        "name": "Enrico Columbo",
-        "sex": "M",
-        "address": "Via Rocco, 20 Piano 4\n00162, Roma (RM)",
-        "mail": "tonia50@gmail.com",
-        "birthdate": "2019-07-07"
-      },
-      "geometry": { "type": "Point", "coordinates": [14.39024, 42.22718] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "bbafd1b8-33eb-42cd-b460-75bf63ef023d",
-        "cluster": false,
-        "reviews": [
-          {
-            "id": "18ec4872-1998-4262-b9d4-17cf011c86df",
-            "stars": 3,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          },
-          {
-            "id": "e15812e6-2c0c-40cc-aae6-2f2a97e0b7dd",
-            "stars": 3,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          }
-        ],
-        "username": "boagafernanda",
-        "name": "Dott. Marina Ferrata",
-        "sex": "F",
-        "address": "Canale Valentina, 4 Appartamento 23\n93016, Riesi (CL)",
-        "mail": "chiaraparuta@libero.it",
-        "birthdate": "1991-07-05"
-      },
-      "geometry": { "type": "Point", "coordinates": [12.38878, 43.1122] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "cfbe268a-1ac3-4e5c-9681-c2a11db5ea44",
-        "cluster": false,
-        "reviews": [
-          {
-            "id": "af5acd21-0341-4735-bb00-db51707164af",
-            "stars": 5,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          },
-          {
-            "id": "31ea5628-f041-4870-a2fa-944a64aedaf0",
-            "stars": 4,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          }
-        ],
-        "username": "cusanogianpietro",
-        "name": "Flora Porzio",
-        "sex": "F",
-        "address": "Borgo Stein, 15\n57023, Cecina (LI)",
-        "mail": "fermifederica@vodafone.it",
-        "birthdate": "2009-01-15"
-      },
-      "geometry": { "type": "Point", "coordinates": [8.88104, 45.79377] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "3773ddb9-374d-403a-a346-ac2f25020f3e",
-        "cluster": false,
-        "reviews": [
-          {
-            "id": "85341656-49c1-4b00-a23b-aecb6efdc660",
-            "stars": 5,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          },
-          {
-            "id": "121f0800-6763-4d9b-a40c-f9b85fce9397",
-            "stars": 5,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          }
-        ],
-        "username": "iannuccisole",
-        "name": "Cassandra Gremese",
-        "sex": "F",
-        "address": "Stretto Ottavio, 74 Appartamento 67\n11028, Valtournenche (AO)",
-        "mail": "pasqualebova@gmail.com",
-        "birthdate": "1921-10-12"
-      },
-      "geometry": { "type": "Point", "coordinates": [14.72443, 36.92574] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "382d410e-18bc-4ad6-a013-6a9b5fa90dfd",
-        "cluster": false,
-        "reviews": [
-          {
-            "id": "d5e1462e-f6c8-4cf7-bc2a-0310ed011a0c",
-            "stars": 3,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          },
-          {
-            "id": "aabca717-6a8d-4221-a865-f7d41eed99e9",
-            "stars": 4,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          }
-        ],
-        "username": "acattaneo",
-        "name": "Marcello Ponti",
-        "sex": "M",
-        "address": "Viale Greco, 2 Piano 3\n98025, Itala (ME)",
-        "mail": "borrominiantonio@tele2.it",
-        "birthdate": "1965-09-01"
-      },
-      "geometry": { "type": "Point", "coordinates": [7.60872, 43.78956] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "61c0643e-6e18-4338-aab7-1be0de8c36ca",
-        "cluster": false,
-        "reviews": [
-          {
-            "id": "a1532d4e-154b-456f-b0c8-07eee5eac093",
-            "stars": 4,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          },
-          {
-            "id": "6708a185-91ec-457c-9e2e-f098d9b7a386",
-            "stars": 3,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          }
-        ],
-        "username": "stefani13",
-        "name": "Federico Detti-Roth",
-        "sex": "M",
-        "address": "Canale Annalisa, 361\n38018, Molveno (TN)",
-        "mail": "nfabbri@tin.it",
-        "birthdate": "1924-04-15"
-      },
-      "geometry": { "type": "Point", "coordinates": [14.66737, 41.55947] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "01106495-13ee-4c8e-aa60-7226c9f3401b",
-        "cluster": false,
-        "reviews": [
-          {
-            "id": "326feedb-2d1c-48c2-9505-dbb4c9bbb50a",
-            "stars": 3,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          },
-          {
-            "id": "003c8fdc-87ef-458b-9a94-b9a0061ec8b9",
-            "stars": 3,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          }
-        ],
-        "username": "pierinasobrero",
-        "name": "Baldassare Comboni",
-        "sex": "M",
-        "address": "Canale Gabriella, 747\n16166, Quinto Al Mare (GE)",
-        "mail": "pellegrinobettoni@hotmail.com",
-        "birthdate": "1936-02-28"
-      },
-      "geometry": { "type": "Point", "coordinates": [13.57661, 37.31065] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "5270781a-62c4-4829-9cc1-6b8438d01136",
-        "cluster": false,
-        "reviews": [
-          {
-            "id": "9f493136-1bb9-41b8-971a-bf86641406b6",
-            "stars": 4,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          },
-          {
-            "id": "b3fff619-2da5-491b-96d7-63c8bc517b3b",
-            "stars": 3,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          }
-        ],
-        "username": "llucarelli",
-        "name": "Enzo Boitani",
-        "sex": "M",
-        "address": "Canale Condoleo, 670 Appartamento 33\n84033, Prato Comune (SA)",
-        "mail": "arnulfodandolo@tim.it",
-        "birthdate": "1951-03-19"
-      },
-      "geometry": { "type": "Point", "coordinates": [14.43865, 40.87329] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "1dbf7bab-edf1-46dc-a41e-731bb7de2fea",
-        "cluster": false,
-        "reviews": [
-          {
-            "id": "018c037d-f79d-43da-91c5-462dcf65d0c6",
-            "stars": 4,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          },
-          {
-            "id": "709f963d-12f6-4365-b539-5ba62632d9fe",
-            "stars": 5,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          }
-        ],
-        "username": "imelda43",
-        "name": "Etta Donini",
-        "sex": "F",
-        "address": "Stretto Corbo, 62 Appartamento 82\n07010, Ardara (SS)",
-        "mail": "vmorandi@tim.it",
-        "birthdate": "1947-11-08"
-      },
-      "geometry": { "type": "Point", "coordinates": [13.39954, 43.62558] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "2ae5d220-0ae5-4789-a49c-0332ab1a146b",
-        "cluster": false,
-        "reviews": [
-          {
-            "id": "e86c6d69-03d5-4630-8d6e-c475e4a54bc3",
-            "stars": 3,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          },
-          {
-            "id": "0b85a738-d69a-4658-9484-2c8c37d718fd",
-            "stars": 5,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          }
-        ],
-        "username": "brescianigiampiero",
-        "name": "Eugenia Ariasso",
-        "sex": "F",
-        "address": "Incrocio Marino, 79\n18037, Pigna (IM)",
-        "mail": "apapafava@hotmail.com",
-        "birthdate": "1952-08-19"
-      },
-      "geometry": { "type": "Point", "coordinates": [12.6723, 41.72063] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "a456e56c-d593-47a2-a4c7-d5ce676b37a0",
-        "cluster": false,
-        "reviews": [
-          {
-            "id": "5072f1c4-5f84-403c-b621-a5767f944f04",
-            "stars": 3,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          },
-          {
-            "id": "8cbddc4e-0b72-4fb3-a7a8-3e0bb8450e41",
-            "stars": 3,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          }
-        ],
-        "username": "nadia45",
-        "name": "Sig.ra Roberta Cignaroli",
-        "sex": "F",
-        "address": "Piazza Badoglio, 17\n29015, Creta (PC)",
-        "mail": "qdepero@live.com",
-        "birthdate": "1922-07-17"
-      },
-      "geometry": { "type": "Point", "coordinates": [17.58522, 40.53123] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "901052a5-12d6-4e57-a0dc-b0e4ed3ac10d",
-        "cluster": false,
-        "reviews": [
-          {
-            "id": "08d62b02-9e55-43a0-919a-506efa71d297",
-            "stars": 5,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          },
-          {
-            "id": "b15ea9ec-0a4e-4945-97f4-f4e2704c38a7",
-            "stars": 3,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          }
-        ],
-        "username": "vnecci",
-        "name": "Dott. Bianca Giovine",
-        "sex": "F",
-        "address": "Stretto Gemito, 43 Piano 3\n26835, Crespiatica (LO)",
-        "mail": "rolando62@tele2.it",
-        "birthdate": "1932-03-28"
-      },
-      "geometry": { "type": "Point", "coordinates": [8.55552, 40.72586] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "6d83bf92-d31c-484f-93f4-98845613a9cd",
-        "cluster": false,
-        "reviews": [
-          {
-            "id": "43e499ed-db7a-4545-bf60-6092953b80fd",
-            "stars": 3,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          },
-          {
-            "id": "95581168-b7b6-431e-a22d-dd6f84390fbc",
-            "stars": 4,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          }
-        ],
-        "username": "pincherlemichelotto",
-        "name": "Manuel Renzi",
-        "sex": "M",
-        "address": "Borgo Lando, 647 Appartamento 96\n88062, Cardinale (CZ)",
-        "mail": "foscarigilberto@outlook.com",
-        "birthdate": "2002-07-02"
-      },
-      "geometry": { "type": "Point", "coordinates": [9.29109, 45.39402] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "53516389-9c63-4dd9-a8c3-d94afe7e03cf",
-        "cluster": false,
-        "reviews": [
-          {
-            "id": "f6b7a875-b6b6-41cc-97c6-c19b4a998452",
-            "stars": 3,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          },
-          {
-            "id": "4fd584a4-5fa1-4e09-85d7-2101a17a26c5",
-            "stars": 3,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          }
-        ],
-        "username": "nstucchi",
-        "name": "Ilaria Cutrufo",
-        "sex": "F",
-        "address": "Incrocio Giancarlo, 20\n60122, Ancona (AN)",
-        "mail": "eproietti@tin.it",
-        "birthdate": "1911-11-20"
-      },
-      "geometry": { "type": "Point", "coordinates": [15.07041, 37.49223] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "6a5d3d54-ff24-4001-899c-4c0bfb38cc21",
-        "cluster": false,
-        "reviews": [
-          {
-            "id": "90f59da0-6849-413f-b7b5-1430c0bc24dd",
-            "stars": 4,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          },
-          {
-            "id": "8b6eae9a-091b-4960-bdb2-b796e260429b",
-            "stars": 4,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          }
-        ],
-        "username": "tcavanna",
-        "name": "Germana Goldstein-Monaco",
-        "sex": "F",
-        "address": "Borgo Ferdinando, 40\n73056, Taurisano (LE)",
-        "mail": "gfoa@libero.it",
-        "birthdate": "1982-03-22"
-      },
-      "geometry": { "type": "Point", "coordinates": [11.412, 45.50369] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "16f33de3-0e10-4f55-9bba-3af4f7c6c7d8",
-        "cluster": false,
-        "reviews": [
-          {
-            "id": "002a64ee-f2ee-4333-9720-d91d8432c362",
-            "stars": 5,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          },
-          {
-            "id": "f362becb-2c37-4a06-95df-aadf78f0d632",
-            "stars": 5,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          }
-        ],
-        "username": "gtagliafierro",
-        "name": "Martina Guicciardini",
-        "sex": "F",
-        "address": "Incrocio Fo\u00e0, 89 Appartamento 36\n40057, Lovoleto (BO)",
-        "mail": "liciapaoletti@tiscali.it",
-        "birthdate": "1955-02-13"
-      },
-      "geometry": { "type": "Point", "coordinates": [14.01481, 42.67164] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "3dc21bd3-687e-4e19-b2fc-4eec580e8116",
-        "cluster": false,
-        "reviews": [
-          {
-            "id": "2bec3a59-8177-40a5-a936-e4bb64b14d1b",
-            "stars": 5,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          },
-          {
-            "id": "0c1de1c7-6426-4df8-a406-40dd47c26283",
-            "stars": 3,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          }
-        ],
-        "username": "guaranaeva",
-        "name": "Annetta Bosio-Morricone",
-        "sex": "F",
-        "address": "Vicolo Ostinelli, 61\n14046, Mombaruzzo (AT)",
-        "mail": "tonino81@hotmail.com",
-        "birthdate": "1985-04-09"
-      },
-      "geometry": { "type": "Point", "coordinates": [12.84052, 45.78071] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "3bde761f-b9f2-4321-a5df-942a1144e13b",
-        "cluster": false,
-        "reviews": [
-          {
-            "id": "3ea03dd7-d4c2-4cf8-b52f-1a7c01731c4a",
-            "stars": 5,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          },
-          {
-            "id": "738d3e33-91db-4724-bc9f-379f7aac10c5",
-            "stars": 5,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          }
-        ],
-        "username": "voltacarmelo",
-        "name": "Mario Pagliaro",
-        "sex": "M",
-        "address": "Incrocio Morosini, 66\n58043, Punta Ala (GR)",
-        "mail": "venancio24@tiscali.it",
-        "birthdate": "1946-11-26"
-      },
-      "geometry": { "type": "Point", "coordinates": [8.86374, 44.89784] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "7d259445-496c-4c0f-b911-51314ba073be",
-        "cluster": false,
-        "reviews": [
-          {
-            "id": "bd01ba11-9455-4281-bc50-9c733dedb7aa",
-            "stars": 5,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          },
-          {
-            "id": "2636d7e3-0fe4-4680-aebb-2770a1cbe1f2",
-            "stars": 3,
-            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            "username": "Nick"
-          }
-        ],
-        "username": "robertojuvara",
-        "name": "Gianfrancesco Zaguri",
-        "sex": "M",
-        "address": "Via Lombardo, 29 Appartamento 60\n12049, Trinita' (CN)",
-        "mail": "adelechechi@yahoo.com",
-        "birthdate": "1935-01-01"
+        "address": "Viale Antonella, 12\n00071, Pomezia (RM)",
+        "mail": "scesaroni@tele2.it",
+        "birthdate": "1987-09-11"
       },
       "geometry": { "type": "Point", "coordinates": [11.04979, 44.59445] }
     },
     {
       "type": "Feature",
       "properties": {
-        "id": "3eae8237-c55e-45a7-90fb-0aa438c49dcf",
+        "_id": "cd659a16-4799-4d96-9fc9-c9b52c2f3c9b",
         "cluster": false,
         "reviews": [
           {
-            "id": "57ee45d7-2c40-482e-be1e-a3e453ff2b13",
+            "_id": "98501134-4c9d-47ff-8e05-c643fb79ccac",
             "stars": 4,
             "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
             "username": "Nick"
           },
           {
-            "id": "a22747ba-8b68-4710-aee6-8e034e738ce8",
+            "_id": "4d8d8c90-141f-4926-81a7-f359fc3e7958",
+            "stars": 4,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          }
+        ],
+        "username": "dinopolani",
+        "name": "Mariano Ruggeri",
+        "sex": "M",
+        "address": "Strada Cassandra, 27 Piano 9\n45037, Melara (RO)",
+        "mail": "oreste50@outlook.com",
+        "birthdate": "1974-07-25"
+      },
+      "geometry": { "type": "Point", "coordinates": [11.412, 45.50369] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "_id": "b0a3414c-be32-489a-b8d8-d70a25803346",
+        "cluster": false,
+        "reviews": [
+          {
+            "_id": "387da830-26ca-4155-86f6-e93c311c1ed6",
+            "stars": 5,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          },
+          {
+            "_id": "53f5b933-b1b1-41b7-979d-3027860976ad",
             "stars": 5,
             "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
             "username": "Nick"
           }
         ],
-        "username": "tremontiorlando",
-        "name": "Tonia Filangieri",
+        "username": "elmopietrangeli",
+        "name": "Gioachino Pellegrini",
+        "sex": "M",
+        "address": "Borgo Stefania, 4 Appartamento 63\n18012, Vallebona (IM)",
+        "mail": "iannottipaola@tin.it",
+        "birthdate": "2017-12-08"
+      },
+      "geometry": { "type": "Point", "coordinates": [13.44275, 38.07789] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "_id": "d1829478-61d5-4de1-8ee4-4a0aeec151bf",
+        "cluster": false,
+        "reviews": [
+          {
+            "_id": "1b7285dc-3a03-43ee-8486-c600ffc9d725",
+            "stars": 3,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          },
+          {
+            "_id": "80f4218a-b053-45e9-9884-d402d1531423",
+            "stars": 4,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          }
+        ],
+        "username": "isabellavarano",
+        "name": "Ninetta Sollima",
         "sex": "F",
-        "address": "Borgo Maurilio, 943\n38053, Castello Tesino (TN)",
-        "mail": "ariafiorucci@outlook.com",
-        "birthdate": "2013-07-31"
+        "address": "Incrocio Giolitti, 418\n20824, Lazzate (MB)",
+        "mail": "bianca55@gmail.com",
+        "birthdate": "1921-08-14"
+      },
+      "geometry": { "type": "Point", "coordinates": [12.70038, 45.9836] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "_id": "a9f8e18c-3c54-454c-b733-476c183cef9a",
+        "cluster": false,
+        "reviews": [
+          {
+            "_id": "8845bf85-0f11-4a86-9d00-7e28d349ee7c",
+            "stars": 4,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          },
+          {
+            "_id": "d2db3968-21b1-48d1-9169-8ba10c0e9257",
+            "stars": 3,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          }
+        ],
+        "username": "doloresrossini",
+        "name": "Sig. Baccio Rossi",
+        "sex": "M",
+        "address": "Incrocio Torquato, 2\n95016, Puntalazzo (CT)",
+        "mail": "fzarlino@alice.it",
+        "birthdate": "1979-04-25"
+      },
+      "geometry": { "type": "Point", "coordinates": [15.07041, 37.49223] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "_id": "d740610a-2fd7-4084-9a98-5fa65b952b4d",
+        "cluster": false,
+        "reviews": [
+          {
+            "_id": "38509103-e814-4841-9aa6-69d3d2f2f6cf",
+            "stars": 5,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          },
+          {
+            "_id": "91b28acd-8ed9-4d00-9a62-0f40391e3e38",
+            "stars": 4,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          }
+        ],
+        "username": "palumboricciotti",
+        "name": "Piergiorgio Tebaldi",
+        "sex": "M",
+        "address": "Vicolo Cannizzaro, 66 Appartamento 46\n41046, Palagano (MO)",
+        "mail": "orlandodelfino@yahoo.com",
+        "birthdate": "1937-04-10"
+      },
+      "geometry": { "type": "Point", "coordinates": [8.62118, 45.44694] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "_id": "7ae0b68b-1554-4d8e-bb4a-7679c421f5cd",
+        "cluster": false,
+        "reviews": [
+          {
+            "_id": "f2f0253a-5541-4cef-817b-9ddeb2c53708",
+            "stars": 4,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          },
+          {
+            "_id": "70e1631c-e862-4467-b8b8-0a953bfee0ea",
+            "stars": 5,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          }
+        ],
+        "username": "astrangio",
+        "name": "Dott. Panfilo Gioberti",
+        "sex": "M",
+        "address": "Vicolo Gregorio, 73 Appartamento 50\n02045, Limiti Di Greccio (RI)",
+        "mail": "arnulfopirandello@virgilio.it",
+        "birthdate": "1953-04-05"
+      },
+      "geometry": { "type": "Point", "coordinates": [13.57661, 37.31065] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "_id": "875cc085-0b89-416f-81bd-edfdb27619bb",
+        "cluster": false,
+        "reviews": [
+          {
+            "_id": "6eeb98f2-7498-459e-9104-be56abfe2d8f",
+            "stars": 5,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          },
+          {
+            "_id": "82ac70b5-9aab-4757-9368-823c1a5b60b9",
+            "stars": 5,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          }
+        ],
+        "username": "lussulivia",
+        "name": "Toni Flaiano",
+        "sex": "M",
+        "address": "Contrada Domenico, 8\n53034, Campiglia (SI)",
+        "mail": "umaglio@libero.it",
+        "birthdate": "1965-05-19"
+      },
+      "geometry": { "type": "Point", "coordinates": [7.60872, 43.78956] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "_id": "55e17498-2640-4f08-b3ee-8ec9baba916a",
+        "cluster": false,
+        "reviews": [
+          {
+            "_id": "37ce51ce-5d8d-41b5-bd2a-93d5c2c6a51a",
+            "stars": 3,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          },
+          {
+            "_id": "34749afb-dd34-4044-9296-963dfbd7259d",
+            "stars": 3,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          }
+        ],
+        "username": "oguidone",
+        "name": "Leone Aporti",
+        "sex": "M",
+        "address": "Strada Gino, 21 Piano 1\n07032, Nulvi (SS)",
+        "mail": "iannuzzisilvio@tim.it",
+        "birthdate": "1926-11-27"
+      },
+      "geometry": { "type": "Point", "coordinates": [17.58522, 40.53123] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "_id": "dcb918d1-9300-4bf9-bf19-27aab071a453",
+        "cluster": false,
+        "reviews": [
+          {
+            "_id": "0e52b3cf-84f4-4630-aff9-490425ffe462",
+            "stars": 4,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          },
+          {
+            "_id": "df902a82-49c3-431e-bbd4-b4628cc2fe38",
+            "stars": 5,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          }
+        ],
+        "username": "armando71",
+        "name": "Saverio Fattori",
+        "sex": "M",
+        "address": "Via Opizzi, 890\n19013, Deiva Marina (SP)",
+        "mail": "npedrazzini@alice.it",
+        "birthdate": "1993-08-02"
+      },
+      "geometry": { "type": "Point", "coordinates": [14.30935, 40.92298] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "_id": "1ef6ba51-c331-4183-b622-66736c09f68f",
+        "cluster": false,
+        "reviews": [
+          {
+            "_id": "be85686f-26fa-4f88-b271-1087942a6208",
+            "stars": 3,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          },
+          {
+            "_id": "2fcd325d-e37c-44cc-ac9b-6372ef8faadb",
+            "stars": 4,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          }
+        ],
+        "username": "lombardoparide",
+        "name": "Lodovico Bova",
+        "sex": "M",
+        "address": "Strada Anita, 66 Appartamento 50\n87022, Cetraro (CS)",
+        "mail": "mauriziobruscantini@outlook.com",
+        "birthdate": "1980-08-25"
+      },
+      "geometry": { "type": "Point", "coordinates": [9.40531, 45.53069] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "_id": "a36bd2b9-de8e-4966-87c5-d792f6fa2a9e",
+        "cluster": false,
+        "reviews": [
+          {
+            "_id": "03e4d4a5-c3a2-4b54-8c96-a448915dacdd",
+            "stars": 5,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          },
+          {
+            "_id": "b03fbec3-a637-469d-9640-1a2502838507",
+            "stars": 3,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          }
+        ],
+        "username": "maurofarnese",
+        "name": "Sig. Amico Martucci",
+        "sex": "M",
+        "address": "Rotonda Ugo, 62 Piano 9\n89010, Varapodio (RC)",
+        "mail": "pieromarsili@gmail.com",
+        "birthdate": "1991-01-10"
+      },
+      "geometry": { "type": "Point", "coordinates": [12.6723, 41.72063] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "_id": "846864aa-b184-4cef-a6c1-8d4ff27a4d2b",
+        "cluster": false,
+        "reviews": [
+          {
+            "_id": "65106a78-07a7-432a-bffa-183a4cb9d756",
+            "stars": 4,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          },
+          {
+            "_id": "61383142-0ba4-4e0c-a1cd-cadcdcfa9626",
+            "stars": 5,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          }
+        ],
+        "username": "pierangelo77",
+        "name": "Niccol\u00f2 Doria",
+        "sex": "M",
+        "address": "Stretto Pagnotto, 842\n84075, Gorga (SA)",
+        "mail": "pinamonteleonardo@live.com",
+        "birthdate": "1941-03-31"
+      },
+      "geometry": { "type": "Point", "coordinates": [12.38878, 43.1122] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "_id": "e0df3aca-3747-4a2c-be74-e3617751d603",
+        "cluster": false,
+        "reviews": [
+          {
+            "_id": "c6a7dc5d-8dfc-4eb1-9f5f-8ee08e9f7026",
+            "stars": 4,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          },
+          {
+            "_id": "8213b4ad-ad81-4c09-8230-1b28e97e0a6e",
+            "stars": 3,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          }
+        ],
+        "username": "cuomoignazio",
+        "name": "Raimondo Ossola",
+        "sex": "M",
+        "address": "Piazza Geronimo, 6\n84050, Cuccaro Vetere (SA)",
+        "mail": "marissa71@libero.it",
+        "birthdate": "1931-09-20"
+      },
+      "geometry": { "type": "Point", "coordinates": [14.39024, 42.22718] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "_id": "ada51109-8158-4d6e-9831-4337f34a6b26",
+        "cluster": false,
+        "reviews": [
+          {
+            "_id": "f2c4fcf3-de83-4c17-a177-db38e22e0248",
+            "stars": 4,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          },
+          {
+            "_id": "19ad88a0-11b8-4fdc-8c33-93b790c19cd0",
+            "stars": 4,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          }
+        ],
+        "username": "mmazzanti",
+        "name": "Camilla Taccola",
+        "sex": "F",
+        "address": "Viale Amalia, 86\n86049, Ururi (CB)",
+        "mail": "claudiacarducci@hotmail.it",
+        "birthdate": "1961-06-19"
+      },
+      "geometry": { "type": "Point", "coordinates": [13.39954, 43.62558] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "_id": "53396c8a-ff2d-49c2-99e3-59ae557fad99",
+        "cluster": false,
+        "reviews": [
+          {
+            "_id": "8f581c58-4ff9-44be-b840-8509d50d2031",
+            "stars": 4,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          },
+          {
+            "_id": "4d75b6db-44f5-4176-83d8-ff37f58159f0",
+            "stars": 3,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          }
+        ],
+        "username": "molesinimichelangelo",
+        "name": "Mattia Ligorio",
+        "sex": "M",
+        "address": "Incrocio Bongiorno, 48\n38027, Male' (TN)",
+        "mail": "npolani@yahoo.com",
+        "birthdate": "1952-05-15"
+      },
+      "geometry": { "type": "Point", "coordinates": [8.55552, 40.72586] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "_id": "cb29151c-23f1-4985-b3a9-6446defdd20e",
+        "cluster": false,
+        "reviews": [
+          {
+            "_id": "be57ab75-7ee8-4236-b4b7-4d1329b06aec",
+            "stars": 5,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          },
+          {
+            "_id": "cbcfa28e-44c8-4a96-9b1a-142daa9fcdc5",
+            "stars": 3,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          }
+        ],
+        "username": "biagigaetano",
+        "name": "Fiorenzo Bernetti",
+        "sex": "M",
+        "address": "Piazza Antonucci, 2 Appartamento 83\n16040, Coreglia Ligure (GE)",
+        "mail": "fvalmarana@poste.it",
+        "birthdate": "1993-10-15"
+      },
+      "geometry": { "type": "Point", "coordinates": [9.32241, 44.31771] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "_id": "1fe15057-45c6-4b15-b0e3-94908770f6e3",
+        "cluster": false,
+        "reviews": [
+          {
+            "_id": "10c9a0cd-65d6-4d53-8dd2-423c2b1af8d2",
+            "stars": 5,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          },
+          {
+            "_id": "aa060349-c388-4ef9-93b9-ed0e8e857f62",
+            "stars": 5,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          }
+        ],
+        "username": "adele00",
+        "name": "Sig. Massimiliano Guarato",
+        "sex": "M",
+        "address": "Strada Ficino, 0 Piano 8\n21022, Azzate (VA)",
+        "mail": "ztrombetta@virgilio.it",
+        "birthdate": "1961-03-02"
+      },
+      "geometry": { "type": "Point", "coordinates": [14.72443, 36.92574] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "_id": "2551bddd-14f9-4ec0-bf2c-72a631b0bb5b",
+        "cluster": false,
+        "reviews": [
+          {
+            "_id": "e4eb4ce3-d706-4a76-8d07-6d540a7031ea",
+            "stars": 3,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          },
+          {
+            "_id": "27308042-d63b-45bb-ab7a-4accbbbb34e9",
+            "stars": 4,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          }
+        ],
+        "username": "roerosusanna",
+        "name": "Marcantonio Udinese",
+        "sex": "M",
+        "address": "Viale Capone, 6 Appartamento 0\n00174, Roma (RM)",
+        "mail": "gabriele89@tim.it",
+        "birthdate": "1943-01-10"
+      },
+      "geometry": { "type": "Point", "coordinates": [14.01481, 42.67164] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "_id": "f0cdff7a-3957-45c0-88a3-c6438c442dcb",
+        "cluster": false,
+        "reviews": [
+          {
+            "_id": "a59877c1-3055-4b33-a12f-0fe7dc176c6f",
+            "stars": 3,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          },
+          {
+            "_id": "4f413a73-c1bf-4219-9464-b553e00534ae",
+            "stars": 3,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          }
+        ],
+        "username": "piergiuseppeinterminei",
+        "name": "Sole Filippini",
+        "sex": "F",
+        "address": "Incrocio Filippelli, 6 Appartamento 99\n72025, San Donaci (BR)",
+        "mail": "mauriliogolgi@gmail.com",
+        "birthdate": "1971-11-07"
+      },
+      "geometry": { "type": "Point", "coordinates": [8.88104, 45.79377] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "_id": "577ff0f5-7fe9-4e36-b8fc-0282664f793d",
+        "cluster": false,
+        "reviews": [
+          {
+            "_id": "9972fd8f-cb5b-4df5-9f3f-720984731ea9",
+            "stars": 4,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          },
+          {
+            "_id": "c2114e7a-e344-48fd-9156-bd85100ecb95",
+            "stars": 4,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          }
+        ],
+        "username": "ermanno89",
+        "name": "Antonietta Mantegna",
+        "sex": "F",
+        "address": "Canale Barberini, 643\n84026, Postiglione (SA)",
+        "mail": "poliboni@hotmail.it",
+        "birthdate": "1963-12-11"
+      },
+      "geometry": { "type": "Point", "coordinates": [16.50104, 41.24264] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "_id": "d73947d1-df29-43ed-a9bd-e889d3aee148",
+        "cluster": false,
+        "reviews": [
+          {
+            "_id": "d727b481-8149-4240-a5e4-858a137828b0",
+            "stars": 4,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          },
+          {
+            "_id": "37acff62-aaf8-4b6b-8872-49fdb104c8a8",
+            "stars": 5,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          }
+        ],
+        "username": "nataliaoscuro",
+        "name": "Sig.ra Isabella Gregori",
+        "sex": "F",
+        "address": "Canale Uberto, 5\n21032, Caravate (VA)",
+        "mail": "ysanguineti@tele2.it",
+        "birthdate": "1997-03-12"
+      },
+      "geometry": { "type": "Point", "coordinates": [9.29109, 45.39402] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "_id": "daac2c39-3104-40ce-95b5-712d0be89b0d",
+        "cluster": false,
+        "reviews": [
+          {
+            "_id": "9b8820e0-07d9-44cc-9341-b4dc2d49f1fa",
+            "stars": 3,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          },
+          {
+            "_id": "2e3e8539-2380-4440-8bc7-6efa4ee6fe5f",
+            "stars": 4,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          }
+        ],
+        "username": "bettinapirelli",
+        "name": "Piermaria Duodo",
+        "sex": "M",
+        "address": "Incrocio Flaiano, 61\n63856, Smerillo (FM)",
+        "mail": "marissaverga@tele2.it",
+        "birthdate": "1968-06-22"
+      },
+      "geometry": { "type": "Point", "coordinates": [14.43865, 40.87329] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "_id": "fc678201-624e-4825-b5a7-311369903d92",
+        "cluster": false,
+        "reviews": [
+          {
+            "_id": "c2b57794-6b52-420b-b210-4bb162beb796",
+            "stars": 5,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          },
+          {
+            "_id": "6d007322-26a7-49a0-9e02-92f54d70910e",
+            "stars": 3,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          }
+        ],
+        "username": "torquato55",
+        "name": "Sig. Calogero Visconti",
+        "sex": "M",
+        "address": "Piazza Bianca, 2\n15033, Terranova (AL)",
+        "mail": "salviniamanda@gmail.com",
+        "birthdate": "1909-07-22"
+      },
+      "geometry": { "type": "Point", "coordinates": [14.34085, 40.87363] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "_id": "93bd6296-27bc-4a8f-bff3-dd2ddb8a3cc6",
+        "cluster": false,
+        "reviews": [
+          {
+            "_id": "f9369cf6-919e-45ca-84d3-ad5bba1efba0",
+            "stars": 5,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          },
+          {
+            "_id": "29c977e1-89c6-4286-b412-33a8769b906c",
+            "stars": 4,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          }
+        ],
+        "username": "gcibin",
+        "name": "Maria Sagnelli",
+        "sex": "F",
+        "address": "Via Druso, 76\n63812, Montegranaro (FM)",
+        "mail": "pcerquiglini@gmail.com",
+        "birthdate": "1940-10-15"
       },
       "geometry": { "type": "Point", "coordinates": [15.00913, 37.51803] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "_id": "fdbd4da5-9081-49cc-995b-df4b67b58f87",
+        "cluster": false,
+        "reviews": [
+          {
+            "_id": "33539369-14e2-4bbd-a9af-3d6db4002b20",
+            "stars": 3,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          },
+          {
+            "_id": "3497808b-a6c6-4324-b3f6-a0fe89b9cf40",
+            "stars": 5,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          }
+        ],
+        "username": "ruggierorossetti",
+        "name": "Jacopo Zamorani-Satriani",
+        "sex": "M",
+        "address": "Stretto Raffaella, 835\n92018, Santa Margherita Di Belice (AG)",
+        "mail": "rosariozola@hotmail.com",
+        "birthdate": "1934-08-24"
+      },
+      "geometry": { "type": "Point", "coordinates": [12.84052, 45.78071] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "_id": "ae6379f2-0e3b-4106-9249-3fdd2de7ad1d",
+        "cluster": false,
+        "reviews": [
+          {
+            "_id": "7d321143-9d2d-4be5-9930-1732e0faa2e4",
+            "stars": 5,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          },
+          {
+            "_id": "a21dd46c-20b9-4fe9-8f48-ac54b9750be6",
+            "stars": 5,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          }
+        ],
+        "username": "colucciopetralli",
+        "name": "Diana Puccini",
+        "sex": "F",
+        "address": "Contrada Riccardo, 9 Appartamento 21\n84044, Matinella (SA)",
+        "mail": "laureano41@hotmail.com",
+        "birthdate": "1920-08-15"
+      },
+      "geometry": { "type": "Point", "coordinates": [14.66737, 41.55947] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "_id": "64363240-1a80-4d58-bd5e-6cd1db6adc92",
+        "cluster": false,
+        "reviews": [
+          {
+            "_id": "e16343b7-70be-41cc-93ba-dc6b922dd641",
+            "stars": 4,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          },
+          {
+            "_id": "66d91339-41ea-47e8-8402-9e6bb398070f",
+            "stars": 3,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          }
+        ],
+        "username": "pscaramucci",
+        "name": "Amadeo Fanucci-Montalcini",
+        "sex": "M",
+        "address": "Viale Gramsci, 13 Piano 8\n86014, Guardiaregia (CB)",
+        "mail": "ramona00@vodafone.it",
+        "birthdate": "1926-11-02"
+      },
+      "geometry": { "type": "Point", "coordinates": [17.80774, 40.55851] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "_id": "cf76c3b7-e9bb-46b1-a0fa-28138b6ab205",
+        "cluster": false,
+        "reviews": [
+          {
+            "_id": "522e934f-c87f-47e5-8b6f-3ad8f8652ce0",
+            "stars": 3,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          },
+          {
+            "_id": "24d74cb1-bd80-4124-9de8-bc68bcb572a2",
+            "stars": 5,
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "username": "Nick"
+          }
+        ],
+        "username": "toninelliallegra",
+        "name": "Filippa Vespa-Cimarosa",
+        "sex": "F",
+        "address": "Rotonda Alfio, 690\n16157, Genova (GE)",
+        "mail": "camuccinijolanda@tiscali.it",
+        "birthdate": "1926-08-15"
+      },
+      "geometry": { "type": "Point", "coordinates": [8.86374, 44.89784] }
     }
   ]
 }

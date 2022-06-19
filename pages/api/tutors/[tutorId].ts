@@ -7,7 +7,7 @@ export default function handler(
   res: NextApiResponse<TutorObjectGeoJSON | {}>
 ) {
   const tutor = fakeTutors.features.find(
-    t => t.properties.id === req.query.tutorId
+    t => t.properties._id === req.query.tutorId
   );
   res.status(200).json(tutor ? tutor : {});
 }

@@ -19,7 +19,9 @@ describe('Tutor details page tests', () => {
   beforeEach(() => {
     render(
       <RouterContext.Provider
-        value={createMockRouter({ query: { id: fakeTutor.properties.id } })}
+        value={createMockRouter({
+          query: { id: fakeTutor.properties._id },
+        })}
       >
         <TutorDetails />
       </RouterContext.Provider>

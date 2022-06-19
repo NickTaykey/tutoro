@@ -24,7 +24,7 @@ const TutorPage: NextPage = () => {
         <h1>{tutor.properties.username}</h1>
         <h2>{tutor.properties.name}</h2>
         {tutor.properties.reviews.map((r: TutorReviewObject) => (
-          <Review key={r.id} review={r} />
+          <Review key={r._id} review={r} />
         ))}
       </>
     );

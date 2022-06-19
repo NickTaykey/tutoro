@@ -22,7 +22,7 @@ describe('TutorPopup tests', () => {
   });
   it('navigates to the correct tutor page', () => {
     const router = createMockRouter({
-      query: { id: fakeTutor.properties.id },
+      query: { id: fakeTutor.properties._id },
     });
     userEvent.click(screen.getByText('Learn more'));
     waitFor(() => {

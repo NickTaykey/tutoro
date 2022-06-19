@@ -1,7 +1,7 @@
 export type TutorObjectGeoJSON = {
   type: 'Feature';
   properties: {
-    id: string;
+    _id: string;
     cluster: false;
     username: string;
     name: string;
@@ -15,7 +15,7 @@ export type TutorObjectGeoJSON = {
 };
 
 export type TutorReviewObject = {
-  id: string;
+  _id: string;
   stars: number;
   text: string;
   username: string;

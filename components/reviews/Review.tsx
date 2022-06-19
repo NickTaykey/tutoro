@@ -4,7 +4,7 @@ const Review: React.FC<{
   review: TutorReviewObject;
 }> = ({ review }) => {
   return (
-    <article key={review.id}>
+    <article>
       <div>{review.stars}</div>
       <div>{review.username}</div>
       <div>{review.text}</div>
