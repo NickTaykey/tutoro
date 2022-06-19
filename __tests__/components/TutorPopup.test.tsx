@@ -1,9 +1,10 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { TutorObjectGeoJSON } from '../../types/index';
 import TutorPopup from '../../components/cluster-map/TutorPopup';
 import { createMockRouter } from '../../utils/testing';
 import fakeTutors from '../../fake-tutors.json';
+
+import type { TutorObjectGeoJSON } from '../../types/index';
 
 const randomTutorIdx = Math.trunc(Math.random() * fakeTutors.features.length);
 const fakeTutor = fakeTutors.features[randomTutorIdx] as TutorObjectGeoJSON;
