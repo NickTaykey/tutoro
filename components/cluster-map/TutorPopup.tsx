@@ -1,4 +1,4 @@
-import { TutorObjectGeoJSON } from '../../types/index';
+import type { TutorObjectGeoJSON } from '../../types/index';
 import Link from 'next/link';
 
 const TutorPopup: React.FC<{
