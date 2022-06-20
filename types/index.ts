@@ -17,8 +17,7 @@ export type TutorObjectGeoJSON = {
 export type TutorReviewObject = {
   _id: string;
   stars: number;
-  text: string;
-  username: string;
+  text?: string;
 };
 
 export type FakeTutorsAPIResponseType = {

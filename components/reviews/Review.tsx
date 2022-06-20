@@ -6,7 +6,6 @@ const Review: React.FC<{
   return (
     <article>
       <div>{review.stars}</div>
-      <div>{review.username}</div>
       <div>{review.text}</div>
     </article>
   );
