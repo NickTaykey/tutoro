@@ -1,25 +1,38 @@
 import type { NextPage } from 'next';
 import ClusterMap from '../components/cluster-map/ClusterMap';
-import type { FeatureCollection, GeoJsonProperties, Geometry } from 'geojson';
 import { useEffect, useState } from 'react';
-import { FakeTutorsAPIResponseType } from '../types';
+import { UserDocument, TutorObjectGeoJSON } from '../types';
 import { useSession, signIn, signOut } from 'next-auth/react';
+import type { FeatureCollection, GeoJsonProperties, Geometry } from 'geojson';
+
+type StateType = FeatureCollection<Geometry, GeoJsonProperties> | null;
 
 const Home: NextPage = () => {
-  const [features, setFeatures] = useState<FakeTutorsAPIResponseType | null>();
+  const [features, setFeatures] = useState<StateType>();
   const { data: session, status } = useSession();
 
   useEffect(() => {
     fetch('/api/tutors')
       .then(res => res.json())
-      .then(features => setFeatures(features));
+      .then((tutors: UserDocument[]) => {
+        const features = tutors.map(
+          (tutor): TutorObjectGeoJSON => ({
+            type: 'Feature',
+            properties: {
+              cluster: false,
+              ...tutor,
+            },
+            geometry: { type: 'Point', coordinates: tutor.coordinates },
+          })
+        );
+        setFeatures({ type: 'FeatureCollection', features });
+      });
   }, []);
-  return (
+
+  return features ? (
     <>
       <h1 style={{ textAlign: 'center' }}>HomePage</h1>
-      <ClusterMap
-        tutors={features as FeatureCollection<Geometry, GeoJsonProperties>}
-      />
+      <ClusterMap tutors={features} />
       {status === 'unauthenticated' && (
         <button onClick={() => signIn()}>Sign in</button>
       )}
@@ -31,6 +44,8 @@ const Home: NextPage = () => {
         </>
       )}
     </>
+  ) : (
+    <h1>Loading map</h1>
   );
 };
 

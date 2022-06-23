@@ -1,12 +1,12 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { TutorObjectGeoJSON, TutorReviewObject } from '../../types';
+import { TutorReviewObject, UserDocument } from '../../types';
 import { useEffect, useState } from 'react';
 import Review from '../../components/reviews/Review';
 
 const TutorPage: NextPage = () => {
   const router = useRouter();
-  const [tutor, setTutor] = useState<TutorObjectGeoJSON | null>();
+  const [tutor, setTutor] = useState<UserDocument | null>();
 
   useEffect(() => {
     if (router.query.tutorId) {
@@ -17,13 +17,12 @@ const TutorPage: NextPage = () => {
   }, [router.query.tutorId]);
 
   let markup = <h1>Loading</h1>;
-  if (tutor && !tutor.properties) markup = <h1>404 Tutor not found!</h1>;
-  if (tutor && tutor.properties) {
+  if (!tutor) markup = <h1>404 Tutor not found!</h1>;
+  if (tutor) {
     markup = (
       <>
-        <h1>{tutor.properties.username}</h1>
-        <h2>{tutor.properties.name}</h2>
-        {tutor.properties.reviews.map((r: TutorReviewObject) => (
+        <h1>{tutor.fullname}</h1>
+        {tutor.reviews.map((r: TutorReviewObject) => (
           <Review key={r._id} review={r} />
         ))}
       </>

@@ -1,12 +1,13 @@
 import { Schema, model, models, Document } from 'mongoose';
 
-interface IUser extends Document {
+export interface IUser extends Document {
   fullname: string;
   email: string;
   avatar?: string;
   isTutor: boolean;
   createdReviews: Schema.Types.ObjectId[];
   reviews: Schema.Types.ObjectId[];
+  coordinates: [number, number];
 }
 
 const userSchema = new Schema<IUser>({
@@ -26,6 +27,7 @@ const userSchema = new Schema<IUser>({
       ref: 'Review',
     },
   ],
+  coordinates: [],
 });
 
 export default models.User || model('User', userSchema);

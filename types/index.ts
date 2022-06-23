@@ -1,26 +1,25 @@
-export type TutorObjectGeoJSON = {
-  type: 'Feature';
-  properties: {
-    _id: string;
-    cluster: false;
-    username: string;
-    name: string;
-    sex: string;
-    mail: string;
-    birthdate: string;
-    address: string;
-    reviews: TutorReviewObject[];
-  };
-  geometry: { type: 'Point'; coordinates: number[] };
-};
-
 export type TutorReviewObject = {
   _id: string;
   stars: number;
   text?: string;
 };
 
-export type FakeTutorsAPIResponseType = {
+export type UserDocument = {
+  _id: string;
+  fullname: string;
+  email: string;
+  reviews: TutorReviewObject[];
+  coordinates: [number, number];
+  address?: string;
+};
+
+export type TutorObjectGeoJSON = {
+  type: 'Feature';
+  properties: UserDocument & { cluster: false };
+  geometry: { type: 'Point'; coordinates: [number, number] };
+};
+
+export type TutorsGeoJSONCollection = {
   type: 'FeatureCollection';
   features: TutorObjectGeoJSON[];
 };

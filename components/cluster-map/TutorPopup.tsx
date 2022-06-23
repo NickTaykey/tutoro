@@ -6,8 +6,7 @@ const TutorPopup: React.FC<{
 }> = ({ popupInfo }) => {
   return (
     <section data-testid="popup-container">
-      <h2>{popupInfo.properties.username}</h2>
-      <div>{popupInfo.properties.name}</div>
+      <h2>{popupInfo.properties.fullname}</h2>
       <Link href={`/tutors/${popupInfo.properties._id}`}>Learn more</Link>
     </section>
   );
