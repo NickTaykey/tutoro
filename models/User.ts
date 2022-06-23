@@ -1,15 +1,15 @@
-import { Schema, model, models, Types } from 'mongoose';
+import { Schema, model, models, Document } from 'mongoose';
 
-interface IUSer {
+interface IUser extends Document {
   fullname: string;
   email: string;
   avatar?: string;
   isTutor: boolean;
-  createdReviews: Types.DocumentArray<Types.ObjectId>[];
-  reviews: Types.DocumentArray<Types.ObjectId>[];
+  createdReviews: Schema.Types.ObjectId[];
+  reviews: Schema.Types.ObjectId[];
 }
 
-const userSchema = new Schema<IUSer>({
+const userSchema = new Schema<IUser>({
   email: { type: String, required: true, unique: true },
   fullname: { type: String, required: true },
   avatar: String,
