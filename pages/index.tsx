@@ -3,6 +3,7 @@ import ClusterMap from '../components/cluster-map/ClusterMap';
 import { useEffect, useState } from 'react';
 import { UserDocument, TutorObjectGeoJSON } from '../types';
 import { useSession, signIn, signOut } from 'next-auth/react';
+import ApiHelper from '../utils/api-helper';
 import type { FeatureCollection, GeoJsonProperties, Geometry } from 'geojson';
 
 type StateType = FeatureCollection<Geometry, GeoJsonProperties> | null;
@@ -12,21 +13,19 @@ const Home: NextPage = () => {
   const { data: session, status } = useSession();
 
   useEffect(() => {
-    fetch('/api/tutors')
-      .then(res => res.json())
-      .then((tutors: UserDocument[]) => {
-        const features = tutors.map(
-          (tutor): TutorObjectGeoJSON => ({
-            type: 'Feature',
-            properties: {
-              cluster: false,
-              ...tutor,
-            },
-            geometry: { type: 'Point', coordinates: tutor.coordinates },
-          })
-        );
-        setFeatures({ type: 'FeatureCollection', features });
-      });
+    ApiHelper('/api/tutors', {}, 'GET').then((tutors: UserDocument[]) => {
+      const features = tutors.map(
+        (tutor): TutorObjectGeoJSON => ({
+          type: 'Feature',
+          properties: {
+            cluster: false,
+            ...tutor,
+          },
+          geometry: { type: 'Point', coordinates: tutor.coordinates },
+        })
+      );
+      setFeatures({ type: 'FeatureCollection', features });
+    });
   }, []);
 
   return features ? (

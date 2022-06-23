@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { TutorReviewObject, UserDocument } from '../../types';
 import { useEffect, useState } from 'react';
 import Review from '../../components/reviews/Review';
+import ApiHelper from '../../utils/api-helper';
 
 const TutorPage: NextPage = () => {
   const router = useRouter();
@@ -10,15 +11,15 @@ const TutorPage: NextPage = () => {
 
   useEffect(() => {
     if (router.query.tutorId) {
-      fetch(`/api/tutors/${router.query.tutorId}`)
-        .then(res => res.json())
-        .then(features => setTutor(features));
+      ApiHelper(`/api/tutors/${router.query.tutorId}`, {}, 'GET').then(
+        features => setTutor(features)
+      );
     }
   }, [router.query.tutorId]);
 
   let markup = <h1>Loading</h1>;
-  if (!tutor) markup = <h1>404 Tutor not found!</h1>;
-  if (tutor) {
+  if (tutor && !tutor.reviews) markup = <h1>404 Tutor not found!</h1>;
+  if (tutor && tutor.reviews) {
     markup = (
       <>
         <h1>{tutor.fullname}</h1>
