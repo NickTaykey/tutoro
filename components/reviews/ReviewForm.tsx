@@ -1,5 +1,6 @@
 import React, { FormEvent, useContext, useRef, useState } from 'react';
-import ReviewContext from '../../store/reviews-context';
+import ReviewContext, { APIError } from '../../store/reviews-context';
+import { TutorReviewObject } from '../../types';
 import StarRating, { StarRatingHandle } from './StarRating';
 
 export enum ReviewFormTypes {
@@ -25,19 +26,34 @@ const ReviewForm: React.FC<
   const imperativeHandlingRef = useRef<StarRatingHandle>(null);
   const [stars, setStars] = useState<number>(0);
   const [text, setText] = useState<string>('');
+  const [errorAlert, setErrorAlert] = useState<string>('');
 
-  const formSubmitHandler = (e: FormEvent) => {
-    e.preventDefault();
-    if (props.type === ReviewFormTypes.Create) {
-      ctx.addReview(props.tutorId, { stars, text });
+  const createReviewHandler = async () => {
+    const apiResponse = await ctx.addReview(props.tutorId, {
+      stars,
+      text,
+    });
+    if (apiResponse.errorMessage) setErrorAlert(apiResponse.errorMessage);
+    else {
       setStars(0);
       setText('');
       imperativeHandlingRef.current!.reset();
     }
   };
 
+  const formSubmitHandler = async (e: FormEvent) => {
+    e.preventDefault();
+    if (props.type === ReviewFormTypes.Create && !stars) {
+      const r = confirm('Are you sure you want to give 0 stars?');
+      if (r) createReviewHandler();
+    } else if (props.type === ReviewFormTypes.Create && stars) {
+      createReviewHandler();
+    }
+  };
+
   return (
     <form onSubmit={formSubmitHandler}>
+      {errorAlert && <div>{errorAlert}</div>}
       <fieldset>
         <StarRating
           ref={imperativeHandlingRef}

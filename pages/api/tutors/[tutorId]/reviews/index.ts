@@ -25,12 +25,16 @@ export default async function handler(
       await tutor.save();
       return res.status(201).json(review.toJSON());
     } catch (e) {
-      if (e instanceof Error.ValidationError)
-        return res.status(400).json({
-          errorMessage:
-            e.errors.stars.kind === 'Number' &&
-            'star rating was passed, it has to be a number.',
-        });
+      if (e instanceof Error.ValidationError) {
+        const { kind } = e.errors.stars;
+        if (kind === 'Number' || kind === 'min' || kind === 'max')
+          return res.status(400).json({
+            errorMessage:
+              kind === 'Number'
+                ? 'star rating was passed, it has to be a number.'
+                : e.errors.stars.message,
+          });
+      }
       return res.status(500).json({
         errorMessage: 'Unexpected internal server error',
         error: JSON.stringify(e),
