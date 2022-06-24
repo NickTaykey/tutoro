@@ -3,8 +3,11 @@ function ApiHelper(
   data: any = {},
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET'
 ) {
+  const body =
+    method === 'PUT' || method === 'POST' ? JSON.stringify(data) : null;
   return fetch(url, {
-    method: method,
+    method,
+    body,
     headers: {
       'Content-Type': 'application/json',
     },
