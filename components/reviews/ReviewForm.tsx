@@ -1,5 +1,5 @@
 import React, { FormEvent, useContext, useRef, useState } from 'react';
-import ReviewContext, { APIError } from '../../store/reviews-context';
+import ReviewContext from '../../store/reviews-context';
 import { TutorReviewObject } from '../../types';
 import StarRating, { StarRatingHandle } from './StarRating';
 
@@ -16,16 +16,19 @@ type CreateReviewFormProps = {
 type EditReviewFormProps = {
   type: ReviewFormTypes.Edit;
   tutorId: string;
-  review: { stars: number; text?: string };
+  review: TutorReviewObject;
 };
 
 const ReviewForm: React.FC<
   CreateReviewFormProps | EditReviewFormProps
 > = props => {
+  const isEdit = props.type === ReviewFormTypes.Edit;
   const ctx = useContext(ReviewContext);
   const imperativeHandlingRef = useRef<StarRatingHandle>(null);
-  const [stars, setStars] = useState<number>(0);
-  const [text, setText] = useState<string>('');
+  const [stars, setStars] = useState<number>(isEdit ? props.review.stars : 0);
+  const [text, setText] = useState<string>(
+    isEdit && props.review?.text ? props.review.text : ''
+  );
   const [errorAlert, setErrorAlert] = useState<string>('');
 
   const createReviewHandler = async () => {
@@ -40,6 +43,19 @@ const ReviewForm: React.FC<
       imperativeHandlingRef.current!.reset();
     }
   };
+  const updateReviewHandler = async () => {
+    const editReviewProps = props as EditReviewFormProps;
+    const apiResponse = await ctx.updateReview(props.tutorId, {
+      ...editReviewProps.review,
+      stars,
+      text,
+    });
+    if (apiResponse.errorMessage) setErrorAlert(apiResponse.errorMessage);
+    else {
+      setStars(0);
+      setText('');
+    }
+  };
 
   const formSubmitHandler = async (e: FormEvent) => {
     e.preventDefault();
@@ -48,6 +64,10 @@ const ReviewForm: React.FC<
       if (r) createReviewHandler();
     } else if (props.type === ReviewFormTypes.Create && stars) {
       createReviewHandler();
+    } else if (props.type === ReviewFormTypes.Edit && !stars) {
+      updateReviewHandler();
+    } else if (props.type === ReviewFormTypes.Edit && stars) {
+      updateReviewHandler();
     }
   };
 
@@ -72,7 +92,7 @@ const ReviewForm: React.FC<
           ></textarea>
         </label>
       </fieldset>
-      <button type="submit">Post review</button>
+      <button type="submit">{isEdit ? 'Update' : 'Post'} review</button>
     </form>
   );
 };
