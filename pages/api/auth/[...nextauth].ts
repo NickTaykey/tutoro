@@ -16,7 +16,7 @@ export default NextAuth({
       const userFound = await User.findOne({ email: user.email });
       if (!userFound) {
         await User.create({
-          username: user.name,
+          fullname: user.name,
           email: user.email,
           avatar: user.image,
         });
