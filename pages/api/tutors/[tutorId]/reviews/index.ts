@@ -1,8 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import connectDB from '../../../../middleware/mongo-connect';
-import sanitize from '../../../../middleware/mongo-sanitize';
-import Review from '../../../../models/Review';
+import connectDB from '../../../../../middleware/mongo-connect';
+import sanitize from '../../../../../middleware/mongo-sanitize';
+import Review from '../../../../../models/Review';
 import { Error } from 'mongoose';
+import User from '../../../../../models/User';
 
 export default async function handler(
   req: NextApiRequest,
@@ -16,6 +17,12 @@ export default async function handler(
         text: sanitizedReqBody?.text,
         stars: Number(sanitizedReqBody.stars),
       });
+      const tutor = await User.findOne({
+        _id: req.query.tutorId,
+        isTutor: true,
+      });
+      tutor.reviews.push(review);
+      await tutor.save();
       return res.status(201).json(review.toJSON());
     } catch (e) {
       if (e instanceof Error.ValidationError)

@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import connectDB from '../../../../middleware/mongo-connect';
-import sanitize from '../../../../middleware/mongo-sanitize';
-import Review from '../../../../models/Review';
+import connectDB from '../../../../../middleware/mongo-connect';
+import sanitize from '../../../../../middleware/mongo-sanitize';
+import Review from '../../../../../models/Review';
 import { Error } from 'mongoose';
 
 export default async function handler(
@@ -11,7 +11,7 @@ export default async function handler(
   await connectDB();
   if (req.method === 'DELETE') {
     const review = await Review.findByIdAndDelete(req.query.reviewId);
-    if (review) return res.status(200).json({});
+    if (review) return res.status(200).json(review.toJSON());
     return res.status(404).json({ errorMessage: 'Review not found' });
   }
   if (req.method === 'PUT') {

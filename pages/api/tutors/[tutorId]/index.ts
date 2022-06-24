@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import type { TutorObjectGeoJSON } from '../../../types';
-import connectDB from '../../../middleware/mongo-connect';
-import User from '../../../models/User';
-import Review from '../../../models/Review';
+import type { TutorObjectGeoJSON } from '../../../../types';
+import connectDB from '../../../../middleware/mongo-connect';
+import User from '../../../../models/User';
+import Review from '../../../../models/Review';
 import { Error } from 'mongoose';
 
 export default async function handler(
