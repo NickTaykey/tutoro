@@ -1,4 +1,5 @@
 import type { NextPage } from 'next';
+import type { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import { TutorReviewObject, UserDocument } from '../../types';
 import { useEffect, useState } from 'react';
@@ -9,10 +10,13 @@ import ReviewContext from '../../store/reviews-context';
 import ReviewForm, {
   ReviewFormTypes,
 } from '../../components/reviews/ReviewForm';
+import { useSession } from 'next-auth/react';
+import Link from 'next/link';
 
-const TutorPage: NextPage = () => {
+const TutorPage: React.FC<Props> = (props: Props) => {
   const router = useRouter();
   const [tutor, setTutor] = useState<UserDocument | null>();
+  const { status } = useSession();
 
   useEffect(() => {
     if (router.query.tutorId) {
@@ -28,11 +32,29 @@ const TutorPage: NextPage = () => {
     markup = (
       <>
         <h1>{tutor.fullname}</h1>
-        <ReviewsContextProvider reviews={tutor.reviews}>
+        <ReviewsContextProvider
+          reviews={tutor.reviews.map(r => ({
+            ...r,
+            ownerAuthenticated:
+              props.userCreatedReviewsIds.indexOf(r._id) !== -1,
+          }))}
+        >
           <ReviewContext.Consumer>
             {reviewsCtx => (
               <>
-                <ReviewForm type={ReviewFormTypes.Create} tutorId={tutor._id} />
+                {status === 'authenticated' && (
+                  <ReviewForm
+                    type={ReviewFormTypes.Create}
+                    tutorId={tutor._id}
+                  />
+                )}
+                {status === 'unauthenticated' && (
+                  <Link
+                    href={`http://localhost:3000/api/auth/signin?callbackUrl=/tutors/${tutor._id}`}
+                  >
+                    Sign In
+                  </Link>
+                )}
                 {reviewsCtx.reviews.map((r: TutorReviewObject) => (
                   <Review key={r._id} review={r} tutorId={tutor._id} />
                 ))}
@@ -46,4 +68,30 @@ const TutorPage: NextPage = () => {
 
   return markup;
 };
+
+import User from '../../models/User';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../api/auth/[...nextauth]';
+import mongoose from 'mongoose';
+
+interface Props {
+  userCreatedReviewsIds: string[];
+}
+
+export const getServerSideProps: GetServerSideProps<Props> = async context => {
+  const session = await getServerSession(context, authOptions);
+  const user = await User.findOne({ email: session?.user?.email });
+  if (user) {
+    const userCreatedReviewsIds: string[] = user.createdReviews.map(
+      (r: mongoose.ObjectId) => r.toString()
+    );
+    return {
+      props: {
+        userCreatedReviewsIds,
+      },
+    };
+  }
+  return { props: { userCreatedReviewsIds: [] } };
+};
+
 export default TutorPage;

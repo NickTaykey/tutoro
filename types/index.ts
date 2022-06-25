@@ -2,6 +2,7 @@ export type TutorReviewObject = {
   _id: string;
   stars: number;
   text?: string;
+  ownerAuthenticated: boolean;
 };
 
 export type UserDocument = {

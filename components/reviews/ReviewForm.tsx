@@ -16,6 +16,7 @@ type CreateReviewFormProps = {
 type EditReviewFormProps = {
   type: ReviewFormTypes.Edit;
   tutorId: string;
+  hideForm: () => void;
   review: TutorReviewObject;
 };
 
@@ -51,10 +52,7 @@ const ReviewForm: React.FC<
       text,
     });
     if (apiResponse.errorMessage) setErrorAlert(apiResponse.errorMessage);
-    else {
-      setStars(0);
-      setText('');
-    }
+    editReviewProps.hideForm();
   };
 
   const formSubmitHandler = async (e: FormEvent) => {

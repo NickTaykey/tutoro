@@ -13,7 +13,12 @@ enum ReviewActionTypes {
 
 interface ReviewAction {
   type: ReviewActionTypes;
-  payload: { _id: string; stars: number; text?: string };
+  payload: {
+    _id: string;
+    stars: number;
+    text?: string;
+    ownerAuthenticated: boolean;
+  };
 }
 
 function reducer(
@@ -22,7 +27,7 @@ function reducer(
 ): TutorReviewObject[] {
   switch (action.type) {
     case ReviewActionTypes.ADD:
-      return [...prevState, { ...action.payload }] as TutorReviewObject[];
+      return [{ ...action.payload }, ...prevState] as TutorReviewObject[];
     case ReviewActionTypes.DELETE:
       return prevState.filter(r => r._id !== action.payload._id);
     case ReviewActionTypes.UPDATE:
@@ -55,7 +60,7 @@ const ReviewsContextProvider: React.FC<{
           if (!apiResponse.errorMessage) {
             dispatchReviewAction({
               type: ReviewActionTypes.ADD,
-              payload: apiResponse,
+              payload: { ...apiResponse, ownerAuthenticated: true },
             });
           }
           return apiResponse;
@@ -72,7 +77,7 @@ const ReviewsContextProvider: React.FC<{
           if (!apiResponse.errorMessage) {
             dispatchReviewAction({
               type: ReviewActionTypes.UPDATE,
-              payload: apiResponse,
+              payload: { ...apiResponse, ownerAuthenticated: true },
             });
           }
           return apiResponse;

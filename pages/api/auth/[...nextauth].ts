@@ -1,9 +1,9 @@
-import NextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import connectDB from '../../../middleware/mongo-connect';
 import User from '../../../models/User';
+import NextAuth, { NextAuthOptions } from 'next-auth';
 
-export default NextAuth({
+export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_ID!,
@@ -24,4 +24,6 @@ export default NextAuth({
       return true;
     },
   },
-});
+};
+
+export default NextAuth(authOptions);
