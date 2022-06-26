@@ -41,6 +41,7 @@ const ReviewForm: React.FC<
     else {
       setStars(0);
       setText('');
+      setErrorAlert('');
       imperativeHandlingRef.current!.reset();
     }
   };
@@ -52,6 +53,7 @@ const ReviewForm: React.FC<
       text,
     });
     if (apiResponse.errorMessage) setErrorAlert(apiResponse.errorMessage);
+    setErrorAlert('');
     editReviewProps.hideForm();
   };
 

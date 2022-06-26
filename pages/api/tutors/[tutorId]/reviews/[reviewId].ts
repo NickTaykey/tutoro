@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import connectDB from '../../../../../middleware/mongo-connect';
 import sanitize from '../../../../../middleware/mongo-sanitize';
 import Review from '../../../../../models/Review';
-import { Error } from 'mongoose';
+import { Error, ObjectId } from 'mongoose';
 import { authOptions } from '../../../auth/[...nextauth]';
 import User from '../../../../../models/User';
 import { getServerSession } from 'next-auth/next';
@@ -20,6 +20,11 @@ export default async function handler(
       if (r.toString() === req.query.reviewId) {
         if (req.method === 'DELETE') {
           const review = await Review.findByIdAndDelete(req.query.reviewId);
+          user.createdReviews = user.createdReviews.filter(
+            (rid: ObjectId) => rid.toString() !== req.query.reviewId
+          );
+          console.log(user.createdReviews.length);
+          await user.save();
           if (review) return res.status(200).json(review.toJSON());
           return res.status(404).json({ errorMessage: 'Review not found' });
         }
