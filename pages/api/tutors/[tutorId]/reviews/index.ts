@@ -27,10 +27,6 @@ export default async function handler(
         ]);
         const canUserCreateReview =
           reviewSet.size === user.createdReviews.length + tutor.reviews.length;
-        console.log(
-          reviewSet.size,
-          user.createdReviews.length + tutor.reviews.length
-        );
         if (canUserCreateReview) {
           try {
             const sanitizedReqBody = sanitize(req.body);

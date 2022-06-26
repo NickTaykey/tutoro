@@ -23,7 +23,6 @@ export default async function handler(
           user.createdReviews = user.createdReviews.filter(
             (rid: ObjectId) => rid.toString() !== req.query.reviewId
           );
-          console.log(user.createdReviews.length);
           await user.save();
           if (review) return res.status(200).json(review.toJSON());
           return res.status(404).json({ errorMessage: 'Review not found' });
