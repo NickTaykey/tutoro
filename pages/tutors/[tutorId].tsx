@@ -73,12 +73,14 @@ import User from '../../models/User';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../api/auth/[...nextauth]';
 import mongoose from 'mongoose';
+import connectDB from '../../middleware/mongo-connect';
 
 interface Props {
   userCreatedReviewsIds: string[];
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
+  await connectDB();
   const session = await getServerSession(context, authOptions);
   const user = await User.findOne({ email: session?.user?.email });
   if (user) {
