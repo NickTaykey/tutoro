@@ -24,3 +24,7 @@ export type TutorsGeoJSONCollection = {
   type: 'FeatureCollection';
   features: TutorObjectGeoJSON[];
 };
+
+export type ReviewAPIResponse =
+  | TutorReviewObject
+  | { errorMessage: string; error?: string };

@@ -6,10 +6,11 @@ import { Error } from 'mongoose';
 import { authOptions } from '../../../auth/[...nextauth]';
 import User from '../../../../../models/User';
 import { getServerSession } from 'next-auth/next';
+import type { ReviewAPIResponse } from '../../../../../types';
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<any>
+  res: NextApiResponse<ReviewAPIResponse>
 ) {
   await connectDB();
   const session = await getServerSession({ req, res }, authOptions);

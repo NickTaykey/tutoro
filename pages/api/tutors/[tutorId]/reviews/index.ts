@@ -6,10 +6,11 @@ import { Error } from 'mongoose';
 import User from '../../../../../models/User';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../../auth/[...nextauth]';
+import type { ReviewAPIResponse } from '../../../../../types';
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<any>
+  res: NextApiResponse<ReviewAPIResponse>
 ) {
   if (req.method === 'POST') {
     await connectDB();
@@ -30,7 +31,9 @@ export default async function handler(
         user.createdReviews.push(review);
         await user.save();
         await tutor.save();
-        return res.status(201).json(review.toJSON());
+        return res
+          .status(201)
+          .json({ ...review.toObject(), ownerAuthenticated: true });
       } catch (e) {
         if (e instanceof Error.ValidationError) {
           const { kind } = e.errors.stars;
