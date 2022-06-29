@@ -2,7 +2,7 @@ export type TutorReviewObject = {
   _id: string;
   stars: number;
   text?: string;
-  ownerAuthenticated: boolean;
+  ownerAuthenticated?: boolean;
 };
 
 export type UserDocument = {
@@ -25,6 +25,6 @@ export type TutorsGeoJSONCollection = {
   features: TutorObjectGeoJSON[];
 };
 
-export type ReviewAPIResponse =
-  | TutorReviewObject
-  | { errorMessage: string; error?: string };
+export type HTTPError = { errorMessage: string; error?: string };
+
+export type ReviewAPIResponse = TutorReviewObject | HTTPError;

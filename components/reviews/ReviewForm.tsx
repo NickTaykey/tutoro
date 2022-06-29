@@ -53,8 +53,10 @@ const ReviewForm: React.FC<
       text,
     });
     if (apiResponse.errorMessage) setErrorAlert(apiResponse.errorMessage);
-    setErrorAlert('');
-    editReviewProps.hideForm();
+    else {
+      setErrorAlert('');
+      editReviewProps.hideForm();
+    }
   };
 
   const formSubmitHandler = async (e: FormEvent) => {
