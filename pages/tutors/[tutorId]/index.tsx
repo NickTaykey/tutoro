@@ -1,10 +1,10 @@
 import type { GetServerSideProps, NextPage } from 'next';
-import type { UserDocument } from '../../types';
+import type { UserDocument } from '../../../types';
 
-import TutorPage from '../../components/TutorPage';
+import TutorPage from '../../../components/TutorPage';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import ApiHelper from '../../utils/api-helper';
+import ApiHelper from '../../../utils/api-helper';
 
 interface Props {
   userCreatedReviewsIds: string[];
@@ -36,11 +36,11 @@ const Page: NextPage<Props> = (props: Props) => {
   return markup;
 };
 
-import User from '../../models/User';
+import User from '../../../models/User';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../api/auth/[...nextauth]';
+import { authOptions } from '../../api/auth/[...nextauth]';
 import mongoose from 'mongoose';
-import connectDB from '../../middleware/mongo-connect';
+import connectDB from '../../../middleware/mongo-connect';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
   await connectDB();

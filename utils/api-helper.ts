@@ -13,7 +13,10 @@ function ApiHelper(
     },
   })
     .then(res => res.json())
-    .then(result => result)
+    .then(result => {
+      console.log(result); // Only for development porpouse
+      return result;
+    })
     .catch(e => e);
 }
 
