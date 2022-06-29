@@ -1,9 +1,13 @@
-import { useSession } from 'next-auth/react';
-import Link from 'next/link';
-import type { GetServerSideProps, NextPage } from 'next';
+import Session from '../../../components/sessions/Session';
 import Review from '../../../components/reviews/Review';
+import SessionsContextProvider from '../../../store/SessionsProvider';
 
-import * as types from '../../../types';
+import {
+  UserDocument,
+  TutorReviewObject,
+  SessionDocument,
+} from '../../../types';
+import type { GetServerSideProps, NextPage } from 'next';
 
 interface Props {
   currentTutor: string | null;
@@ -15,27 +19,21 @@ const ProfilePage: NextPage<Props> = ({ currentTutor }) => {
     return (
       <>
         <h1>Hi, {parsedCurrentTutor.fullname}!</h1>
-        {parsedCurrentTutor.reviews.map((r: types.TutorReviewObject) => (
+        {parsedCurrentTutor.reviews.map((r: TutorReviewObject) => (
           <Review key={r._id} tutorId={parsedCurrentTutor._id} review={r} />
         ))}
-        {parsedCurrentTutor.requestedSessions.map((s: types.Session) => {
-          const date = new Date(s.date);
-          return (
-            <article key={s._id} style={{ border: '1px solid black' }}>
-              <div>Subject: {s.topic}</div>
-              <div>
-                <strong>{s.hours} hours</strong>
-              </div>
-              <p>{s.topic}</p>
-              <time dateTime={date.toDateString()}>{date.toDateString()}</time>
-              <div>
-                <strong>Not accepted yet!</strong>
-                <br />
-                <button>Accept session</button>
-              </div>
-            </article>
-          );
-        })}
+        <SessionsContextProvider
+          sessions={parsedCurrentTutor.requestedSessions}
+          tutorId={parsedCurrentTutor._id}
+        >
+          <SessionsContext.Consumer>
+            {ctx => {
+              return ctx.sessions.map((s: SessionDocument) => (
+                <Session key={parsedCurrentTutor._id} session={s} />
+              ));
+            }}
+          </SessionsContext.Consumer>
+        </SessionsContextProvider>
       </>
     );
   }
@@ -46,10 +44,9 @@ import User from '../../../models/User';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../api/auth/[...nextauth]';
 import connectDB from '../../../middleware/mongo-connect';
-import type { UserDocument } from '../../../types';
 import ReviewModel from '../../../models/Review';
 import mongoose from 'mongoose';
-import ApiHelper from '../../../utils/api-helper';
+import SessionsContext from '../../../store/sessions-context';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
   await connectDB();

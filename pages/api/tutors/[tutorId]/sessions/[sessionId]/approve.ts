@@ -10,7 +10,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ISession | HTTPError>
 ) {
-  ensureHttpMethod(req, res, 'POST', async () => {
+  ensureHttpMethod(req, res, 'PUT', async () => {
     await serverSideErrorHandler(req, res, async (req, res) => {
       await connectDB();
       await mongoErrorHandler(req, res, 'Session', async () => {
