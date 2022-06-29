@@ -10,6 +10,8 @@ export type UserDocument = {
   fullname: string;
   email: string;
   reviews: TutorReviewObject[];
+  requestedSessions: Session[];
+  bookedSessions: Session[];
   coordinates: [number, number];
   address?: string;
 };
@@ -35,4 +37,8 @@ export interface ISession {
   hours: number;
   approved: boolean;
   date: Date;
+}
+
+export interface Session extends ISession {
+  _id: string;
 }
