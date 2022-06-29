@@ -2,27 +2,44 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TutorPopup from '../../components/cluster-map/TutorPopup';
 import { createMockRouter } from '../../utils/testing';
-import fakeTutors from '../../fake-tutors.json';
+import seedTutors from '../../seed-tutors.json';
+import * as functions from 'next-auth/react';
 
-import type { TutorObjectGeoJSON } from '../../types/index';
+const tutor = seedTutors[0];
 
-const randomTutorIdx = Math.trunc(Math.random() * fakeTutors.features.length);
-const fakeTutor = fakeTutors.features[randomTutorIdx] as TutorObjectGeoJSON;
+functions!.useSession = jest.fn().mockReturnValue({ status: 'authenticated' });
+
+import type { TutorReviewObject } from '../../types/index';
 
 describe('TutorPopup tests', () => {
   beforeEach(() => {
-    render(<TutorPopup popupInfo={fakeTutor} />);
+    render(
+      <TutorPopup
+        popupInfo={{
+          type: 'Feature',
+          properties: {
+            cluster: false,
+            ...tutor,
+            coordinates: tutor.coordinates as [number, number],
+            reviews: tutor.reviews as TutorReviewObject[],
+          },
+          geometry: {
+            type: 'Point',
+            coordinates: tutor.coordinates as [number, number],
+          },
+        }}
+      />
+    );
   });
   it('renders without crashing', () => {
     expect(screen.getByTestId('popup-container')).toBeInTheDocument();
   });
   it('displays correct information', () => {
-    expect(screen.getByText(fakeTutor.properties.username)).toBeInTheDocument();
-    expect(screen.getByText(fakeTutor.properties.name)).toBeInTheDocument();
+    expect(screen.getByText(tutor.fullname)).toBeInTheDocument();
   });
   it('navigates to the correct tutor page', () => {
     const router = createMockRouter({
-      query: { id: fakeTutor.properties._id },
+      query: { id: tutor._id },
     });
     userEvent.click(screen.getByText('Learn more'));
     waitFor(() => {

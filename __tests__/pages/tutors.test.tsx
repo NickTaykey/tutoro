@@ -1,8 +1,18 @@
 import { render, screen, act } from '@testing-library/react';
-import fakeTutors from '../../fake-tutors.json';
-import Home from '../../pages/index';
+import Home from '../../pages/tutors';
+import seedTutors from '../../seed-tutors.json';
+import * as functions from 'next-auth/react';
 
-import type { FakeTutorsAPIResponseType } from '../../types';
+functions!.useSession = jest.fn().mockReturnValue({
+  status: 'authenticated',
+  data: { user: { email: 'random@mail.com', fullname: 'Nick' } },
+});
+
+global.fetch = jest.fn(() => {
+  return Promise.resolve({
+    json: () => Promise.resolve(seedTutors),
+  });
+}) as jest.Mock;
 
 jest.mock('../../components/cluster-map/ClusterMap', () => {
   return () => <div data-testid="map" />;
@@ -10,7 +20,7 @@ jest.mock('../../components/cluster-map/ClusterMap', () => {
 
 global.fetch = jest.fn(() => {
   return Promise.resolve({
-    json: () => Promise.resolve(fakeTutors as FakeTutorsAPIResponseType),
+    json: () => Promise.resolve(seedTutors),
   });
 }) as jest.Mock;
 

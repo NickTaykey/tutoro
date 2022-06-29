@@ -1,20 +1,26 @@
 import { render, screen } from '@testing-library/react';
 import Review from '../../components/reviews/Review';
-import fakeTutors from '../../fake-tutors.json';
+import seedTutors from '../../seed-tutors.json';
+import * as functions from 'next-auth/react';
 
-const randomTutorIdx = Math.trunc(Math.random() * fakeTutors.features.length);
-const fakeReview = fakeTutors.features[randomTutorIdx].properties.reviews[0];
+const tutor = seedTutors[0];
+
+functions!.useSession = jest.fn().mockReturnValue({ status: 'authenticated' });
 
 describe('Review tests', () => {
   beforeEach(() => {
-    render(<Review review={fakeReview} />);
+    render(
+      <Review
+        tutorId={tutor._id}
+        review={{ ...tutor.reviews[0], ownerAuthenticated: true }}
+      />
+    );
   });
   it('renders without crashing', () => {
     expect(screen.getByRole('article')).toBeInTheDocument();
   });
   it('displays correct information', () => {
-    expect(screen.getByText(fakeReview.stars)).toBeInTheDocument();
-    expect(screen.getByText(fakeReview.text)).toBeInTheDocument();
-    expect(screen.getByText(fakeReview.username)).toBeInTheDocument();
+    expect(screen.getByText(tutor.reviews[0].stars)).toBeInTheDocument();
+    expect(screen.getByText(tutor.reviews[0].text)).toBeInTheDocument();
   });
 });
