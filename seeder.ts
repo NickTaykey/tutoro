@@ -3,6 +3,9 @@ import User from './models/User';
 import Review from './models/Review';
 import { faker } from '@faker-js/faker';
 import dotenv from 'dotenv';
+import fs from 'fs';
+
+import type { Document } from 'mongoose';
 
 dotenv.config({ path: __dirname + '/.env.local' });
 
@@ -21,6 +24,7 @@ if (process.argv.length === 4) {
   await connectDB();
   await User.deleteMany({});
   await Review.deleteMany({});
+  const tutors: Document[] = [];
   for (let i = 0; i < nUsers; i++) {
     const coordinates = faker.address.nearbyGPSCoordinate(
       LOCATION_CENTER_COORDINATES,
@@ -42,7 +46,9 @@ if (process.argv.length === 4) {
       user.reviews.push(review);
     }
     await user.save();
+    tutors.push(user);
   }
+  fs.writeFile('seed-tutors.json', JSON.stringify(tutors), () => {});
   console.log(
     `Created ${nUsers} fake tutor users with ${nReviews} fake reviews each.`
   );
