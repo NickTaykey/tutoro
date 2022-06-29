@@ -8,6 +8,8 @@ export interface IUser extends Document {
   createdReviews: Schema.Types.ObjectId[];
   reviews: Schema.Types.ObjectId[];
   coordinates: [number, number];
+  bookedSessions: Schema.Types.ObjectId[];
+  requestedSessions: Schema.Types.ObjectId[];
 }
 
 const userSchema = new Schema<IUser>({
@@ -28,6 +30,8 @@ const userSchema = new Schema<IUser>({
     },
   ],
   coordinates: [],
+  bookedSessions: [{ type: Schema.Types.ObjectId, ref: 'Session' }],
+  requestedSessions: [{ type: Schema.Types.ObjectId, ref: 'Session' }],
 });
 
 export default models.User || model('User', userSchema);

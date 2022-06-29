@@ -28,3 +28,11 @@ export type TutorsGeoJSONCollection = {
 export type HTTPError = { errorMessage: string; error?: string };
 
 export type ReviewAPIResponse = TutorReviewObject | HTTPError;
+
+export interface ISession {
+  subject: string;
+  topic: string;
+  hours: number;
+  approved: boolean;
+  date: Date;
+}

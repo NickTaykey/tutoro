@@ -37,6 +37,7 @@ if (process.argv.length === 4) {
       avatar: faker.internet.avatar(),
       coordinates: [+coordinates[0], +coordinates[1]],
       isTutor: true,
+      requestedSessions: [],
     });
     for (let j = 0; j < nReviews; j++) {
       const review = await Review.create({
