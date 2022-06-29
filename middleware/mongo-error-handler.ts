@@ -28,6 +28,11 @@ async function mongoErrorHandler(
                 : message,
           });
       }
+      if (e.errors && e.errors.date) {
+        return res.status(400).json({
+          errorMessage: 'The date provided is not valid',
+        });
+      }
     } else throw new Error(JSON.stringify(e));
   }
 }
