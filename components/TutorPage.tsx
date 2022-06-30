@@ -3,6 +3,7 @@ import ReviewsContextProvider from '../store/ReviewsProvider';
 import ReviewContext from '../store/reviews-context';
 import ReviewForm, { ReviewFormTypes } from './reviews/ReviewForm';
 import { useSession } from 'next-auth/react';
+import calcAvgRating from '../utils/calc-avg-rating';
 import Link from 'next/link';
 
 import type { UserDocument, TutorReviewObject } from '../types';
@@ -17,14 +18,6 @@ const TutorPage: React.FC<Props> = ({
   userCreatedReviewsIds,
 }: Props) => {
   const { status } = useSession();
-  const calcAvgRating = (reviews: TutorReviewObject[]) => {
-    const totRating = reviews.reduce(
-      (acm: number, r: TutorReviewObject) => (acm += r.stars),
-      0
-    );
-    return Math.ceil(totRating / reviews.length);
-  };
-
   let markup = <h1>Loading</h1>;
   if (tutor && !tutor.reviews) markup = <h1>404 Tutor not found!</h1>;
   if (tutor && tutor.reviews) {

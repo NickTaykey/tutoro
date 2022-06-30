@@ -12,13 +12,16 @@ export type UserDocument = {
   reviews: TutorReviewObject[];
   requestedSessions: SessionDocument[];
   bookedSessions: SessionDocument[];
+  createdReviews: TutorReviewObject[];
   coordinates: [number, number];
   address?: string;
 };
 
+export type TutorObjectGeoJSONProperties = UserDocument & { cluster: false };
+
 export type TutorObjectGeoJSON = {
   type: 'Feature';
-  properties: UserDocument & { cluster: false };
+  properties: TutorObjectGeoJSONProperties;
   geometry: { type: 'Point'; coordinates: [number, number] };
 };
 
