@@ -41,9 +41,14 @@ const ClusterMap: React.FC<{
 
   const onMapLoad = () => {
     mapRef!.current!.on('click', 'unclustered-point', e => {
+      const { properties } = e.features![0];
       setPopupInfo({
         type: 'Feature',
-        properties: e.features![0].properties,
+        properties: {
+          ...e.features![0].properties,
+          reviews: JSON.parse(properties!.reviews),
+          createdReviews: JSON.parse(properties!.createdReviews),
+        },
         geometry: { type: 'Point', coordinates: e.lngLat.toArray() },
       } as TutorObjectGeoJSON);
     });
