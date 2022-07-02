@@ -1,6 +1,6 @@
 import React, { FormEvent, useContext, useRef, useState } from 'react';
+import type { ReviewDocumentObject } from '../../models/Review';
 import ReviewContext from '../../store/reviews-context';
-import { TutorReviewObject } from '../../types';
 import StarRating, { StarRatingHandle } from './StarRating';
 
 export enum ReviewFormTypes {
@@ -17,7 +17,7 @@ type EditReviewFormProps = {
   type: ReviewFormTypes.Edit;
   tutorId: string;
   hideForm: () => void;
-  review: TutorReviewObject;
+  review: ReviewDocumentObject;
 };
 
 const ReviewForm: React.FC<

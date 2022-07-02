@@ -1,9 +1,10 @@
-import type { TutorReviewObject } from '../types';
+import type { ReviewDocumentObject } from '../models/Review';
 
-export default (reviews: TutorReviewObject[]) => {
+export default (reviews: ReviewDocumentObject[]) => {
   const totRating = reviews.reduce(
-    (acm: number, r: TutorReviewObject) => (acm += r.stars),
+    (acm: number, r: ReviewDocumentObject) => (acm += r.stars),
     0
   );
-  return Math.ceil(totRating / reviews.length);
+  const avgRating = Math.ceil(totRating / reviews.length);
+  return avgRating ? avgRating : 0;
 };

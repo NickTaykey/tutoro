@@ -1,12 +1,7 @@
 import { render, screen, act } from '@testing-library/react';
 import Home from '../../pages/tutors';
 import seedTutors from '../../seed-tutors.json';
-import * as functions from 'next-auth/react';
-
-functions!.useSession = jest.fn().mockReturnValue({
-  status: 'authenticated',
-  data: { user: { email: 'random@mail.com', fullname: 'Nick' } },
-});
+import type { UserDocumentObject } from '../../models/User';
 
 global.fetch = jest.fn(() => {
   return Promise.resolve({
@@ -26,8 +21,10 @@ global.fetch = jest.fn(() => {
 
 describe('Home page tests', () => {
   it('renders without crashing', async () => {
-    await act(() => {
-      render(<Home />);
+    act(() => {
+      render(
+        <Home currentUser={seedTutors[0] as unknown as UserDocumentObject} />
+      );
     });
     expect(screen.getByRole('heading')).toBeInTheDocument();
     expect(fetch).toBeCalled();

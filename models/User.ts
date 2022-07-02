@@ -1,37 +1,67 @@
-import { Schema, model, models, Document } from 'mongoose';
+import { Schema, model, models, Types } from 'mongoose';
+import type { Model, ObjectId, Document } from 'mongoose';
+import type { ReviewDocument, ReviewDocumentObject } from './Review';
+import type { SessionDocument, SessionDocumentObject } from './Session';
 
-export interface IUser extends Document {
-  fullname: string;
+type ReviewsArray =
+  | ObjectId[]
+  | ReviewDocument[]
+  | Types.Array<ObjectId>
+  | Types.Array<ReviewDocument>;
+
+type SessionsArray =
+  | ObjectId[]
+  | SessionDocument[]
+  | Types.Array<ObjectId>
+  | Types.Array<SessionDocument>;
+
+interface UserCoreObject {
   email: string;
-  avatar?: string;
+  fullname: string;
   isTutor: boolean;
-  createdReviews: Schema.Types.ObjectId[];
-  reviews: Schema.Types.ObjectId[];
   coordinates: [number, number];
-  bookedSessions: Schema.Types.ObjectId[];
-  requestedSessions: Schema.Types.ObjectId[];
+  avatar?: string;
 }
 
-const userSchema = new Schema<IUser>({
+interface User extends UserCoreObject {
+  reviews: ReviewsArray;
+  createdReviews: ReviewsArray;
+  bookedSessions: SessionsArray;
+  requestedSessions: SessionsArray;
+}
+
+export type UserDocument = User & Document;
+
+export interface UserDocumentObject extends UserCoreObject {
+  _id: string;
+  reviews: ReviewDocumentObject[];
+  createdReviews: ReviewDocumentObject[];
+  bookedSessions: SessionDocumentObject[];
+  requestedSessions: SessionDocumentObject[];
+}
+
+type UserModel = Model<UserDocument>;
+
+const reviewsArrayObject = {
+  type: Schema.Types.ObjectId,
+  ref: 'Review',
+};
+const sessionsArrayObject = {
+  type: Schema.Types.ObjectId,
+  ref: 'Session',
+};
+
+const userSchema = new Schema<UserDocument, UserModel>({
   email: { type: String, required: true, unique: true },
   fullname: { type: String, required: true },
-  avatar: String,
   isTutor: { type: Boolean, default: false },
-  reviews: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'Review',
-    },
-  ],
-  createdReviews: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'Review',
-    },
-  ],
+  reviews: [reviewsArrayObject],
+  createdReviews: [reviewsArrayObject],
+  bookedSessions: [sessionsArrayObject],
+  requestedSessions: [sessionsArrayObject],
+  avatar: String,
   coordinates: [],
-  bookedSessions: [{ type: Schema.Types.ObjectId, ref: 'Session' }],
-  requestedSessions: [{ type: Schema.Types.ObjectId, ref: 'Session' }],
 });
 
-export default models.User || model('User', userSchema);
+export default models.User ||
+  model<UserDocument, UserModel>('User', userSchema);

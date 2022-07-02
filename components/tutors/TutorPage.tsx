@@ -1,15 +1,16 @@
-import Review from './reviews/Review';
-import ReviewsContextProvider from '../store/ReviewsProvider';
-import ReviewContext from '../store/reviews-context';
-import ReviewForm, { ReviewFormTypes } from './reviews/ReviewForm';
+import Review from '../reviews/Review';
+import ReviewsContextProvider from '../../store/ReviewsProvider';
+import ReviewContext from '../../store/reviews-context';
+import ReviewForm, { ReviewFormTypes } from '../reviews/ReviewForm';
 import { useSession } from 'next-auth/react';
-import calcAvgRating from '../utils/calc-avg-rating';
+import calcAvgRating from '../../utils/calc-avg-rating';
 import Link from 'next/link';
 
-import type { UserDocument, TutorReviewObject } from '../types';
+import type { ReviewDocumentObject } from '../../models/Review';
+import type { UserDocumentObject } from '../../models/User';
 
 interface Props {
-  tutor: UserDocument;
+  tutor: UserDocumentObject;
   userCreatedReviewsIds: string[];
 }
 
@@ -47,7 +48,7 @@ const TutorPage: React.FC<Props> = ({
                     Sign In
                   </Link>
                 )}
-                {reviewsCtx.reviews.map((r: TutorReviewObject) => (
+                {reviewsCtx.reviews.map((r: ReviewDocumentObject) => (
                   <Review key={r._id} review={r} tutorId={tutor._id} />
                 ))}
               </>

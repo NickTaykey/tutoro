@@ -1,17 +1,18 @@
 import { useContext, useState } from 'react';
 import ReviewContext from '../../store/reviews-context';
-import type { TutorReviewObject } from '../../types';
 import ReviewForm from './ReviewForm';
 import { ReviewFormTypes } from './ReviewForm';
 import { useSession } from 'next-auth/react';
+import type { ReviewDocumentObject } from '../../models/Review';
 
 const Review: React.FC<{
   tutorId: string;
-  review: TutorReviewObject;
+  review: ReviewDocumentObject;
 }> = props => {
   const ctx = useContext(ReviewContext);
   const { status } = useSession();
   const [showUpdateForm, setShowUpdateForm] = useState<boolean>(false);
+
   const deleteReviewClickHandler = () => {
     const c = confirm('Are you sure you want to delete this review?');
     if (c) ctx.deleteReview(props.tutorId, props.review._id);

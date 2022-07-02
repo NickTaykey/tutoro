@@ -1,7 +1,7 @@
 import type { GetServerSideProps, NextPage } from 'next';
-import type { UserDocument } from '../../../types';
+import User, { UserDocumentObject } from '../../../models/User';
 
-import TutorPage from '../../../components/TutorPage';
+import TutorPage from '../../../components/tutors/TutorPage';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import ApiHelper from '../../../utils/api-helper';
@@ -12,7 +12,7 @@ interface Props {
 
 const Page: NextPage<Props> = (props: Props) => {
   const router = useRouter();
-  const [tutor, setTutor] = useState<UserDocument | null>();
+  const [tutor, setTutor] = useState<UserDocumentObject | null>();
 
   useEffect(() => {
     if (router.query.tutorId) {
@@ -36,7 +36,6 @@ const Page: NextPage<Props> = (props: Props) => {
   return markup;
 };
 
-import User from '../../../models/User';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../api/auth/[...nextauth]';
 import mongoose from 'mongoose';

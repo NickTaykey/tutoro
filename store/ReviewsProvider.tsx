@@ -1,7 +1,7 @@
 import React, { useReducer } from 'react';
 import ReviewContext, { APIError } from './reviews-context';
 import ApiHelper from '../utils/api-helper';
-import type { TutorReviewObject } from '../types';
+import type { ReviewDocumentObject } from '../models/Review';
 
 type ReviewFieldsArg = { stars: number; text?: string };
 
@@ -22,17 +22,19 @@ interface ReviewAction {
 }
 
 function reducer(
-  prevState: TutorReviewObject[],
+  prevState: ReviewDocumentObject[],
   action: ReviewAction
-): TutorReviewObject[] {
+): ReviewDocumentObject[] {
   switch (action.type) {
     case ReviewActionTypes.ADD:
-      return [{ ...action.payload }, ...prevState] as TutorReviewObject[];
+      return [{ ...action.payload }, ...prevState] as ReviewDocumentObject[];
     case ReviewActionTypes.DELETE:
       return prevState.filter(r => r._id !== action.payload._id);
     case ReviewActionTypes.UPDATE:
       return prevState.map(r =>
-        r._id === action.payload._id ? { ...action.payload } : r
+        r._id === action.payload._id
+          ? ({ ...action.payload } as ReviewDocumentObject)
+          : r
       );
     default:
       return prevState;
@@ -40,7 +42,7 @@ function reducer(
 }
 
 const ReviewsContextProvider: React.FC<{
-  reviews: TutorReviewObject[];
+  reviews: ReviewDocumentObject[];
   children: React.ReactNode[] | React.ReactNode;
 }> = props => {
   const [reviews, dispatchReviewAction] = useReducer(reducer, props.reviews);
@@ -51,7 +53,7 @@ const ReviewsContextProvider: React.FC<{
         async addReview(
           tutorId: string,
           review: ReviewFieldsArg
-        ): Promise<TutorReviewObject | APIError | any> {
+        ): Promise<ReviewDocumentObject | APIError | any> {
           const apiResponse = await ApiHelper(
             `/api/tutors/${tutorId}/reviews`,
             review,
@@ -67,8 +69,8 @@ const ReviewsContextProvider: React.FC<{
         },
         async updateReview(
           tutorId: string,
-          review: TutorReviewObject
-        ): Promise<TutorReviewObject | APIError | any> {
+          review: ReviewDocumentObject
+        ): Promise<ReviewDocumentObject | APIError | any> {
           const apiResponse = await ApiHelper(
             `/api/tutors/${tutorId}/reviews/${review._id}`,
             review,
@@ -85,7 +87,7 @@ const ReviewsContextProvider: React.FC<{
         async deleteReview(
           tutorId: string,
           reviewId: string
-        ): Promise<TutorReviewObject | APIError | any> {
+        ): Promise<ReviewDocumentObject | APIError | any> {
           const apiResponse = await ApiHelper(
             `/api/tutors/${tutorId}/reviews/${reviewId}`,
             {},

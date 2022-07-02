@@ -1,14 +1,16 @@
 import { useContext } from 'react';
+import type { SessionDocumentObject } from '../../models/Session';
 import SessionsContext from '../../store/sessions-context';
-import { SessionDocument } from '../../types';
 
 interface Props {
-  session: SessionDocument;
+  session: SessionDocumentObject;
+  tutorId: string;
+  isTutor: boolean;
 }
 
-const Session: React.FC<Props> = ({ session }) => {
+const Session: React.FC<Props> = ({ session, tutorId, isTutor }) => {
   const ctx = useContext(SessionsContext);
-  const approveSessionHandler = () => ctx.approveSession(session._id);
+  const approveSessionHandler = () => ctx.approveSession(session._id, tutorId);
   const date = new Date(session.date);
   return (
     <article style={{ border: '1px solid black' }}>
@@ -21,7 +23,7 @@ const Session: React.FC<Props> = ({ session }) => {
       <div>
         <strong>{session.approved ? 'Approved!' : 'Not approved yet!'}</strong>
         <br />
-        {!session.approved && (
+        {!session.approved && isTutor && (
           <button onClick={approveSessionHandler}>Approve session</button>
         )}
       </div>

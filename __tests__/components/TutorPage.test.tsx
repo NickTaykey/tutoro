@@ -1,8 +1,8 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import TutorPage from '../../components/TutorPage';
+import TutorPage from '../../components/tutors/TutorPage';
 import seedTutors from '../../seed-tutors.json';
 import * as functions from 'next-auth/react';
-import { TutorReviewObject } from '../../types';
+import type { ReviewDocumentObject } from '../../models/Review';
 
 functions!.useSession = jest.fn().mockReturnValue({ status: 'authenticated' });
 
@@ -20,7 +20,7 @@ describe('Tutor details page tests', () => {
       <TutorPage
         tutor={{ ...tutor, coordinates: tutor.coordinates as [number, number] }}
         userCreatedReviewsIds={tutor.createdReviews.map(
-          (r: TutorReviewObject) => r._id
+          (r: ReviewDocumentObject) => r._id
         )}
       />
     );

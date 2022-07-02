@@ -1,7 +1,7 @@
 import React, { useReducer } from 'react';
 import SessionsContext, { APIError } from './sessions-context';
 import ApiHelper from '../utils/api-helper';
-import type { SessionDocument } from '../types';
+import { SessionDocumentObject } from '../models/Session';
 
 enum SessionActionTypes {
   APPROVE,
@@ -16,9 +16,9 @@ interface SessionAction {
 }
 
 function reducer(
-  prevState: SessionDocument[],
+  prevState: SessionDocumentObject[],
   action: SessionAction
-): SessionDocument[] {
+): SessionDocumentObject[] {
   switch (action.type) {
     case SessionActionTypes.DELETE:
       return prevState.filter(s => s._id !== action.payload.sessionId);
@@ -32,8 +32,7 @@ function reducer(
 }
 
 const SessionContextProvider: React.FC<{
-  sessions: SessionDocument[];
-  tutorId: string;
+  sessions: SessionDocumentObject[];
   children: React.ReactNode[] | React.ReactNode;
 }> = props => {
   const [sessions, dispatchSessionsAction] = useReducer(
@@ -44,12 +43,12 @@ const SessionContextProvider: React.FC<{
     <SessionsContext.Provider
       value={{
         sessions,
-        tutorId: props.tutorId,
         async approveSession(
-          sessionId: string
-        ): Promise<SessionDocument | APIError | any> {
+          sessionId: string,
+          tutorId: string
+        ): Promise<SessionDocumentObject | APIError> {
           const apiResponse = await ApiHelper(
-            `/api/tutors/${this.tutorId}/sessions/${sessionId}/approve`,
+            `/api/tutors/${tutorId}/sessions/${sessionId}/approve`,
             null,
             'PUT'
           );
@@ -62,10 +61,11 @@ const SessionContextProvider: React.FC<{
           return apiResponse;
         },
         async deleteSession(
-          sessionId: string
-        ): Promise<SessionDocument | APIError | any> {
+          sessionId: string,
+          tutorId: string
+        ): Promise<SessionDocumentObject | APIError> {
           const apiResponse = await ApiHelper(
-            `/api/tutors/${this.tutorId}/sessions/${sessionId}`,
+            `/api/tutors/${tutorId}/sessions/${sessionId}`,
             null,
             'DELETE'
           );

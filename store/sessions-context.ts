@@ -1,23 +1,21 @@
 import React from 'react';
-import type { SessionDocument } from '../types';
+import type { SessionDocumentObject } from '../models/Session';
 
 export type APIError = { errorMessage: string };
-type ContextMethodReturnType = Promise<SessionDocument | APIError | any>;
+type ContextMethodReturnType = Promise<SessionDocumentObject | APIError | {}>;
 
 interface SessionsContextObject {
-  tutorId: string | null;
-  sessions: SessionDocument[];
-  deleteSession(sessionId: string): ContextMethodReturnType;
-  approveSession(sessionId: string): ContextMethodReturnType;
+  sessions: SessionDocumentObject[];
+  deleteSession(sessionId: string, tutorId: string): ContextMethodReturnType;
+  approveSession(sessionId: string, tutorId: string): ContextMethodReturnType;
 }
 
 const SessionsContext = React.createContext<SessionsContextObject>({
-  tutorId: null,
   sessions: [],
-  deleteSession(sessionId: string) {
+  deleteSession(sessionId: string, tutorId: string) {
     return Promise.resolve({});
   },
-  approveSession(sessionId: string) {
+  approveSession(sessionId: string, tutorId: string) {
     return Promise.resolve({});
   },
 });

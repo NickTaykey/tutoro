@@ -4,12 +4,11 @@ import TutorPopup from '../../components/cluster-map/TutorPopup';
 import { createMockRouter } from '../../utils/testing';
 import seedTutors from '../../seed-tutors.json';
 import * as functions from 'next-auth/react';
+import type { ReviewDocumentObject } from '../../models/Review';
 
 const tutor = seedTutors[0];
 
 functions!.useSession = jest.fn().mockReturnValue({ status: 'authenticated' });
-
-import type { TutorReviewObject } from '../../types/index';
 
 describe('TutorPopup tests', () => {
   beforeEach(() => {
@@ -21,7 +20,7 @@ describe('TutorPopup tests', () => {
             cluster: false,
             ...tutor,
             coordinates: tutor.coordinates as [number, number],
-            reviews: tutor.reviews as TutorReviewObject[],
+            reviews: tutor.reviews as ReviewDocumentObject[],
           },
           geometry: {
             type: 'Point',

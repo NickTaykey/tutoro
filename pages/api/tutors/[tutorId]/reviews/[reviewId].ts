@@ -1,20 +1,19 @@
-import connectDB from '../../../../../middleware/mongo-connect';
 import sanitize from '../../../../../middleware/mongo-sanitize';
-import Review from '../../../../../models/Review';
+import connectDB from '../../../../../middleware/mongo-connect';
+import Review, { ReviewDocumentObject } from '../../../../../models/Review';
 import User from '../../../../../models/User';
-import mongoErrorHandler from '../../../../../middleware/mongo-error-handler';
-import { ObjectId } from 'mongoose';
 import { authOptions } from '../../../auth/[...nextauth]';
 import { getServerSession } from 'next-auth/next';
+import serverSideErrorHandler from '../../../../../middleware/server-side-error-handler';
+import mongoErrorHandler from '../../../../../middleware/mongo-error-handler';
 import ensureHttpMethod from '../../../../../middleware/ensure-http-method';
 
-import type { ReviewAPIResponse } from '../../../../../types';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import serverSideErrorHandler from '../../../../../middleware/server-side-error-handler';
+import type { ObjectId } from 'mongoose';
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ReviewAPIResponse>
+  res: NextApiResponse<ReviewDocumentObject>
 ) {
   ensureHttpMethod(req, res, ['DELETE', 'PUT'], async () => {
     await serverSideErrorHandler(req, res, async (req, res) => {
@@ -29,7 +28,7 @@ export default async function handler(
       }
 
       const doesReviewExist: boolean = user.createdReviews
-        .map((rid: ObjectId) => rid.toString())
+        .map((reviewId: ObjectId) => reviewId.toString())
         .includes(req.query.reviewId);
 
       if (doesReviewExist) {
@@ -44,7 +43,7 @@ export default async function handler(
             }
             const review = await Review.findByIdAndDelete(req.query.reviewId);
             user.createdReviews = user.createdReviews.filter(
-              (rid: ObjectId) => rid.toString() !== req.query.reviewId
+              (reviewId: ObjectId) => reviewId.toString() !== req.query.reviewId
             );
             await user.save();
             res.status(200).json(review.toJSON());

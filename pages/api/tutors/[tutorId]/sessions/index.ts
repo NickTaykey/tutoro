@@ -1,18 +1,20 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-import type { ISession, HTTPError } from '../../../../../types';
+import sanitize from '../../../../../middleware/mongo-sanitize';
 import connectDB from '../../../../../middleware/mongo-connect';
 import mongoErrorHandler from '../../../../../middleware/mongo-error-handler';
-import Session from '../../../../../models/Session';
-import sanitize from '../../../../../middleware/mongo-sanitize';
+import serverSideErrorHandler from '../../../../../middleware/server-side-error-handler';
+import ensureHttpMethod from '../../../../../middleware/ensure-http-method';
+import findTestingUsers from '../../../../../utils/dev-testing-users';
+import Session, { SessionDocumentObject } from '../../../../../models/Session';
+import User from '../../../../../models/User';
 import { authOptions } from '../../../auth/[...nextauth]';
 import { getServerSession } from 'next-auth/next';
-import User from '../../../../../models/User';
-import ensureHttpMethod from '../../../../../middleware/ensure-http-method';
-import serverSideErrorHandler from '../../../../../middleware/server-side-error-handler';
+
+import type { NextApiRequest, NextApiResponse } from 'next';
+import type { HTTPError } from '../../../../../types';
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ISession | HTTPError>
+  res: NextApiResponse<SessionDocumentObject | HTTPError>
 ) {
   ensureHttpMethod(req, res, 'POST', async () => {
     await serverSideErrorHandler(req, res, async (req, res) => {
@@ -22,17 +24,25 @@ export default async function handler(
           getServerSession({ req, res }, authOptions),
           User.findOne({ _id: req.query.tutorId, isTutor: true }),
         ]);
-        const user = await User.findOne({ email: session?.user?.email });
+
+        const email = session?.user?.email;
+        const users = await findTestingUsers();
+        let { user: currentUser } = users.user;
+        if (email) currentUser = (await User.findOne({ email }))!;
+
         const sanitizedBody = sanitize(req.body);
         const createdSession = await Session.create({
           ...sanitizedBody,
           hours: Number(sanitizedBody.hours),
           date: new Date(sanitizedBody.date),
+          tutorId: tutor._id,
         });
-        user.bookedSessions.push(createdSession);
+
+        currentUser.bookedSessions.push(createdSession);
         tutor.requestedSessions.push(createdSession);
-        await user.save();
+        await currentUser.save();
         await tutor.save();
+
         return res.status(201).json(createdSession.toObject());
       });
     });

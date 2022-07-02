@@ -1,7 +1,6 @@
 import connectDB from '../../../../../middleware/mongo-connect';
 import sanitize from '../../../../../middleware/mongo-sanitize';
-import Review from '../../../../../models/Review';
-import { ObjectId } from 'mongoose';
+import Review, { ReviewDocumentObject } from '../../../../../models/Review';
 import User from '../../../../../models/User';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../../auth/[...nextauth]';
@@ -10,11 +9,11 @@ import ensureHttpMethod from '../../../../../middleware/ensure-http-method';
 import serverSideErrorHandler from '../../../../../middleware/server-side-error-handler';
 
 import type { NextApiRequest, NextApiResponse } from 'next';
-import type { ReviewAPIResponse } from '../../../../../types';
+import type { ObjectId } from 'mongoose';
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ReviewAPIResponse>
+  res: NextApiResponse<ReviewDocumentObject>
 ) {
   serverSideErrorHandler(req, res, async (req, res) => {
     await ensureHttpMethod(req, res, 'POST', async () => {
@@ -48,6 +47,7 @@ export default async function handler(
           const review = await Review.create({
             text: sanitizedReqBody?.text,
             stars: Number(sanitizedReqBody.stars),
+            tutorId: tutor._id,
           });
           tutor.reviews.push(review);
           user.createdReviews.push(review);

@@ -1,11 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { TutorObjectGeoJSON, HTTPError } from '../../../../types';
-import connectDB from '../../../../middleware/mongo-connect';
-import User from '../../../../models/User';
-import Review from '../../../../models/Review';
+
+import serverSideErrorHandler from '../../../../middleware/server-side-error-handler';
 import mongoErrorHandler from '../../../../middleware/mongo-error-handler';
 import ensureHttpMethod from '../../../../middleware/ensure-http-method';
-import serverSideErrorHandler from '../../../../middleware/server-side-error-handler';
+import connectDB from '../../../../middleware/mongo-connect';
+import Review from '../../../../models/Review';
+import User from '../../../../models/User';
 
 export default async function handler(
   req: NextApiRequest,

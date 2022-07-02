@@ -1,9 +1,9 @@
 import type { NextPage } from 'next';
-import type { UserDocument } from '../../../types';
+import type { UserDocument } from '../../../../models/User';
 
 import { FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import ApiHelper from '../../../utils/api-helper';
+import ApiHelper from '../../../../utils/api-helper';
 
 interface FormStructure {
   subject: string;

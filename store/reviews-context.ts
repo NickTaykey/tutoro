@@ -1,16 +1,16 @@
 import React from 'react';
-import type { TutorReviewObject } from '../types';
+import type { ReviewDocumentObject } from '../models/Review';
 
 type ReviewFieldsArg = { stars: number; text?: string };
 export type APIError = { errorMessage: string };
-type ContextMethodReturnType = Promise<TutorReviewObject | APIError | any>;
+type ContextMethodReturnType = Promise<ReviewDocumentObject | APIError | any>;
 
 interface ReviewContextObject {
-  reviews: TutorReviewObject[];
+  reviews: ReviewDocumentObject[];
   addReview(tutorId: string, review: ReviewFieldsArg): ContextMethodReturnType;
   updateReview(
     tutorId: string,
-    review: TutorReviewObject
+    review: ReviewDocumentObject
   ): ContextMethodReturnType;
   deleteReview(tutorId: string, reviewId: string): ContextMethodReturnType;
 }
@@ -20,7 +20,7 @@ const ReviewContext = React.createContext<ReviewContextObject>({
   addReview(tutorId: string, review: ReviewFieldsArg) {
     return Promise.resolve({});
   },
-  updateReview(tutorId: string, review: TutorReviewObject) {
+  updateReview(tutorId: string, review: ReviewDocumentObject) {
     return Promise.resolve({});
   },
   deleteReview(tutorId: string, reviewId: string) {

@@ -18,7 +18,7 @@ const TutorPopup: React.FC<{
       </div>
       <Link href={`/tutors/${popupInfo.properties._id}`}>Learn more</Link>
       <br />
-      <Link href={`/tutors/${popupInfo.properties._id}/new-session`}>
+      <Link href={`/tutors/${popupInfo.properties._id}/sessions/new`}>
         Book session
       </Link>
     </section>
