@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import fs from 'fs';
 import Review from './models/Review';
 import User from './models/User';
+import Session from './models/Session';
 import type { UserDocument } from './models/User';
 
 dotenv.config({ path: __dirname + '/.env.local' });
@@ -15,8 +16,11 @@ const N_REVIEWS = process.argv.length === 4 ? Number(process.argv[3]) : 2;
 (async () => {
   faker.setLocale('it');
   await connectDB();
-  await User.deleteMany({});
-  await Review.deleteMany({});
+  await Promise.all([
+    User.deleteMany({}),
+    Review.deleteMany({}),
+    Session.deleteMany({}),
+  ]);
   const users: Array<UserDocument> = [];
   for (let i = 0; i < N_USERS; i++) {
     const coordinates = faker.address.nearbyGPSCoordinate(

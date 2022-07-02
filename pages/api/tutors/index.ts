@@ -6,16 +6,17 @@ import mongoErrorHandler from '../../../middleware/mongo-error-handler';
 import ensureHttpMethod from '../../../middleware/ensure-http-method';
 import connectDB from '../../../middleware/mongo-connect';
 import Review from '../../../models/Review';
-import User, { UserDocument } from '../../../models/User';
+import User from '../../../models/User';
+import type { UserDocument } from '../../../models/User';
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<UserDocument[] | HTTPError>
 ) {
-  ensureHttpMethod(req, res, 'GET', async () => {
-    await serverSideErrorHandler(req, res, async (req, res) => {
+  ensureHttpMethod(req, res, 'GET', () => {
+    serverSideErrorHandler(req, res, async (req, res) => {
       await connectDB();
-      await mongoErrorHandler(req, res, 'User', async () => {
+      mongoErrorHandler(req, res, 'User', async () => {
         const tutors = await User.find({ isTutor: true })
           .populate({
             path: 'reviews',

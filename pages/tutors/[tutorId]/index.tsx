@@ -1,5 +1,6 @@
 import type { GetServerSideProps, NextPage } from 'next';
-import User, { UserDocumentObject } from '../../../models/User';
+import type { UserDocumentObject } from '../../../models/User';
+import User from '../../../models/User';
 
 import TutorPage from '../../../components/tutors/TutorPage';
 import { useState, useEffect } from 'react';

@@ -11,6 +11,7 @@ interface Props {
 const Session: React.FC<Props> = ({ session, tutorId, isTutor }) => {
   const ctx = useContext(SessionsContext);
   const approveSessionHandler = () => ctx.approveSession(session._id, tutorId);
+  const deleteSessionHandler = () => ctx.deleteSession(session._id, tutorId);
   const date = new Date(session.date);
   return (
     <article style={{ border: '1px solid black' }}>
@@ -25,6 +26,9 @@ const Session: React.FC<Props> = ({ session, tutorId, isTutor }) => {
         <br />
         {!session.approved && isTutor && (
           <button onClick={approveSessionHandler}>Approve session</button>
+        )}
+        {!isTutor && (
+          <button onClick={deleteSessionHandler}>Delete session</button>
         )}
       </div>
     </article>

@@ -1,7 +1,7 @@
 import React, { useReducer } from 'react';
 import SessionsContext, { APIError } from './sessions-context';
 import ApiHelper from '../utils/api-helper';
-import { SessionDocumentObject } from '../models/Session';
+import type { SessionDocumentObject } from '../models/Session';
 
 enum SessionActionTypes {
   APPROVE,

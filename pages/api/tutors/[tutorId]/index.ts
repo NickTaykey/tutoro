@@ -12,10 +12,10 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<TutorObjectGeoJSON | HTTPError>
 ) {
-  ensureHttpMethod(req, res, 'GET', async () => {
-    await serverSideErrorHandler(req, res, async (req, res) => {
+  ensureHttpMethod(req, res, 'GET', () => {
+    serverSideErrorHandler(req, res, async (req, res) => {
       await connectDB();
-      await mongoErrorHandler(req, res, 'User', async () => {
+      mongoErrorHandler(req, res, 'User', async () => {
         const tutor = await User.findById(req.query.tutorId)
           .populate({
             path: 'reviews',

@@ -22,7 +22,7 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
           {ctx => {
             return ctx.sessions.map((s: SessionDocumentObject) => (
               <Session
-                key={props.currentUser._id}
+                key={s._id}
                 session={s}
                 tutorId={s.tutorId.toString()}
                 isTutor={false}
