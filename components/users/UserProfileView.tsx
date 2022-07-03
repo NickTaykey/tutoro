@@ -6,6 +6,7 @@ import SessionsContext from '../../store/sessions-context';
 import type { UserDocumentObject } from '../../models/User';
 import type { ReviewDocumentObject } from '../../models/Review';
 import type { SessionDocumentObject } from '../../models/Session';
+import Link from 'next/link';
 
 interface Props {
   currentUser: UserDocumentObject;
@@ -31,6 +32,9 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
           }}
         </SessionsContext.Consumer>
       </SessionsContextProvider>
+      {!props.currentUser.isTutor && (
+        <Link href="/users/become-tutor">Become a tutor</Link>
+      )}
     </>
   );
 };

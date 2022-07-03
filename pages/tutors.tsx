@@ -35,7 +35,25 @@ const Home: NextPage<Props> = (props: Props) => {
   return features ? (
     <>
       <h1 style={{ textAlign: 'center' }}>HomePage</h1>
-      <ClusterMap tutors={features} />
+      {/* === ONLY FOR TO SAVE ON MAPBOX LOADS IN DEVELOPMENT */}
+      {/* <ClusterMap tutors={features} /> */}
+      <ul>
+        {features.features.map(f => (
+          <li>
+            <div>{f.properties?.email}</div>
+            <div>{f.properties?._id}</div>
+            <div>
+              <Link href={`/tutors/${f.properties!._id}`}>Learn more</Link>
+              <br />
+              <Link href={`/tutors/${f.properties!._id}/sessions/new`}>
+                Book session
+              </Link>
+            </div>
+          </li>
+        ))}
+      </ul>
+      {/* === */}
+
       {!props.currentUser && <button onClick={() => signIn()}>Sign in</button>}
       {props.currentUser && (
         <>

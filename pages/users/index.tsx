@@ -105,6 +105,9 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
         ? [user.coordinates[0], user.coordinates[1]]
         : [NaN, NaN],
       avatar: user.avatar,
+      bio: user.bio || '',
+      location: user.location || '',
+      subjects: user.subjects || [],
       reviews: [],
       createdReviews: [],
       bookedSessions: [],

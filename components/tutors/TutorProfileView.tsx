@@ -13,7 +13,7 @@ interface Props {
 const TutorProfileView: React.FC<Props> = (props: Props) => {
   return (
     <>
-      {props.currentUser.reviews.length &&
+      {!!props.currentUser.reviews.length &&
         props.currentUser.reviews.map((r: ReviewDocumentObject) => (
           <Review key={r._id} tutorId={props.currentUser._id} review={r} />
         ))}

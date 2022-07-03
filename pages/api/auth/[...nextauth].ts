@@ -19,6 +19,9 @@ export const authOptions: NextAuthOptions = {
           fullname: user.name,
           email: user.email,
           avatar: user.image,
+          location: '',
+          bio: '',
+          subjects: [],
         });
       }
       return true;

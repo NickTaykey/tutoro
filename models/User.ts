@@ -20,7 +20,10 @@ interface UserCoreObject {
   fullname: string;
   isTutor: boolean;
   coordinates: [number, number];
-  avatar?: string;
+  subjects: string[];
+  bio: string;
+  location: string;
+  avatar: string;
 }
 
 interface User extends UserCoreObject {
@@ -59,6 +62,9 @@ const userSchema = new Schema<UserDocument, UserModel>({
   createdReviews: [reviewsArrayObject],
   bookedSessions: [sessionsArrayObject],
   requestedSessions: [sessionsArrayObject],
+  subjects: [],
+  bio: String,
+  location: String,
   avatar: String,
   coordinates: [],
 });

@@ -52,11 +52,9 @@ export default async function handler(
               .status(200)
               .json(deletedSession as SessionDocumentObject);
           }
-          return res
-            .status(403)
-            .json({
-              errorMessage: 'You are not authorized to delete this Session.',
-            });
+          return res.status(403).json({
+            errorMessage: 'You are not authorized to delete this Session.',
+          });
         });
       });
     });

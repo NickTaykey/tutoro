@@ -28,12 +28,18 @@ const N_REVIEWS = process.argv.length === 4 ? Number(process.argv[3]) : 2;
       50,
       true
     );
+    const isTutor = i === 0;
     const user = new User({
       fullname: faker.name.findName(),
       email: faker.internet.email(),
       avatar: faker.internet.avatar(),
-      coordinates: [Number(coordinates[0]), Number(coordinates[1])],
-      isTutor: i === 0,
+      coordinates: isTutor
+        ? [Number(coordinates[0]), Number(coordinates[1])]
+        : [],
+      subjects: isTutor ? ['Science', 'Maths', 'Physics'] : [],
+      bio: isTutor ? faker.lorem.lines(1) : '',
+      location: isTutor ? faker.lorem.words(2) : '',
+      isTutor,
     });
     if (!user.isTutor) {
       for (let j = 0; j < N_REVIEWS; j++) {
