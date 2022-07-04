@@ -19,9 +19,11 @@ interface Props {
 }
 
 const ProfilePage: NextPage<Props> = ({ currentUser }) => {
+  const { query } = useRouter();
   if (currentUser) {
     return (
       <>
+        {query['q'] === 'bc' && <div>Congratulations you are a Tutor now!</div>}
         <h1>Hi, {currentUser.fullname}!</h1>
         <UserProfileView currentUser={currentUser} />
         {currentUser.isTutor && <TutorProfileView currentUser={currentUser} />}
@@ -35,6 +37,7 @@ import connectDB from '../../middleware/mongo-connect';
 import ReviewModel from '../../models/Review';
 import SessionModel from '../../models/Session';
 import findTestingUsers from '../../utils/dev-testing-users';
+import { useRouter } from 'next/router';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
   await connectDB();
@@ -73,7 +76,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
     }
   }
   // ===
-
   const user = await User.findOne(query);
   if (user) {
     const currentUser = getUserDocumentObject(user);

@@ -23,7 +23,7 @@ export const getPopulateSessions = (
       subject: s.subject,
       topic: s.topic,
       hours: s.hours,
-      approved: s.approved,
+      status: s.status,
       _id: s._id.toString(),
       tutorId: s.tutorId.toString(),
       date: s.date.toLocaleString(),

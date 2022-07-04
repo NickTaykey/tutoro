@@ -64,8 +64,6 @@ const Page: NextPage<Props> = ({ tutor }) => {
         'POST'
       ).then(res => {
         if (res.errorMessage) return setValidationError(res.errorMessage);
-        setValidationError(null);
-        setFormFields(DEFAULT_FORM_VALUES);
         router.replace('/users');
       });
     } else setValidationError(validationError.errorMessage);
@@ -81,7 +79,7 @@ const Page: NextPage<Props> = ({ tutor }) => {
           <fieldset>
             <label htmlFor="subject">Subject</label>
             <select name="subject" id="subject" onChange={formFieldUpdater}>
-              {tutor.subjects.map((s, i) => (
+              {tutor.subjects.map(s => (
                 <option key={s} value={s}>
                   {s}
                 </option>

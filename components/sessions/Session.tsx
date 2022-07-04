@@ -1,6 +1,7 @@
 import { useContext } from 'react';
 import type { SessionDocumentObject } from '../../models/Session';
 import SessionsContext from '../../store/sessions-context';
+import { SessionStatus } from '../../types';
 
 interface Props {
   session: SessionDocumentObject;
@@ -10,8 +11,15 @@ interface Props {
 
 const Session: React.FC<Props> = ({ session, tutorId, isTutor }) => {
   const ctx = useContext(SessionsContext);
-  const approveSessionHandler = () => ctx.approveSession(session._id, tutorId);
-  const deleteSessionHandler = () => ctx.deleteSession(session._id, tutorId);
+  const approveSessionHandler = () => {
+    ctx.setSessionStatus(session._id, tutorId, true);
+  };
+  const rejectSessionHandler = () => {
+    ctx.setSessionStatus(session._id, tutorId, false);
+  };
+  const deleteSessionHandler = () => {
+    ctx.deleteSession(session._id, tutorId);
+  };
   const date = new Date(session.date);
   return (
     <article style={{ border: '1px solid black' }}>
@@ -22,10 +30,19 @@ const Session: React.FC<Props> = ({ session, tutorId, isTutor }) => {
       <p>{session.topic}</p>
       <time dateTime={date.toDateString()}>{date.toDateString()}</time>
       <div>
-        <strong>{session.approved ? 'Approved!' : 'Not approved yet!'}</strong>
+        <strong>
+          {session.status === SessionStatus.APPROVED
+            ? 'Approved!'
+            : session.status === SessionStatus.REJECTED
+            ? 'Rejected'
+            : 'Not approved yet!'}
+        </strong>
         <br />
-        {!session.approved && isTutor && (
-          <button onClick={approveSessionHandler}>Approve session</button>
+        {session.status === SessionStatus.NOT_APPROVED && isTutor && (
+          <>
+            <button onClick={approveSessionHandler}>Approve session</button>
+            <button onClick={rejectSessionHandler}>Reject session</button>
+          </>
         )}
         {!isTutor && (
           <button onClick={deleteSessionHandler}>Delete session</button>

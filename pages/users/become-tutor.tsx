@@ -12,6 +12,7 @@ import User from '../../models/User';
 import { useForm, useFieldArray } from 'react-hook-form';
 import ApiHelper from '../../utils/api-helper';
 import { useState } from 'react';
+import { useRouter } from 'next/router';
 
 interface Props {
   currentUser: UserDocumentObject | null;
@@ -46,6 +47,7 @@ const BecomeTutorPage: NextPage<Props> = ({ currentUser }) => {
   });
 
   const [apiError, setApiError] = useState<string | null>();
+  const router = useRouter();
 
   const onSubmit: SubmitHandler<FormValues> = async data => {
     const res = await ApiHelper(
@@ -54,7 +56,7 @@ const BecomeTutorPage: NextPage<Props> = ({ currentUser }) => {
       'PUT'
     );
     if (res.errorMessage) return setApiError(res.errorMessage);
-    alert('Congratulations, now you are a Tutor!');
+    return router.replace('/users?q=bc');
   };
 
   if (currentUser) {
@@ -139,6 +141,11 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
 
   const user = await User.findOne(query);
   if (user) {
+    if (user.isTutor)
+      return {
+        props: {},
+        redirect: { permanent: false, destination: '/users' },
+      };
     return {
       props: { currentUser: getUserDocumentObject(user as UserDocument) },
     };

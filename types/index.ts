@@ -17,4 +17,10 @@ export type QueryObject = {
   _id?: ObjectId;
 };
 
+export enum SessionStatus {
+  APPROVED = 'approved',
+  NOT_APPROVED = 'not approved',
+  REJECTED = 'rejected',
+}
+
 export type HTTPError = { errorMessage: string; error?: string };

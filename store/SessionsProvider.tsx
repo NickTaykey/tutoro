@@ -2,9 +2,10 @@ import React, { useReducer } from 'react';
 import SessionsContext, { APIError } from './sessions-context';
 import ApiHelper from '../utils/api-helper';
 import type { SessionDocumentObject } from '../models/Session';
+import { SessionStatus } from '../types';
 
 enum SessionActionTypes {
-  APPROVE,
+  UPDATE,
   DELETE,
 }
 
@@ -12,6 +13,7 @@ interface SessionAction {
   type: SessionActionTypes;
   payload: {
     sessionId: string;
+    sessionStatus?: SessionStatus;
   };
 }
 
@@ -22,9 +24,11 @@ function reducer(
   switch (action.type) {
     case SessionActionTypes.DELETE:
       return prevState.filter(s => s._id !== action.payload.sessionId);
-    case SessionActionTypes.APPROVE:
+    case SessionActionTypes.UPDATE:
       return prevState.map(s =>
-        s._id === action.payload.sessionId ? { ...s, approved: true } : s
+        s._id === action.payload.sessionId
+          ? { ...s, status: action.payload.sessionStatus! }
+          : s
       );
     default:
       return prevState;
@@ -43,19 +47,25 @@ const SessionContextProvider: React.FC<{
     <SessionsContext.Provider
       value={{
         sessions,
-        async approveSession(
+        async setSessionStatus(
           sessionId: string,
-          tutorId: string
+          tutorId: string,
+          approve: boolean
         ): Promise<SessionDocumentObject | APIError> {
           const apiResponse = await ApiHelper(
-            `/api/tutors/${tutorId}/sessions/${sessionId}/approve`,
-            null,
+            `/api/tutors/${tutorId}/sessions/${sessionId}`,
+            { approve },
             'PUT'
           );
           if (!apiResponse.errorMessage) {
             dispatchSessionsAction({
-              type: SessionActionTypes.APPROVE,
-              payload: { sessionId },
+              type: SessionActionTypes.UPDATE,
+              payload: {
+                sessionId,
+                sessionStatus: approve
+                  ? SessionStatus.APPROVED
+                  : SessionStatus.REJECTED,
+              },
             });
           }
           return apiResponse;
