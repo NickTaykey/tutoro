@@ -27,7 +27,7 @@ export default async function handler(
 
         if (doesReviewExist) {
           if (req.method === 'DELETE') {
-            await mongoErrorHandler(req, res, 'User', async () => {
+            mongoErrorHandler(req, res, 'User', async () => {
               const tutor = await User.findOne({
                 isTutor: true,
                 _id: req.query.tutorId,
@@ -48,7 +48,7 @@ export default async function handler(
               res.status(200).json(review.toJSON());
             });
           } else if (req.method === 'PUT') {
-            await mongoErrorHandler(req, res, 'Review', async () => {
+            mongoErrorHandler(req, res, 'Review', async () => {
               const review = await Review.findByIdAndUpdate(
                 req.query.reviewId,
                 sanitize(req.body),

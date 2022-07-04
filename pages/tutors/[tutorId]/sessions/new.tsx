@@ -1,9 +1,15 @@
-import type { NextPage } from 'next';
-import type { UserDocument } from '../../../../models/User';
+import type { NextPage, GetServerSideProps } from 'next';
+import type { UserDocument, UserDocumentObject } from '../../../../models/User';
 
-import { FormEvent, useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import { FormEvent, useState } from 'react';
+import { getUserDocumentObject } from '../../../../utils/user-casting-helpers';
 import ApiHelper from '../../../../utils/api-helper';
+import User from '../../../../models/User';
+import Review from '../../../../models/Review';
+
+interface Props {
+  tutor: UserDocumentObject | null;
+}
 
 interface FormStructure {
   subject: string;
@@ -11,14 +17,13 @@ interface FormStructure {
   hours: number;
 }
 
-const DEFAULT_FORM_VALUES: FormStructure = {
-  subject: 'maths',
-  topic: '',
-  hours: 1,
-};
-
-const Page: NextPage = () => {
-  const [tutor, setTutor] = useState<UserDocument | null>();
+const Page: NextPage<Props> = ({ tutor }) => {
+  const DEFAULT_FORM_VALUES: FormStructure = {
+    subject: tutor!.subjects[0],
+    topic: '',
+    hours: 1,
+  };
+  const router = useRouter();
   const [validationError, setValidationError] = useState<string | null>();
   const [formFields, setFormFields] =
     useState<FormStructure>(DEFAULT_FORM_VALUES);
@@ -52,28 +57,21 @@ const Page: NextPage = () => {
     if (!validationError) {
       ApiHelper(
         `/api/tutors/${tutor!._id}/sessions`,
-        { ...formFields, date: new Date().toISOString() },
+        {
+          ...formFields,
+          date: new Date().toISOString(),
+        },
         'POST'
-      ).then(() => {
+      ).then(res => {
+        if (res.errorMessage) return setValidationError(res.errorMessage);
         setValidationError(null);
         setFormFields(DEFAULT_FORM_VALUES);
-        alert('Session successfully registered');
+        router.replace('/users');
       });
     } else setValidationError(validationError.errorMessage);
   };
 
-  const router = useRouter();
-
-  useEffect(() => {
-    if (router.query.tutorId) {
-      ApiHelper(`/api/tutors/${router.query.tutorId}`, {}, 'GET').then(
-        features => setTutor(features)
-      );
-    }
-  }, [router.query.tutorId]);
-
-  let markup = <h1>Loading</h1>;
-  if (tutor && !tutor.reviews) markup = <h1>404 Tutor not found!</h1>;
+  let markup = <h1>404 Tutor not found!</h1>;
   if (tutor && tutor.reviews) {
     markup = (
       <>
@@ -83,11 +81,11 @@ const Page: NextPage = () => {
           <fieldset>
             <label htmlFor="subject">Subject</label>
             <select name="subject" id="subject" onChange={formFieldUpdater}>
-              <option value="maths" defaultChecked>
-                Maths
-              </option>
-              <option value="physics">Physics</option>
-              <option value="computer-science">Computer Science</option>
+              {tutor.subjects.map((s, i) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
             </select>
           </fieldset>
           <fieldset>
@@ -117,6 +115,45 @@ const Page: NextPage = () => {
     );
   }
   return markup;
+};
+
+import { getServerSession } from 'next-auth';
+import connectDB from '../../../../middleware/mongo-connect';
+import { authOptions } from '../../../api/auth/[...nextauth]';
+import { useRouter } from 'next/router';
+
+export const getServerSideProps: GetServerSideProps<Props> = async context => {
+  const [, session] = await Promise.all([
+    connectDB(),
+    getServerSession(context, authOptions),
+  ]);
+  if (session) {
+    const tutor = await User.findById(context.query.tutorId)
+      .populate({
+        path: 'reviews',
+        options: {
+          sort: { _id: -1 },
+        },
+        model: Review,
+      })
+      .exec();
+    if (
+      context.query.tutorId === (session!.user as UserDocument)!._id.toString()
+    ) {
+      return {
+        props: {},
+        redirect: { permanent: false, destination: '/tutoro' },
+      };
+    }
+    return { props: { tutor: tutor ? getUserDocumentObject(tutor) : null } };
+  }
+  return {
+    props: {},
+    redirect: {
+      permanent: false,
+      destination: `http://localhost:3000/api/auth/signin?callbackUrl=/tutors/${context.query.tutorId}/sessions/new`,
+    },
+  };
 };
 
 export default Page;

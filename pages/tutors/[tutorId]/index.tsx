@@ -1,62 +1,65 @@
 import type { GetServerSideProps, NextPage } from 'next';
-import type { UserDocumentObject } from '../../../models/User';
-import User from '../../../models/User';
+import type { UserDocument, UserDocumentObject } from '../../../models/User';
 
 import TutorPage from '../../../components/tutors/TutorPage';
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import ApiHelper from '../../../utils/api-helper';
+import User from '../../../models/User';
+import Review from '../../../models/Review';
 
 interface Props {
-  userCreatedReviewsIds: string[];
+  userCreatedReviews: string[];
+  tutor: UserDocumentObject | null;
 }
 
-const Page: NextPage<Props> = (props: Props) => {
-  const router = useRouter();
-  const [tutor, setTutor] = useState<UserDocumentObject | null>();
-
-  useEffect(() => {
-    if (router.query.tutorId) {
-      ApiHelper(`/api/tutors/${router.query.tutorId}`, {}, 'GET').then(
-        features => setTutor(features)
-      );
-    }
-  }, [router.query.tutorId]);
-
-  let markup = <h1>Loading</h1>;
-  if (tutor && !tutor.reviews) markup = <h1>404 Tutor not found!</h1>;
+const Page: NextPage<Props> = ({ tutor, userCreatedReviews }) => {
+  let markup = <h1>404 Tutor not found!</h1>;
   if (tutor && tutor.reviews) {
     markup = (
-      <TutorPage
-        tutor={tutor}
-        userCreatedReviewsIds={props.userCreatedReviewsIds}
-      />
+      <TutorPage tutor={tutor} userCreatedReviews={userCreatedReviews} />
     );
   }
-
   return markup;
 };
 
-import { getServerSession } from 'next-auth';
+import {
+  getPopulateReviews,
+  getUserDocumentObject,
+} from '../../../utils/user-casting-helpers';
 import { authOptions } from '../../api/auth/[...nextauth]';
-import mongoose from 'mongoose';
 import connectDB from '../../../middleware/mongo-connect';
+import { getServerSession } from 'next-auth';
+import mongoose from 'mongoose';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
-  await connectDB();
-  const session = await getServerSession(context, authOptions);
-  const user = await User.findOne({ email: session?.user?.email });
+  const [, session] = await Promise.all([
+    connectDB(),
+    getServerSession(context, authOptions),
+  ]);
+  const [user, userTutor] = await Promise.all([
+    User.findOne({ email: session?.user?.email }),
+    User.findById(context.query.tutorId)
+      .populate({
+        path: 'reviews',
+        options: {
+          sort: { _id: -1 },
+        },
+        model: Review,
+      })
+      .exec(),
+  ]);
+  const tutor = getUserDocumentObject(userTutor as UserDocument);
+  tutor.reviews = getPopulateReviews(userTutor.reviews);
   if (user) {
-    const userCreatedReviewsIds: string[] = user.createdReviews.map(
+    const userCreatedReviews: string[] = user.createdReviews.map(
       (r: mongoose.ObjectId) => r.toString()
     );
     return {
       props: {
-        userCreatedReviewsIds,
+        userCreatedReviews,
+        tutor,
       },
     };
   }
-  return { props: { userCreatedReviewsIds: [] } };
+  return { props: { userCreatedReviews: [], tutor } };
 };
 
 export default Page;

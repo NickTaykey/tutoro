@@ -1,8 +1,9 @@
-import type { UserDocumentObject, UserDocument } from '../../models/User';
-import type { ObjectId } from 'mongoose';
+import type { UserDocument, UserDocumentObject } from '../../models/User';
 import type { GetServerSideProps, NextPage } from 'next';
 import type { SubmitHandler } from 'react-hook-form';
+import type { QueryObject } from '../../types';
 
+import { getUserDocumentObject } from '../../utils/user-casting-helpers';
 import { authOptions } from '../../pages/api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth';
 import connectDB from '../../middleware/mongo-connect';
@@ -110,12 +111,6 @@ const BecomeTutorPage: NextPage<Props> = ({ currentUser }) => {
   return <h1>Only authenticated users can visit this page</h1>;
 };
 
-type QueryObject = {
-  email?: string;
-  isTutor?: boolean;
-  _id?: ObjectId;
-};
-
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
   await connectDB();
 
@@ -141,29 +136,11 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
     }
   }
   // ===
-  const getUserDocumentObject = (user: UserDocument): UserDocumentObject => {
-    return {
-      _id: user._id.toString(),
-      email: user.email,
-      fullname: user.fullname,
-      isTutor: user.isTutor,
-      coordinates: user.coordinates.length
-        ? [user.coordinates[0], user.coordinates[1]]
-        : [NaN, NaN],
-      avatar: user.avatar,
-      bio: user.bio || '',
-      location: user.location || '',
-      subjects: user.subjects || [],
-      reviews: [],
-      createdReviews: [],
-      bookedSessions: [],
-      requestedSessions: [],
-    };
-  };
+
   const user = await User.findOne(query);
   if (user) {
     return {
-      props: { currentUser: getUserDocumentObject(user) },
+      props: { currentUser: getUserDocumentObject(user as UserDocument) },
     };
   }
   return {

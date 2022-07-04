@@ -36,7 +36,6 @@ export default async function handler(
             await sessionUser.save();
             return res.status(200).json(sessionUser);
           }
-          console.log(bio, subjects, location);
           return res.status(400).json({
             errorMessage: `Provide a valid ${
               !bio ? 'bio' : !subjects.length ? 'subjects list' : 'location'

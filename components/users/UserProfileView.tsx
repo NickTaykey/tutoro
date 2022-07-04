@@ -15,9 +15,11 @@ interface Props {
 const UserProfileView: React.FC<Props> = (props: Props) => {
   return (
     <>
+      <h2>My reviews</h2>
       {props.currentUser.createdReviews.map((r: ReviewDocumentObject) => (
         <Review key={r._id} review={r} tutorId={r.tutorId.toString()} />
       ))}
+      <h2>My sessions</h2>
       <SessionsContextProvider sessions={props.currentUser.bookedSessions}>
         <SessionsContext.Consumer>
           {ctx => {

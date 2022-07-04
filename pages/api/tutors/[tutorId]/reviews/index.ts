@@ -30,6 +30,11 @@ export default async function handler(
           if (!tutor) {
             return res.status(404).json({ errorMessage: 'Tutor not found' });
           }
+          if (tutor._id.toString() === user._id.toString()) {
+            return res
+              .status(403)
+              .json({ errorMessage: 'As a Tutor you cannot review yourself!' });
+          }
 
           const reviewSet = new Set([
             ...tutor.reviews.map((rid: ObjectId) => rid.toString()),
@@ -49,8 +54,7 @@ export default async function handler(
             });
             tutor.reviews.push(review);
             user.createdReviews.push(review);
-            await user.save();
-            await tutor.save();
+            await Promise.all([user.save(), tutor.save()]);
             return res
               .status(201)
               .json({ ...review.toObject(), ownerAuthenticated: true });

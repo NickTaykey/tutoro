@@ -2,8 +2,10 @@ import User from '../models/User';
 import type { UserDocument } from '../models/User';
 
 const findTestingUsers = async () => {
-  const tutor = await User.findOne({ isTutor: true });
-  const user = await User.findOne({ isTutor: false });
+  const [tutor, user] = await Promise.all([
+    User.findOne({ isTutor: true }),
+    User.findOne({ isTutor: false }),
+  ]);
   return {
     tutor: {
       fakeId: 'TUTOR-TESTING',

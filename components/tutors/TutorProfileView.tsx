@@ -13,6 +13,7 @@ interface Props {
 const TutorProfileView: React.FC<Props> = (props: Props) => {
   return (
     <>
+      <h2>Received Reviews</h2>
       {!!props.currentUser.reviews.length &&
         props.currentUser.reviews.map((r: ReviewDocumentObject) => (
           <Review key={r._id} tutorId={props.currentUser._id} review={r} />
@@ -20,6 +21,7 @@ const TutorProfileView: React.FC<Props> = (props: Props) => {
       {!props.currentUser.reviews.length && (
         <div>You have not been reviewed yet!</div>
       )}
+      <h2>Requested sessions</h2>
       <SessionsContextProvider sessions={props.currentUser.requestedSessions}>
         <SessionsContext.Consumer>
           {ctx => {

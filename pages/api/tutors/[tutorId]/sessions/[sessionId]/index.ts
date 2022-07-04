@@ -24,7 +24,6 @@ export default async function handler(
             User.findById(userSession._id),
             User.findById(req.query.tutorId),
           ]);
-
           const sessionRegisteredOnUser = user.bookedSessions.find(
             (sessionId: ObjectId) =>
               sessionId.toString() === req.query.sessionId
