@@ -7,18 +7,32 @@ import { signIn, signOut } from 'next-auth/react';
 import Link from 'next/link';
 
 interface Props {
-  features: FeatureCollection<Geometry, GeoJsonProperties> | null;
+  points: FeatureCollection<Geometry, GeoJsonProperties> | null;
   currentUser: UserDocumentObject | null;
 }
 
-const Home: NextPage<Props> = ({ currentUser, features }) => {
-  return features ? (
+const Home: NextPage<Props> = ({ currentUser, points }) => {
+  return points ? (
     <>
       <h1 style={{ textAlign: 'center' }}>HomePage</h1>
       {/* === ONLY FOR TO SAVE ON MAPBOX LOADS IN DEVELOPMENT */}
-      {/* <ClusterMap tutors={features} /> */}
+      <ClusterMap
+        tutors={points}
+        authenticatedTutor={
+          currentUser
+            ? ({
+                type: 'Feature',
+                properties: currentUser,
+                geometry: {
+                  type: 'Point',
+                  coordinates: currentUser.coordinates,
+                },
+              } as TutorObjectGeoJSON)
+            : null
+        }
+      />
       <ul>
-        {features.features.map(f => (
+        {points.features.map(f => (
           <li key={f.properties?._id}>
             <div>{f.properties?.email}</div>
             <div>{f.properties?._id}</div>
@@ -56,58 +70,95 @@ const Home: NextPage<Props> = ({ currentUser, features }) => {
   );
 };
 
-import { getUserDocumentObject } from '../utils/user-casting-helpers';
+import {
+  getPopulatedReviews,
+  getUserDocumentObject,
+} from '../utils/user-casting-helpers';
 import { authOptions } from './api/auth/[...nextauth]';
 import connectDB from '../middleware/mongo-connect';
 import { getServerSession } from 'next-auth';
-import Review from '../models/Review';
+import Review, { ReviewDocument } from '../models/Review';
 import User from '../models/User';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
-  type FeatureCollectionObject = {
-    type: 'FeatureCollection';
-    features: TutorObjectGeoJSON[];
-  };
-  const [, session] = await Promise.all([
-    connectDB(),
-    getServerSession(context, authOptions),
-  ]);
-  const tutors = await User.find({ isTutor: true })
-    .populate({
-      path: 'reviews',
-      options: {
-        sort: { _id: -1 },
-      },
-      model: Review,
-    })
-    .exec();
-
-  const features: FeatureCollectionObject = {
+  const getPoints = (
+    tutors: UserDocumentObject[]
+  ): FeatureCollection<Geometry, GeoJsonProperties> => ({
     type: 'FeatureCollection',
     features: tutors.map(
       (tutor): TutorObjectGeoJSON => ({
         type: 'Feature',
         properties: {
           cluster: false,
-          ...getUserDocumentObject(tutor as UserDocument),
+          ...tutor,
         },
         geometry: { type: 'Point', coordinates: tutor.coordinates },
       })
     ),
+  });
+
+  const populateReviewsInDocuments = (tutors: UserDocument[]) => {
+    return tutors.map(tutor => {
+      const reviews = getPopulatedReviews(tutor.reviews as ReviewDocument[]);
+      const tutorObject = getUserDocumentObject(tutor as UserDocument);
+      tutorObject.reviews = reviews;
+      return tutorObject;
+    });
   };
 
-  if (session) {
+  const [, session] = await Promise.all([
+    connectDB(),
+    getServerSession(context, authOptions),
+  ]);
+
+  const populateReviewsConfig = {
+    path: 'reviews',
+    options: {
+      sort: { _id: -1 },
+    },
+    model: Review,
+  };
+
+  if (session && session.user) {
+    const { _id: currentUserId } = session.user as UserDocument;
+    const [unauthenticatedTutors, currentUser] = await Promise.all([
+      User.find({
+        isTutor: true,
+        _id: { $ne: currentUserId },
+      })
+        .populate(populateReviewsConfig)
+        .exec(),
+      User.findById(currentUserId).populate(populateReviewsConfig).exec(),
+    ]);
+
+    const unauthenticatedTutorsObjects = populateReviewsInDocuments(
+      unauthenticatedTutors as UserDocument[]
+    );
+    const currentUserObject = getUserDocumentObject(currentUser);
+    currentUserObject.reviews = getPopulatedReviews(
+      currentUser.reviews as ReviewDocument[]
+    );
+
     return {
       props: {
-        currentUser: session.user as UserDocumentObject,
-        features,
+        points: getPoints(unauthenticatedTutorsObjects),
+        currentUser: currentUserObject,
       },
     };
   }
+
+  const tutors = await User.find({
+    isTutor: true,
+  })
+    .populate(populateReviewsConfig)
+    .exec();
+
+  const tutorsObjects = populateReviewsInDocuments(tutors as UserDocument[]);
+
   return {
     props: {
+      points: getPoints(tutorsObjects),
       currentUser: null,
-      features,
     },
   };
 };

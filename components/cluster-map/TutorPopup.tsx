@@ -5,7 +5,8 @@ import { FaStar } from 'react-icons/fa';
 
 const TutorPopup: React.FC<{
   popupInfo: TutorObjectGeoJSON;
-}> = ({ popupInfo }) => {
+  authenticatedTutor: boolean;
+}> = ({ popupInfo, authenticatedTutor }) => {
   return (
     <section data-testid="popup-container">
       <h2>{popupInfo.properties.fullname}</h2>
@@ -18,9 +19,11 @@ const TutorPopup: React.FC<{
       </div>
       <Link href={`/tutors/${popupInfo.properties._id}`}>Learn more</Link>
       <br />
-      <Link href={`/tutors/${popupInfo.properties._id}/sessions/new`}>
-        Book session
-      </Link>
+      {!authenticatedTutor && (
+        <Link href={`/tutors/${popupInfo.properties._id}/sessions/new`}>
+          Book session
+        </Link>
+      )}
     </section>
   );
 };

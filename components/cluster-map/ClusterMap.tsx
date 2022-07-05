@@ -7,6 +7,7 @@ import Map, {
   Source,
   Layer,
   Popup,
+  Marker,
 } from 'react-map-gl';
 import {
   clusterLayer,
@@ -22,23 +23,25 @@ import type { TutorObjectGeoJSON } from '../../types';
 
 const ClusterMap: React.FC<{
   tutors: FeatureCollection<Geometry, GeoJsonProperties>;
-}> = ({ tutors }) => {
+  authenticatedTutor: TutorObjectGeoJSON | null;
+}> = ({ tutors, authenticatedTutor }) => {
   const [popupInfo, setPopupInfo] = useState<TutorObjectGeoJSON | null>(null);
   const mapRef = useRef<MapRef | null>(null);
-  const onMapClick = (event: MapLayerMouseEvent) => {
-    const feature: any = event.features![0];
-    const clusterId = feature!.properties!.cluster_id;
-    const mapboxSource = mapRef!.current!.getSource('tutors') as GeoJSONSource;
-
-    mapboxSource.getClusterExpansionZoom(clusterId, (_, zoom) => {
-      mapRef!.current!.easeTo({
-        center: feature!.geometry!.coordinates,
-        zoom,
-        duration: 500,
+  const onMapClick = (e: MapLayerMouseEvent) => {
+    if (e.features && e.features.length) {
+      const clusterId = e.features[0]!.properties!.cluster_id;
+      const mapboxSource = mapRef!.current!.getSource(
+        'tutors'
+      ) as GeoJSONSource;
+      mapboxSource.getClusterExpansionZoom(clusterId, (_, zoom) => {
+        mapRef!.current!.easeTo({
+          center: e.lngLat,
+          zoom,
+          duration: 500,
+        });
       });
-    });
+    }
   };
-
   const onMapLoad = () => {
     mapRef!.current!.on('click', 'unclustered-point', e => {
       const { properties } = e.features![0];
@@ -49,7 +52,10 @@ const ClusterMap: React.FC<{
           reviews: JSON.parse(properties!.reviews),
           createdReviews: JSON.parse(properties!.createdReviews),
         },
-        geometry: { type: 'Point', coordinates: e.lngLat.toArray() },
+        geometry: {
+          type: 'Point',
+          coordinates: JSON.parse(properties!.coordinates),
+        },
       } as TutorObjectGeoJSON);
     });
   };
@@ -63,7 +69,7 @@ const ClusterMap: React.FC<{
         bearing: 0,
         pitch: 0,
       }}
-      interactiveLayerIds={[clusterLayer.id]}
+      interactiveLayerIds={[clusterLayer.id!]}
       onClick={onMapClick}
       onLoad={onMapLoad}
       ref={mapRef}
@@ -84,6 +90,17 @@ const ClusterMap: React.FC<{
         <Layer {...clusterCountLayer} />
         <Layer {...unclusteredPointLayer} />
       </Source>
+      {authenticatedTutor && (
+        <Marker
+          longitude={authenticatedTutor.geometry.coordinates[0]}
+          latitude={authenticatedTutor.geometry.coordinates[1]}
+          anchor="top"
+          color="orange"
+          onClick={() => {
+            setPopupInfo(authenticatedTutor);
+          }}
+        />
+      )}
       {popupInfo && (
         <Popup
           closeOnClick={false}
@@ -92,7 +109,12 @@ const ClusterMap: React.FC<{
           latitude={+popupInfo.geometry.coordinates[1]}
           onClose={() => setPopupInfo(null)}
         >
-          <TutorPopup popupInfo={popupInfo} />
+          <TutorPopup
+            popupInfo={popupInfo}
+            authenticatedTutor={
+              popupInfo.properties._id === authenticatedTutor?.properties._id
+            }
+          />
         </Popup>
       )}
       <GeolocateControl position="top-left" />

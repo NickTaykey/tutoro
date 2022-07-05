@@ -2,7 +2,7 @@ import type { ReviewDocument, ReviewDocumentObject } from '../models/Review';
 import type { SessionDocument, SessionDocumentObject } from '../models/Session';
 import type { UserDocument, UserDocumentObject } from '../models/User';
 
-export const getPopulateReviews = (
+export const getPopulatedReviews = (
   reviews: ReviewDocument[]
 ): ReviewDocumentObject[] => {
   return reviews.map(
@@ -15,7 +15,7 @@ export const getPopulateReviews = (
   );
 };
 
-export const getPopulateSessions = (
+export const getPopulatedSessions = (
   reviews: SessionDocument[]
 ): SessionDocumentObject[] => {
   return reviews.map(

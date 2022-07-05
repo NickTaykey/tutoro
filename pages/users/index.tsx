@@ -10,8 +10,8 @@ import type { QueryObject } from '../../types';
 
 import {
   getUserDocumentObject,
-  getPopulateReviews,
-  getPopulateSessions,
+  getPopulatedReviews,
+  getPopulatedSessions,
 } from '../../utils/user-casting-helpers';
 
 interface Props {
@@ -96,8 +96,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
           model: SessionModel,
         }),
       ]);
-      currentUser.reviews = getPopulateReviews(user.reviews);
-      currentUser.requestedSessions = getPopulateSessions(
+      currentUser.reviews = getPopulatedReviews(user.reviews);
+      currentUser.requestedSessions = getPopulatedSessions(
         user.requestedSessions
       );
     }
@@ -117,8 +117,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
         model: SessionModel,
       }),
     ]);
-    currentUser.createdReviews = getPopulateReviews(user.createdReviews);
-    currentUser.bookedSessions = getPopulateSessions(user.bookedSessions);
+    currentUser.createdReviews = getPopulatedReviews(user.createdReviews);
+    currentUser.bookedSessions = getPopulatedSessions(user.bookedSessions);
     return {
       props: { currentUser },
     };

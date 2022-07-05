@@ -40,6 +40,7 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           avatar: user.avatar,
           isTutor: user.isTutor,
+          coordinates: user.coordinates,
         },
       };
     },

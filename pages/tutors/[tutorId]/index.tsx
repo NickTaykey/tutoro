@@ -26,7 +26,7 @@ const Page: NextPage<Props> = ({ tutor, userCreatedReviews, host }) => {
 };
 
 import {
-  getPopulateReviews,
+  getPopulatedReviews,
   getUserDocumentObject,
 } from '../../../utils/user-casting-helpers';
 import { authOptions } from '../../api/auth/[...nextauth]';
@@ -52,7 +52,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
       .exec(),
   ]);
   const tutor = getUserDocumentObject(userTutor as UserDocument);
-  tutor.reviews = getPopulateReviews(userTutor.reviews);
+  tutor.reviews = getPopulatedReviews(userTutor.reviews);
   const { host } = context.req.headers;
   if (user) {
     const userCreatedReviews: string[] = user.createdReviews.map(
