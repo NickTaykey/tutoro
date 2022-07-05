@@ -127,7 +127,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
     props: {},
     redirect: {
       permanent: false,
-      destination: 'http://localhost:3000/api/auth/signin?callbackUrl=/users',
+      destination: `http://${context.req.headers.host}/api/auth/signin?callbackUrl=/users`,
     },
   };
 };

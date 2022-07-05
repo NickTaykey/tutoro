@@ -11,11 +11,16 @@ import type { UserDocument, UserDocumentObject } from '../../models/User';
 import { useRouter } from 'next/router';
 
 interface Props {
+  host: String;
   tutor: UserDocumentObject;
   userCreatedReviews: string[];
 }
 
-const TutorPage: React.FC<Props> = ({ tutor, userCreatedReviews }: Props) => {
+const TutorPage: React.FC<Props> = ({
+  tutor,
+  userCreatedReviews,
+  host,
+}: Props) => {
   const { status, data } = useSession();
   let markup = <h1>404 Tutor not found!</h1>;
   const { query } = useRouter();
@@ -43,7 +48,7 @@ const TutorPage: React.FC<Props> = ({ tutor, userCreatedReviews }: Props) => {
                   )}
                 {status === 'unauthenticated' && (
                   <Link
-                    href={`http://localhost:3000/api/auth/signin?callbackUrl=/tutors/${tutor._id}`}
+                    href={`http://${host}/api/auth/signin?callbackUrl=/tutors/${tutor._id}`}
                   >
                     Sign In
                   </Link>

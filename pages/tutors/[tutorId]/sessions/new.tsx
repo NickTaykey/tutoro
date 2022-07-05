@@ -6,6 +6,8 @@ import { getUserDocumentObject } from '../../../../utils/user-casting-helpers';
 import ApiHelper from '../../../../utils/api-helper';
 import User from '../../../../models/User';
 import Review from '../../../../models/Review';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 interface Props {
   tutor: UserDocumentObject | null;
@@ -15,6 +17,7 @@ interface FormStructure {
   subject: string;
   topic: string;
   hours: number;
+  date: Date;
 }
 
 const Page: NextPage<Props> = ({ tutor }) => {
@@ -22,6 +25,7 @@ const Page: NextPage<Props> = ({ tutor }) => {
     subject: tutor!.subjects[0],
     topic: '',
     hours: 1,
+    date: new Date(Date.now()),
   };
   const router = useRouter();
   const [validationError, setValidationError] = useState<string | null>();
@@ -33,19 +37,31 @@ const Page: NextPage<Props> = ({ tutor }) => {
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
-    setFormFields(prevState => {
-      const value = Number(e.target.value)
+    setFormFields(prevState => ({
+      ...prevState,
+      [e.target.name]: Number(e.target.value)
         ? Number(e.target.value)
-        : e.target.value;
-      return {
-        ...prevState,
-        [e.target.name]: value,
-      };
+        : e.target.value,
+    }));
+  };
+
+  const dateChangeHandler = (date: Date) => {
+    setFormFields(prevState => ({ ...prevState, date: date }));
+  };
+
+  const timeChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormFields(prevState => {
+      const newDate = new Date(prevState.date);
+      const hourComponents = e.target.value.split(':').map(v => +v);
+      newDate.setHours(hourComponents[0], hourComponents[1]);
+      return { ...prevState, date: newDate };
     });
   };
 
   const formValidator = (): { errorMessage: string } | null => {
     if (!formFields.hours) return { errorMessage: 'Invalid number of hours' };
+    if (!formFields.date || formFields.date.getTime() <= Date.now())
+      return { errorMessage: 'Invalid date' };
     if (!formFields.topic.length)
       return { errorMessage: 'Invalid session topic' };
     return null;
@@ -59,7 +75,7 @@ const Page: NextPage<Props> = ({ tutor }) => {
         `/api/tutors/${tutor!._id}/sessions`,
         {
           ...formFields,
-          date: new Date().toISOString(),
+          date: formFields.date.toISOString(),
         },
         'POST'
       ).then(res => {
@@ -68,6 +84,15 @@ const Page: NextPage<Props> = ({ tutor }) => {
       });
     } else setValidationError(validationError.errorMessage);
   };
+
+  const currentHour =
+    formFields.date.getHours() < 9
+      ? '0' + formFields.date.getHours().toString()
+      : formFields.date.getHours().toString();
+  const currentMinutes =
+    formFields.date.getMinutes() < 9
+      ? '0' + formFields.date.getMinutes().toString()
+      : formFields.date.getMinutes().toString();
 
   let markup = <h1>404 Tutor not found!</h1>;
   if (tutor && tutor.reviews) {
@@ -105,6 +130,24 @@ const Page: NextPage<Props> = ({ tutor }) => {
               max={6}
               onChange={formFieldUpdater}
               value={formFields.hours}
+            />
+          </fieldset>
+          <fieldset>
+            <div>When would you like to have this session?</div>
+            <label htmlFor="date">Date</label>
+            <DatePicker
+              id="date"
+              selected={formFields.date}
+              onChange={dateChangeHandler}
+              minDate={new Date(Date.now())}
+            />
+            <label htmlFor="time">Time</label>
+            <input
+              type="time"
+              name="time"
+              id="time"
+              onChange={timeChangeHandler}
+              value={`${currentHour}:${currentMinutes}`}
             />
           </fieldset>
           <button type="submit">Submit request</button>
@@ -149,7 +192,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
     props: {},
     redirect: {
       permanent: false,
-      destination: `http://localhost:3000/api/auth/signin?callbackUrl=/tutors/${context.query.tutorId}/sessions/new`,
+      destination: `http://${context.req.headers.host}/api/auth/signin?callbackUrl=/tutors/${context.query.tutorId}/sessions/new`,
     },
   };
 };

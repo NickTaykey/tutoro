@@ -5,6 +5,7 @@ import SessionsContext from '../../store/sessions-context';
 import type { UserDocumentObject } from '../../models/User';
 import type { SessionDocumentObject } from '../../models/Session';
 import type { ReviewDocumentObject } from '../../models/Review';
+import { SessionStatus } from '../../types';
 
 interface Props {
   currentUser: UserDocumentObject;
@@ -22,7 +23,11 @@ const TutorProfileView: React.FC<Props> = (props: Props) => {
         <div>You have not been reviewed yet!</div>
       )}
       <h2>Requested sessions</h2>
-      <SessionsContextProvider sessions={props.currentUser.requestedSessions}>
+      <SessionsContextProvider
+        sessions={props.currentUser.requestedSessions.filter(
+          s => s.status !== SessionStatus.REJECTED
+        )}
+      >
         <SessionsContext.Consumer>
           {ctx => {
             return ctx.sessions.map((s: SessionDocumentObject) => (

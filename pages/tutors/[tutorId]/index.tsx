@@ -6,15 +6,20 @@ import User from '../../../models/User';
 import Review from '../../../models/Review';
 
 interface Props {
+  host: string;
   userCreatedReviews: string[];
   tutor: UserDocumentObject | null;
 }
 
-const Page: NextPage<Props> = ({ tutor, userCreatedReviews }) => {
+const Page: NextPage<Props> = ({ tutor, userCreatedReviews, host }) => {
   let markup = <h1>404 Tutor not found!</h1>;
   if (tutor && tutor.reviews) {
     markup = (
-      <TutorPage tutor={tutor} userCreatedReviews={userCreatedReviews} />
+      <TutorPage
+        tutor={tutor}
+        userCreatedReviews={userCreatedReviews}
+        host={host}
+      />
     );
   }
   return markup;
@@ -48,6 +53,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
   ]);
   const tutor = getUserDocumentObject(userTutor as UserDocument);
   tutor.reviews = getPopulateReviews(userTutor.reviews);
+  const { host } = context.req.headers;
   if (user) {
     const userCreatedReviews: string[] = user.createdReviews.map(
       (r: mongoose.ObjectId) => r.toString()
@@ -55,11 +61,14 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
     return {
       props: {
         userCreatedReviews,
+        host: host!,
         tutor,
       },
     };
   }
-  return { props: { userCreatedReviews: [], tutor } };
+  return {
+    props: { userCreatedReviews: [], host: host!, tutor },
+  };
 };
 
 export default Page;
