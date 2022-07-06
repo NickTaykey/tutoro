@@ -3,12 +3,12 @@ import ReviewsContextProvider from '../../store/ReviewsProvider';
 import ReviewContext from '../../store/reviews-context';
 import calcAvgRating from '../../utils/calc-avg-rating';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
 import Review from '../reviews/Review';
 import Link from 'next/link';
 
 import type { ReviewDocumentObject } from '../../models/Review';
 import type { UserDocument, UserDocumentObject } from '../../models/User';
-import { useRouter } from 'next/router';
 
 interface Props {
   host: String;
@@ -22,8 +22,8 @@ const TutorPage: React.FC<Props> = ({
   host,
 }: Props) => {
   const { status, data } = useSession();
-  let markup = <h1>404 Tutor not found!</h1>;
   const { query } = useRouter();
+  let markup = <h1>404 Tutor not found!</h1>;
   if (tutor && tutor.reviews) {
     markup = (
       <>
@@ -54,7 +54,7 @@ const TutorPage: React.FC<Props> = ({
                   </Link>
                 )}
                 {reviewsCtx.reviews.map((r: ReviewDocumentObject) => (
-                  <Review key={r._id} review={r} tutorId={tutor._id} />
+                  <Review key={r._id} review={r} viewAsTutor={false} />
                 ))}
               </>
             )}
@@ -63,7 +63,6 @@ const TutorPage: React.FC<Props> = ({
       </>
     );
   }
-
   return markup;
 };
 

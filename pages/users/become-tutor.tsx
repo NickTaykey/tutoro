@@ -1,4 +1,4 @@
-import type { UserDocument, UserDocumentObject } from '../../models/User';
+import type { UserDocument } from '../../models/User';
 import type { GetServerSideProps, NextPage } from 'next';
 import type { SubmitHandler } from 'react-hook-form';
 import type { QueryObject } from '../../types';
@@ -14,17 +14,13 @@ import ApiHelper from '../../utils/api-helper';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 
-interface Props {
-  currentUser: UserDocumentObject | null;
-}
-
 type FormValues = {
   location: string;
   bio: string;
   subjects: Array<{ subject: string }>;
 };
 
-const BecomeTutorPage: NextPage<Props> = ({ currentUser }) => {
+const BecomeTutorPage: NextPage = () => {
   const {
     register,
     control,
@@ -59,61 +55,58 @@ const BecomeTutorPage: NextPage<Props> = ({ currentUser }) => {
     return router.replace('/users?q=bc');
   };
 
-  if (currentUser) {
-    return (
-      <>
-        <h1>So you would like to become a Tutoro Tutor?</h1>
-        {!!apiError && <div>{apiError}</div>}
-        <form onSubmit={handleSubmit(onSubmit)}>
-          {!!Object.keys(errors).length && (
-            <div>Provide your {Object.keys(errors)[0]}</div>
-          )}
-          <fieldset>
-            <label htmlFor="bio">Some words about you</label>
-            <textarea id="bio" {...register('bio', { required: true })} />
-          </fieldset>
-          <fieldset>
-            <label htmlFor="location">Where will you host your sessions?</label>
-            <input
-              id="location"
-              type="text"
-              {...register('location', { required: true, maxLength: 50 })}
-            />
-          </fieldset>
-          <fieldset>
-            <ul>
-              {subjects.map((subject, index, subjects) => (
-                <li key={subject.id}>
-                  <label htmlFor={`subjects.${index}.subject`}>
-                    Your subject n. {index + 1}
-                  </label>
-                  <input
-                    {...register(`subjects.${index}.subject`, {
-                      required: true,
-                    })}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => subjects.length > 1 && remove(index)}
-                  >
-                    remove
-                  </button>
-                </li>
-              ))}
-            </ul>
-            <button type="button" onClick={() => append({ subject: '' })}>
-              append
-            </button>
-          </fieldset>
-          <button>Become a Tutor!</button>
-        </form>
-      </>
-    );
-  }
-  return <h1>Only authenticated users can visit this page</h1>;
+  return (
+    <>
+      <h1>So you would like to become a Tutoro Tutor?</h1>
+      {!!apiError && <div>{apiError}</div>}
+      <form onSubmit={handleSubmit(onSubmit)}>
+        {!!Object.keys(errors).length && (
+          <div>Provide your {Object.keys(errors)[0]}</div>
+        )}
+        <fieldset>
+          <label htmlFor="bio">Some words about you</label>
+          <textarea id="bio" {...register('bio', { required: true })} />
+        </fieldset>
+        <fieldset>
+          <label htmlFor="location">Where will you host your sessions?</label>
+          <input
+            id="location"
+            type="text"
+            {...register('location', { required: true, maxLength: 50 })}
+          />
+        </fieldset>
+        <fieldset>
+          <ul>
+            {subjects.map((subject, index, subjects) => (
+              <li key={subject.id}>
+                <label htmlFor={`subjects.${index}.subject`}>
+                  Your subject n. {index + 1}
+                </label>
+                <input
+                  {...register(`subjects.${index}.subject`, {
+                    required: true,
+                  })}
+                />
+                <button
+                  type="button"
+                  onClick={() => subjects.length > 1 && remove(index)}
+                >
+                  remove
+                </button>
+              </li>
+            ))}
+          </ul>
+          <button type="button" onClick={() => append({ subject: '' })}>
+            append
+          </button>
+        </fieldset>
+        <button>Become a Tutor!</button>
+      </form>
+    </>
+  );
 };
 
-export const getServerSideProps: GetServerSideProps<Props> = async context => {
+export const getServerSideProps: GetServerSideProps = async context => {
   await connectDB();
 
   // === PRODUCTION VERSION
@@ -123,7 +116,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
   // ===
 
   // === REMOVE IN PRODUCTION, ONLY FOR TESTING PORPOSE ===
-  const {
+  /* const {
     tutor: { tutor, fakeId: tutorFakeId },
     user: { user: normalUser, fakeId: userFakeId },
   } = await findTestingUsers();
@@ -136,7 +129,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
       query._id = tutor._id;
       query.isTutor = true;
     }
-  }
+  } */
   // ===
 
   const user = await User.findOne(query);
@@ -147,11 +140,15 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
         redirect: { permanent: false, destination: '/users' },
       };
     return {
-      props: { currentUser: getUserDocumentObject(user as UserDocument) },
+      props: {},
     };
   }
   return {
-    props: { currentUser: null },
+    props: {},
+    redirect: {
+      permanent: false,
+      destination: '/api/auth/signin?callbackUrl=/users/become-tutor',
+    },
   };
 };
 

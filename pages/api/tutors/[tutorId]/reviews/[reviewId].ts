@@ -54,6 +54,10 @@ export default async function handler(
                 sanitize(req.body),
                 { runValidators: true, new: true }
               );
+              await Promise.all([
+                review.populate({ path: 'user', model: User }),
+                review.populate({ path: 'tutor', model: User }),
+              ]);
               res.status(200).json(review.toJSON());
             });
           }

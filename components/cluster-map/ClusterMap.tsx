@@ -10,9 +10,9 @@ import Map, {
   Marker,
 } from 'react-map-gl';
 import {
-  clusterLayer,
-  clusterCountLayer,
   unclusteredPointLayer,
+  clusterCountLayer,
+  clusterLayer,
 } from './layers';
 import TutorPopup from './TutorPopup';
 
@@ -21,12 +21,15 @@ import type { MapLayerMouseEvent } from 'mapbox-gl';
 import type { FeatureCollection, GeoJsonProperties, Geometry } from 'geojson';
 import type { TutorObjectGeoJSON } from '../../types';
 
-const ClusterMap: React.FC<{
+interface Props {
   tutors: FeatureCollection<Geometry, GeoJsonProperties>;
   authenticatedTutor: TutorObjectGeoJSON | null;
-}> = ({ tutors, authenticatedTutor }) => {
+}
+
+const ClusterMap: React.FC<Props> = ({ tutors, authenticatedTutor }) => {
   const [popupInfo, setPopupInfo] = useState<TutorObjectGeoJSON | null>(null);
   const mapRef = useRef<MapRef | null>(null);
+
   const onMapClick = (e: MapLayerMouseEvent) => {
     if (e.features && e.features.length) {
       const clusterId = e.features[0]!.properties!.cluster_id;
@@ -42,6 +45,7 @@ const ClusterMap: React.FC<{
       });
     }
   };
+
   const onMapLoad = () => {
     mapRef!.current!.on('click', 'unclustered-point', e => {
       const { properties } = e.features![0];

@@ -1,5 +1,6 @@
 import React, { FormEvent, useContext, useRef, useState } from 'react';
 import type { ReviewDocumentObject } from '../../models/Review';
+import { UserDocumentObject } from '../../models/User';
 import ReviewContext from '../../store/reviews-context';
 import StarRating, { StarRatingHandle } from './StarRating';
 
@@ -15,47 +16,54 @@ type CreateReviewFormProps = {
 
 type EditReviewFormProps = {
   type: ReviewFormTypes.Edit;
-  tutorId: string;
-  hideForm: () => void;
   review: ReviewDocumentObject;
+  hideForm: () => void;
 };
 
 const ReviewForm: React.FC<
   CreateReviewFormProps | EditReviewFormProps
 > = props => {
-  const isEdit = props.type === ReviewFormTypes.Edit;
   const ctx = useContext(ReviewContext);
+  const isEdit = props.type === ReviewFormTypes.Edit;
   const imperativeHandlingRef = useRef<StarRatingHandle>(null);
+  const [errorAlert, setErrorAlert] = useState<string>('');
   const [stars, setStars] = useState<number>(isEdit ? props.review.stars : 0);
   const [text, setText] = useState<string>(
     isEdit && props.review?.text ? props.review.text : ''
   );
-  const [errorAlert, setErrorAlert] = useState<string>('');
 
   const createReviewHandler = async () => {
-    const apiResponse = await ctx.addReview(props.tutorId, {
-      stars,
-      text,
-    });
-    if (apiResponse.errorMessage) setErrorAlert(apiResponse.errorMessage);
-    else {
-      setStars(0);
-      setText('');
-      setErrorAlert('');
-      imperativeHandlingRef.current!.reset();
+    if (props.type === ReviewFormTypes.Create) {
+      const apiResponse = await ctx.addReview(props.tutorId, {
+        stars,
+        text,
+      });
+      if (apiResponse.errorMessage) setErrorAlert(apiResponse.errorMessage);
+      else {
+        setStars(0);
+        setText('');
+        setErrorAlert('');
+        imperativeHandlingRef.current!.reset();
+      }
     }
   };
+
   const updateReviewHandler = async () => {
-    const editReviewProps = props as EditReviewFormProps;
-    const apiResponse = await ctx.updateReview(props.tutorId, {
-      ...editReviewProps.review,
-      stars,
-      text,
-    });
-    if (apiResponse.errorMessage) setErrorAlert(apiResponse.errorMessage);
-    else {
-      setErrorAlert('');
-      editReviewProps.hideForm();
+    if (props.type === ReviewFormTypes.Edit) {
+      const editReviewProps = props as EditReviewFormProps;
+      const apiResponse = await ctx.updateReview(
+        (props.review.tutor as UserDocumentObject)._id,
+        {
+          ...editReviewProps.review,
+          stars,
+          text,
+        }
+      );
+      if (apiResponse.errorMessage) setErrorAlert(apiResponse.errorMessage);
+      else {
+        setErrorAlert('');
+        editReviewProps.hideForm();
+      }
     }
   };
 

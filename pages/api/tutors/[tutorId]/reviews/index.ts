@@ -50,7 +50,8 @@ export default async function handler(
             const review = await Review.create({
               text: sanitizedReqBody?.text,
               stars: Number(sanitizedReqBody.stars),
-              tutorId: tutor._id,
+              tutor: tutor,
+              user: userSession,
             });
             tutor.reviews.push(review);
             user.createdReviews.push(review);

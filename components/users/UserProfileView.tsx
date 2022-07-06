@@ -17,19 +17,14 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
     <>
       <h2>My reviews</h2>
       {props.currentUser.createdReviews.map((r: ReviewDocumentObject) => (
-        <Review key={r._id} review={r} tutorId={r.tutorId.toString()} />
+        <Review key={r._id} review={r} viewAsTutor={false} />
       ))}
       <h2>My sessions</h2>
       <SessionsContextProvider sessions={props.currentUser.bookedSessions}>
         <SessionsContext.Consumer>
           {ctx => {
             return ctx.sessions.map((s: SessionDocumentObject) => (
-              <Session
-                key={s._id}
-                session={s}
-                tutorId={s.tutorId.toString()}
-                isTutor={false}
-              />
+              <Session key={s._id} session={s} viewAsTutor={false} />
             ));
           }}
         </SessionsContext.Consumer>

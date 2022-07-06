@@ -1,9 +1,11 @@
 import { Schema, model, models, Document, Model } from 'mongoose';
 import type { ObjectId } from 'mongoose';
+import type { UserDocument, UserDocumentObject } from './User';
 
 export interface Review {
   stars: number;
-  tutorId: ObjectId | string;
+  tutor: ObjectId | UserDocument | UserDocumentObject | string;
+  user: ObjectId | UserDocument | UserDocumentObject | string;
   text?: string;
 }
 
@@ -24,7 +26,8 @@ const reviewSchema = new Schema<ReviewDocument, ReviewModel>({
     max: [5, 'You can give at the most {MAX} stars'],
   },
   text: String,
-  tutorId: { type: Schema.Types.ObjectId, ref: 'User' },
+  tutor: { type: Schema.Types.ObjectId, ref: 'User' },
+  user: { type: Schema.Types.ObjectId, ref: 'User' },
 });
 
 export default models.Review ||

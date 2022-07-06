@@ -4,6 +4,7 @@ import type { UserDocument, UserDocumentObject } from '../../../models/User';
 import TutorPage from '../../../components/tutors/TutorPage';
 import User from '../../../models/User';
 import Review from '../../../models/Review';
+import type { ReviewDocument } from '../../../models/Review';
 
 interface Props {
   host: string;
@@ -25,50 +26,68 @@ const Page: NextPage<Props> = ({ tutor, userCreatedReviews, host }) => {
   return markup;
 };
 
-import {
-  getPopulatedReviews,
-  getUserDocumentObject,
-} from '../../../utils/user-casting-helpers';
+import { getUserDocumentObject } from '../../../utils/user-casting-helpers';
 import { authOptions } from '../../api/auth/[...nextauth]';
 import connectDB from '../../../middleware/mongo-connect';
 import { getServerSession } from 'next-auth';
 import mongoose from 'mongoose';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
+  const { host } = context.req.headers;
   const [, session] = await Promise.all([
     connectDB(),
     getServerSession(context, authOptions),
   ]);
-  const [user, userTutor] = await Promise.all([
-    User.findOne({ email: session?.user?.email }),
-    User.findById(context.query.tutorId)
-      .populate({
-        path: 'reviews',
-        options: {
-          sort: { _id: -1 },
-        },
-        model: Review,
-      })
-      .exec(),
-  ]);
-  const tutor = getUserDocumentObject(userTutor as UserDocument);
-  tutor.reviews = getPopulatedReviews(userTutor.reviews);
-  const { host } = context.req.headers;
-  if (user) {
-    const userCreatedReviews: string[] = user.createdReviews.map(
-      (r: mongoose.ObjectId) => r.toString()
-    );
+
+  const getReviewDocumentObject = (r: ReviewDocument) => {
     return {
-      props: {
-        userCreatedReviews,
-        host: host!,
-        tutor,
-      },
+      stars: r.stars,
+      _id: r._id.toString(),
+      text: r.text,
+      user: getUserDocumentObject(r.user as UserDocument),
+      tutor: getUserDocumentObject(r.tutor as UserDocument),
+    };
+  };
+  try {
+    const [user, userTutor] = await Promise.all([
+      User.findOne({ email: session?.user?.email }),
+      User.findById(context.query.tutorId)
+        .populate({
+          path: 'reviews',
+          options: {
+            sort: { _id: -1 },
+          },
+          model: Review,
+          populate: [
+            { path: 'user', model: User },
+            { path: 'tutor', model: User },
+          ],
+        })
+        .exec(),
+    ]);
+    const tutor = getUserDocumentObject(userTutor as UserDocument);
+    tutor.reviews = userTutor.reviews.map(getReviewDocumentObject);
+
+    if (user) {
+      const userCreatedReviews: string[] = user.createdReviews.map(
+        (r: mongoose.ObjectId) => r.toString()
+      );
+      return {
+        props: {
+          userCreatedReviews,
+          host: host!,
+          tutor,
+        },
+      };
+    }
+    return {
+      props: { userCreatedReviews: [], host: host!, tutor },
+    };
+  } catch (e) {
+    return {
+      props: { userCreatedReviews: [], host: host!, tutor: null },
     };
   }
-  return {
-    props: { userCreatedReviews: [], host: host!, tutor },
-  };
 };
 
 export default Page;

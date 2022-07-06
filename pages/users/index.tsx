@@ -10,8 +10,8 @@ import type { QueryObject } from '../../types';
 
 import {
   getUserDocumentObject,
-  getPopulatedReviews,
-  getPopulatedSessions,
+  getReviewDocumentObject,
+  getSessionDocumentObject,
 } from '../../utils/user-casting-helpers';
 
 interface Props {
@@ -34,13 +34,14 @@ const ProfilePage: NextPage<Props> = ({ currentUser }) => {
 };
 
 import connectDB from '../../middleware/mongo-connect';
-import ReviewModel from '../../models/Review';
-import SessionModel from '../../models/Session';
 import findTestingUsers from '../../utils/dev-testing-users';
 import { useRouter } from 'next/router';
+import Review from '../../models/Review';
+import Session from '../../models/Session';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
   await connectDB();
+
   const [session, testingUsers] = await Promise.all([
     getServerSession(context, authOptions),
     findTestingUsers(),
@@ -52,15 +53,25 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
   // ===
 
   // === REMOVE IN PRODUCTION, ONLY FOR TESTING PORPOSE ===
-  const {
+  /* const {
     tutor: { tutor, fakeId: tutorFakeId },
     user: { user: normalUser, fakeId: userFakeId },
   } = testingUsers;
-
   const visitingUserTestingProfile = context.req.url?.includes(userFakeId);
-  const visitingTutorTestingProfile = context.req.url?.includes(tutorFakeId);
+  const visitingTutorTestingProfile = context.req.url?.includes(tutorFakeId); */
+  // ===
 
-  if (visitingTutorTestingProfile || visitingUserTestingProfile) {
+  const populateConfig = {
+    options: {
+      sort: { _id: -1 },
+    },
+    populate: [
+      { path: 'user', model: User },
+      { path: 'tutor', model: User },
+    ],
+  };
+
+  /* if (visitingTutorTestingProfile || visitingUserTestingProfile) {
     if (
       (visitingTutorTestingProfile && !tutor) ||
       (visitingUserTestingProfile && !normalUser)
@@ -74,51 +85,48 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
       query._id = tutor._id;
       query.isTutor = true;
     }
-  }
+  } */
   // ===
-  const user = await User.findOne(query);
-  if (user) {
+
+  if (query.email) {
+    const user = await User.findOne(query);
     const currentUser = getUserDocumentObject(user);
     if (user.isTutor) {
       await Promise.all([
         user.populate({
           path: 'reviews',
-          options: {
-            sort: { _id: -1 },
-          },
-          model: ReviewModel,
+          model: Review,
+          ...populateConfig,
         }),
         user.populate({
           path: 'requestedSessions',
-          options: {
-            sort: { _id: -1 },
-          },
-          model: SessionModel,
+          model: Session,
+          ...populateConfig,
         }),
       ]);
-      currentUser.reviews = getPopulatedReviews(user.reviews);
-      currentUser.requestedSessions = getPopulatedSessions(
-        user.requestedSessions
+      currentUser.reviews = user.reviews.map(getReviewDocumentObject);
+      currentUser.requestedSessions = user.requestedSessions.map(
+        getSessionDocumentObject
       );
     }
     await Promise.all([
       user.populate({
         path: 'createdReviews',
-        options: {
-          sort: { _id: -1 },
-        },
-        model: ReviewModel,
+        ...populateConfig,
+        model: Review,
       }),
       user.populate({
         path: 'bookedSessions',
-        options: {
-          sort: { _id: -1 },
-        },
-        model: SessionModel,
+        ...populateConfig,
+        model: Session,
       }),
     ]);
-    currentUser.createdReviews = getPopulatedReviews(user.createdReviews);
-    currentUser.bookedSessions = getPopulatedSessions(user.bookedSessions);
+    currentUser.createdReviews = user.createdReviews.map(
+      getReviewDocumentObject
+    );
+    currentUser.bookedSessions = user.bookedSessions.map(
+      getSessionDocumentObject
+    );
     return {
       props: { currentUser },
     };

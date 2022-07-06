@@ -17,7 +17,7 @@ const TutorProfileView: React.FC<Props> = (props: Props) => {
       <h2>Received Reviews</h2>
       {!!props.currentUser.reviews.length &&
         props.currentUser.reviews.map((r: ReviewDocumentObject) => (
-          <Review key={r._id} tutorId={props.currentUser._id} review={r} />
+          <Review key={r._id} review={r} viewAsTutor />
         ))}
       {!props.currentUser.reviews.length && (
         <div>You have not been reviewed yet!</div>
@@ -31,12 +31,7 @@ const TutorProfileView: React.FC<Props> = (props: Props) => {
         <SessionsContext.Consumer>
           {ctx => {
             return ctx.sessions.map((s: SessionDocumentObject) => (
-              <Session
-                key={s._id}
-                session={s}
-                tutorId={s.tutorId.toString()}
-                isTutor={true}
-              />
+              <Session key={s._id} session={s} viewAsTutor />
             ));
           }}
         </SessionsContext.Consumer>

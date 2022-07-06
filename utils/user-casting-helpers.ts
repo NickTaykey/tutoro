@@ -1,35 +1,6 @@
-import type { ReviewDocument, ReviewDocumentObject } from '../models/Review';
-import type { SessionDocument, SessionDocumentObject } from '../models/Session';
 import type { UserDocument, UserDocumentObject } from '../models/User';
-
-export const getPopulatedReviews = (
-  reviews: ReviewDocument[]
-): ReviewDocumentObject[] => {
-  return reviews.map(
-    (r: ReviewDocument): ReviewDocumentObject => ({
-      stars: r.stars,
-      _id: r._id.toString(),
-      tutorId: r.tutorId.toString(),
-      text: r.text,
-    })
-  );
-};
-
-export const getPopulatedSessions = (
-  reviews: SessionDocument[]
-): SessionDocumentObject[] => {
-  return reviews.map(
-    (s: SessionDocument): SessionDocumentObject => ({
-      subject: s.subject,
-      topic: s.topic,
-      hours: s.hours,
-      status: s.status,
-      _id: s._id.toString(),
-      tutorId: s.tutorId.toString(),
-      date: s.date.toLocaleString(),
-    })
-  );
-};
+import type { SessionDocument } from '../models/Session';
+import type { ReviewDocument } from '../models/Review';
 
 export const getUserDocumentObject = (
   user: UserDocument
@@ -52,3 +23,21 @@ export const getUserDocumentObject = (
     requestedSessions: [],
   };
 };
+
+export const getReviewDocumentObject = (r: ReviewDocument) => ({
+  stars: r.stars,
+  _id: r._id.toString(),
+  text: r.text,
+  user: getUserDocumentObject(r.user as UserDocument),
+  tutor: getUserDocumentObject(r.tutor as UserDocument),
+});
+
+export const getSessionDocumentObject = (s: SessionDocument) => ({
+  subject: s.subject,
+  topic: s.topic,
+  hours: s.hours,
+  status: s.status,
+  _id: s._id.toString(),
+  user: getUserDocumentObject(s.user as UserDocument),
+  tutor: getUserDocumentObject(s.tutor as UserDocument),
+});

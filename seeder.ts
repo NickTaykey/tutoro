@@ -46,7 +46,8 @@ const N_REVIEWS = process.argv.length === 4 ? Number(process.argv[3]) : 2;
         const review = await Review.create({
           stars: Math.trunc(Math.random() * 6),
           text: faker.lorem.lines(1),
-          tutorId: users.length ? users[0]._id : user._id,
+          tutor: users[0]._id,
+          user: user._id,
         });
         users[0].reviews.push(review);
         user.createdReviews.push(review);

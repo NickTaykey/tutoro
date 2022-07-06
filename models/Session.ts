@@ -1,14 +1,16 @@
 import { Schema, model, models } from 'mongoose';
-import type { ObjectId, Document, Model } from 'mongoose';
 import { SessionStatus } from '../types';
+import type { ObjectId, Document, Model } from 'mongoose';
+import type { UserDocument, UserDocumentObject } from '../models/User';
 
 interface Session {
   subject: string;
   topic: string;
   hours: number;
   status: SessionStatus;
-  tutorId: ObjectId | string;
   date: Date | string;
+  tutor: ObjectId | UserDocument | UserDocumentObject | string;
+  user: ObjectId | UserDocument | UserDocumentObject | string;
 }
 
 export type SessionDocument = Session & Document;
@@ -24,7 +26,8 @@ const sessionSchema = new Schema<SessionDocument, SessionModel>({
   topic: { type: String, required: true },
   hours: { type: Number, required: true, default: 1 },
   status: { type: String, default: SessionStatus.NOT_APPROVED },
-  tutorId: { type: Schema.Types.ObjectId, ref: 'User' },
+  tutor: { type: Schema.Types.ObjectId, ref: 'User' },
+  user: { type: Schema.Types.ObjectId, ref: 'User' },
   date: Date,
 });
 

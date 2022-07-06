@@ -1,28 +1,35 @@
 import { useContext, useState } from 'react';
-import ReviewContext from '../../store/reviews-context';
-import ReviewForm from './ReviewForm';
 import { ReviewFormTypes } from './ReviewForm';
 import { useSession } from 'next-auth/react';
+import ReviewContext from '../../store/reviews-context';
+import ReviewForm from './ReviewForm';
 import type { ReviewDocumentObject } from '../../models/Review';
+import { UserDocumentObject } from '../../models/User';
 
-const Review: React.FC<{
-  tutorId: string;
+interface Props {
   review: ReviewDocumentObject;
-}> = props => {
+  viewAsTutor: boolean;
+}
+
+const Review: React.FC<Props> = ({ review, viewAsTutor }) => {
   const ctx = useContext(ReviewContext);
   const { status } = useSession();
   const [showUpdateForm, setShowUpdateForm] = useState<boolean>(false);
+  const { tutor, user } = review;
+  const { _id: tutorId, fullname: tutorFullname } = tutor as UserDocumentObject;
+  const { fullname: userFullname } = user as UserDocumentObject;
 
   const deleteReviewClickHandler = () => {
     const c = confirm('Are you sure you want to delete this review?');
-    if (c) ctx.deleteReview(props.tutorId, props.review._id);
+    if (c) ctx.deleteReview(tutorId.toString(), review._id);
   };
 
   return (
     <article>
-      <div>{props.review.stars}</div>
-      {props.review.text && <div>{props.review.text}</div>}
-      {status === 'authenticated' && props.review.ownerAuthenticated && (
+      <h3>{viewAsTutor ? userFullname : tutorFullname}</h3>
+      <div>{review.stars}</div>
+      {review.text && <div>{review.text}</div>}
+      {status === 'authenticated' && review.ownerAuthenticated && (
         <>
           <button onClick={deleteReviewClickHandler}>DELETE</button>
           <button onClick={() => setShowUpdateForm(prevState => !prevState)}>
@@ -31,8 +38,7 @@ const Review: React.FC<{
           {showUpdateForm && (
             <ReviewForm
               type={ReviewFormTypes.Edit}
-              review={props.review}
-              tutorId={props.tutorId}
+              review={review}
               hideForm={() => setShowUpdateForm(false)}
             />
           )}

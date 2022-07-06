@@ -22,10 +22,10 @@ interface FormStructure {
 
 const Page: NextPage<Props> = ({ tutor }) => {
   const DEFAULT_FORM_VALUES: FormStructure = {
-    subject: tutor!.subjects[0],
+    subject: tutor ? tutor.subjects[0] : '',
     topic: '',
     hours: 1,
-    date: new Date(Date.now()),
+    date: new Date(Date.now() + 3.6 * 10 ** 6),
   };
   const router = useRouter();
   const [validationError, setValidationError] = useState<string | null>();
@@ -60,7 +60,10 @@ const Page: NextPage<Props> = ({ tutor }) => {
 
   const formValidator = (): { errorMessage: string } | null => {
     if (!formFields.hours) return { errorMessage: 'Invalid number of hours' };
-    if (!formFields.date || formFields.date.getTime() <= Date.now())
+    if (
+      !formFields.date ||
+      new Date(Date.now()).getTime() > formFields.date.getTime()
+    )
       return { errorMessage: 'Invalid date' };
     if (!formFields.topic.length)
       return { errorMessage: 'Invalid session topic' };
@@ -168,25 +171,30 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
     connectDB(),
     getServerSession(context, authOptions),
   ]);
-  if (session) {
-    const tutor = await User.findById(context.query.tutorId)
-      .populate({
-        path: 'reviews',
-        options: {
-          sort: { _id: -1 },
-        },
-        model: Review,
-      })
-      .exec();
-    if (
-      context.query.tutorId === (session!.user as UserDocument)!._id.toString()
-    ) {
-      return {
-        props: {},
-        redirect: { permanent: false, destination: '/tutoro' },
-      };
+  try {
+    if (session) {
+      const tutor = await User.findById(context.query.tutorId)
+        .populate({
+          path: 'reviews',
+          options: {
+            sort: { _id: -1 },
+          },
+          model: Review,
+        })
+        .exec();
+      if (
+        context.query.tutorId ===
+        (session!.user as UserDocument)!._id.toString()
+      ) {
+        return {
+          props: {},
+          redirect: { permanent: false, destination: '/tutoro' },
+        };
+      }
+      return { props: { tutor: tutor ? getUserDocumentObject(tutor) : null } };
     }
-    return { props: { tutor: tutor ? getUserDocumentObject(tutor) : null } };
+  } catch (e) {
+    return { props: { tutor: null } };
   }
   return {
     props: {},

@@ -28,6 +28,8 @@ export default async function handler(
           if (
             sanitizedBody.topic &&
             Number(sanitizedBody.hours) > 0 &&
+            sanitizedBody.date &&
+            new Date(sanitizedBody.date).getTime() > Date.now() &&
             sanitizedBody.subject
           ) {
             const tutor = await User.findOne({
@@ -39,7 +41,8 @@ export default async function handler(
                 ...sanitizedBody,
                 hours: Number(sanitizedBody.hours),
                 date: new Date(sanitizedBody.date),
-                tutorId: tutor._id,
+                tutor: tutor._id,
+                user: sessionUser._id,
                 status: SessionStatus.NOT_APPROVED,
               });
               tutor.requestedSessions.push(createdSession._id);
@@ -75,7 +78,9 @@ export default async function handler(
                 ? 'topic'
                 : sanitizedBody.hours < 1
                 ? 'hours number'
-                : 'subject'
+                : !sanitizedBody.subject
+                ? 'subject'
+                : 'date'
             }`,
           });
         });
