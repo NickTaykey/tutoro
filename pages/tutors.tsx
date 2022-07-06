@@ -17,7 +17,7 @@ const Home: NextPage<Props> = ({ currentUser, points }) => {
     <>
       <h1 style={{ textAlign: 'center' }}>HomePage</h1>
       {/* === ONLY FOR TO SAVE ON MAPBOX LOADS IN DEVELOPMENT */}
-      {/* <ClusterMap
+      <ClusterMap
         authenticatedTutor={
           currentUser?.isTutor
             ? ({
@@ -31,7 +31,7 @@ const Home: NextPage<Props> = ({ currentUser, points }) => {
             : null
         }
         tutors={points}
-      /> */}
+      />
       <ul>
         {points.features.map(f => (
           <li key={f.properties?._id}>
