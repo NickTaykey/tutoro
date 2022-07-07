@@ -38,7 +38,7 @@ export default async function handler(
             sessionUser.isTutor = true;
             sessionUser.coordinates = coordinates as [number, number];
             sessionUser.bio = bio;
-            sessionUser.subjects = subjects;
+            sessionUser.subjects = subjects.map((s: string) => s.trim().toLowerCase());
             sessionUser.location = location;
             sessionUser.pricePerHour = price;
             await sessionUser.save();

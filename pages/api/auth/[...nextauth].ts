@@ -17,8 +17,8 @@ export const authOptions: NextAuthOptions = {
       const userFound = await User.findOne({ email: user.email });
       if (!userFound) {
         await User.create({
-          fullname: user.name,
-          email: user.email,
+          fullname: user.name?.trim(),
+          email: user.email?.trim(),
           avatar: user.image,
           location: '',
           bio: '',

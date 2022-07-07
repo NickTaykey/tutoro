@@ -1,37 +1,78 @@
-import type { TutorObjectGeoJSON } from '../types';
+import type { TutorObjectGeoJSON, TutorFilters } from '../types';
 import type { UserDocument, UserDocumentObject } from '../models/User';
 import type { FeatureCollection, GeoJsonProperties, Geometry } from 'geojson';
 import type { GetServerSideProps, NextPage } from 'next';
 import ClusterMap from '../components/cluster-map/ClusterMap';
-import { getReviewDocumentObject } from '../utils/user-casting-helpers';
+import {
+  getReviewDocumentObject,
+  getUserDocumentObject,
+} from '../utils/user-casting-helpers';
 import { signIn, signOut } from 'next-auth/react';
 import Link from 'next/link';
 
+const getPoints = (
+  tutors: UserDocumentObject[]
+): FeatureCollection<Geometry, GeoJsonProperties> => ({
+  type: 'FeatureCollection',
+  features: tutors.map(
+    (tutor): TutorObjectGeoJSON => ({
+      type: 'Feature',
+      properties: {
+        cluster: false,
+        ...tutor,
+      },
+      geometry: { type: 'Point', coordinates: tutor.coordinates },
+    })
+  ),
+});
+
+type PointsCollection = FeatureCollection<Geometry, GeoJsonProperties>;
+
 interface Props {
-  points: FeatureCollection<Geometry, GeoJsonProperties> | null;
+  points: PointsCollection | null;
   currentUser: UserDocumentObject | null;
 }
 
 const Home: NextPage<Props> = ({ currentUser, points }) => {
+  const [filteredPoints, setFilteredPoints] = useState<PointsCollection | null>(
+    null
+  );
+
+  const filterTutorsHandler = (filters: TutorFilters) => {
+    console.log('sent');
+    ApiHelper('/api/tutors/filter', filters, 'GET').then(res => {
+      setFilteredPoints(
+        getPoints(res.map((t: UserDocument) => getUserDocumentObject(t)))
+      );
+    });
+  };
+
   return points ? (
     <>
       <h1 style={{ textAlign: 'center' }}>HomePage</h1>
-      {/* === ONLY FOR TO SAVE ON MAPBOX LOADS IN DEVELOPMENT */}
-      {/* <ClusterMap
-        authenticatedTutor={
-          currentUser?.isTutor
-            ? ({
-                type: 'Feature',
-                properties: currentUser,
-                geometry: {
-                  type: 'Point',
-                  coordinates: currentUser.coordinates,
-                },
-              } as TutorObjectGeoJSON)
-            : null
-        }
-        tutors={points}
-      /> */}
+      <section style={{ display: 'flex' }}>
+        <section>
+          {/* === ONLY TO SAVE ON MAPBOX LOADS IN DEVELOPMENT */}
+          <ClusterMap
+            authenticatedTutor={
+              currentUser?.isTutor
+                ? ({
+                    type: 'Feature',
+                    properties: currentUser,
+                    geometry: {
+                      type: 'Point',
+                      coordinates: currentUser.coordinates,
+                    },
+                  } as TutorObjectGeoJSON)
+                : null
+            }
+            tutors={filteredPoints ? filteredPoints : points}
+          />
+        </section>
+        <section>
+          <FiltersForm filterTutorsHandler={filterTutorsHandler} />
+        </section>
+      </section>
       <ul>
         {points.features.map(f => (
           <li key={f.properties?._id}>
@@ -71,31 +112,17 @@ const Home: NextPage<Props> = ({ currentUser, points }) => {
   );
 };
 
-import { getUserDocumentObject } from '../utils/user-casting-helpers';
 import { authOptions } from './api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth';
 import connectDB from '../middleware/mongo-connect';
 import Review from '../models/Review';
 import User from '../models/User';
+import FiltersForm from '../components/cluster-map/FiltersForm';
+import { useState } from 'react';
+import ApiHelper from '../utils/api-helper';
 import type { ReviewDocument } from '../models/Review';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
-  const getPoints = (
-    tutors: UserDocumentObject[]
-  ): FeatureCollection<Geometry, GeoJsonProperties> => ({
-    type: 'FeatureCollection',
-    features: tutors.map(
-      (tutor): TutorObjectGeoJSON => ({
-        type: 'Feature',
-        properties: {
-          cluster: false,
-          ...tutor,
-        },
-        geometry: { type: 'Point', coordinates: tutor.coordinates },
-      })
-    ),
-  });
-
   const populateReviewConfig = {
     path: 'reviews',
     options: {

@@ -6,14 +6,15 @@ import Review from './models/Review';
 import User from './models/User';
 import Session from './models/Session';
 import type { UserDocument } from './models/User';
+import type { ReviewDocument } from './models/Review';
 
 dotenv.config({ path: __dirname + '/.env.local' });
 
 const LOCATION_CENTER_COORDINATES: [number, number] = [12.21, 46.14];
-const N_USERS = process.argv.length === 4 ? Number(process.argv[2]) : 2;
-const N_REVIEWS = process.argv.length === 4 ? Number(process.argv[3]) : 2;
+const N_USERS = process.argv.length === 6 ? Number(process.argv[3]) : 1;
+const N_TUTORS = process.argv.length === 6 ? Number(process.argv[5]) : 1;
 
-(async () => {
+const seeder = async () => {
   faker.setLocale('it');
   await connectDB();
   await Promise.all([
@@ -22,46 +23,78 @@ const N_REVIEWS = process.argv.length === 4 ? Number(process.argv[3]) : 2;
     Session.deleteMany({}),
   ]);
   const users: Array<UserDocument> = [];
+  const tutors: Array<UserDocument> = [];
+  const defaultSubjects = ['science', 'maths', 'physics'];
+
+  const getRandomSubjects = () => {
+    const nSubjects = Math.trunc(Math.random() * defaultSubjects.length) + 1;
+    const randomSubjects = new Set();
+    while (randomSubjects.size !== nSubjects) {
+      randomSubjects.add(
+        defaultSubjects[Math.trunc(Math.random() * defaultSubjects.length)]
+      );
+    }
+    return Array.from(randomSubjects);
+  };
+
   for (let i = 0; i < N_USERS; i++) {
+    const user = new User({
+      fullname: faker.name.findName(),
+      email: faker.internet.email(),
+      avatar: faker.internet.avatar(),
+      isTutor: false,
+    });
+    users.push(user as UserDocument);
+  }
+
+  for (let i = 0; i < N_TUTORS; i++) {
     const coordinates = faker.address.nearbyGPSCoordinate(
       LOCATION_CENTER_COORDINATES,
       50,
       true
     );
-    const isTutor = i === 0;
-    const user = new User({
+    const tutor = new User({
       fullname: faker.name.findName(),
       email: faker.internet.email(),
       avatar: faker.internet.avatar(),
-      pricePerHour: isTutor ? Math.trunc(Math.random() * 250) + 5 : 0,
-      coordinates: isTutor
-        ? [Number(coordinates[0]), Number(coordinates[1])]
-        : [],
-      subjects: isTutor ? ['Science', 'Maths', 'Physics'] : [],
-      bio: isTutor ? faker.lorem.lines(1) : '',
-      location: isTutor ? faker.lorem.words(2) : '',
-      isTutor,
+      pricePerHour: Math.trunc(Math.random() * 250) + 6,
+      coordinates: [Number(coordinates[0]), Number(coordinates[1])],
+      subjects: getRandomSubjects(),
+      bio: faker.lorem.lines(1),
+      location: faker.lorem.words(2),
+      isTutor: true,
     });
-    if (!user.isTutor) {
-      for (let j = 0; j < N_REVIEWS; j++) {
-        const review = await Review.create({
-          stars: Math.trunc(Math.random() * 6),
-          text: faker.lorem.lines(1),
-          tutor: users[0]._id,
-          user: user._id,
-        });
-        users[0].reviews.push(review);
-        user.createdReviews.push(review);
-      }
-    }
-    users.push(user as UserDocument);
-    if (users.length) await users[0].save();
-    await user.save();
+    tutors.push(tutor as UserDocument);
   }
-  fs.writeFile('seed-tutors.json', JSON.stringify(users), () => {});
-  console.log(
-    `Created ${
-      N_USERS - 1
-    } regular users and 1 tutor and ${N_REVIEWS} of this tutor`
+
+  const reviews: ReviewDocument[] = [];
+  for (let t of tutors) {
+    for (let u of users) {
+      const review = new Review({
+        stars: Math.trunc(Math.random() * 6),
+        text: faker.lorem.lines(1),
+        tutor: t._id,
+        user: u._id,
+      });
+      reviews.push(review);
+      u.createdReviews.push(review);
+      t.reviews.push(review);
+      review.save();
+    }
+  }
+
+  await Promise.all([
+    ...users.map(u => u.save()),
+    ...tutors.map(t => t.save()),
+  ]);
+
+  fs.writeFile(
+    'seed-tutors.json',
+    JSON.stringify([...tutors, ...users]),
+    () => {}
   );
-})();
+
+  console.log(`Created ${N_USERS} regular users and ${N_TUTORS} tutors`);
+};
+
+seeder();

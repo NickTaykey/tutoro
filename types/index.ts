@@ -24,3 +24,15 @@ export enum SessionStatus {
 }
 
 export type HTTPError = { errorMessage: string; error?: string };
+
+export type TutorFiltersFormFields = {
+  distance: number;
+  name: string;
+  priceMin: number;
+  priceMax: number;
+  subject: string;
+};
+
+export type TutorFilters = TutorFiltersFormFields & {
+  location: [number, number] | null;
+};
