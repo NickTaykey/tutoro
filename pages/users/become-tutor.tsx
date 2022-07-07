@@ -1,9 +1,7 @@
-import type { UserDocument } from '../../models/User';
 import type { GetServerSideProps, NextPage } from 'next';
 import type { SubmitHandler } from 'react-hook-form';
 import type { QueryObject } from '../../types';
 
-import { getUserDocumentObject } from '../../utils/user-casting-helpers';
 import { authOptions } from '../../pages/api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth';
 import connectDB from '../../middleware/mongo-connect';
@@ -17,6 +15,7 @@ import { useRouter } from 'next/router';
 type FormValues = {
   location: string;
   bio: string;
+  price: number;
   subjects: Array<{ subject: string }>;
 };
 
@@ -26,10 +25,12 @@ const BecomeTutorPage: NextPage = () => {
     control,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm<FormValues>({
     defaultValues: {
       location: '',
       bio: '',
+      price: 20,
       subjects: [{ subject: '' }],
     },
   });
@@ -73,6 +74,17 @@ const BecomeTutorPage: NextPage = () => {
             id="location"
             type="text"
             {...register('location', { required: true, maxLength: 50 })}
+          />
+        </fieldset>
+        <fieldset>
+          <h3>${watch('price')}</h3>
+          <label htmlFor="price">How much will you charge per hour?</label>
+          <input
+            id="price"
+            type="range"
+            min={5}
+            max={250}
+            {...register('price', { required: true, min: 5, max: 250 })}
           />
         </fieldset>
         <fieldset>

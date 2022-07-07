@@ -89,11 +89,11 @@ const Page: NextPage<Props> = ({ tutor }) => {
   };
 
   const currentHour =
-    formFields.date.getHours() < 9
+    formFields.date.getHours() < 10
       ? '0' + formFields.date.getHours().toString()
       : formFields.date.getHours().toString();
   const currentMinutes =
-    formFields.date.getMinutes() < 9
+    formFields.date.getMinutes() < 10
       ? '0' + formFields.date.getMinutes().toString()
       : formFields.date.getMinutes().toString();
 
@@ -103,6 +103,7 @@ const Page: NextPage<Props> = ({ tutor }) => {
       <>
         <h1>Book a session with {tutor.fullname}</h1>
         {validationError?.length && <div>{validationError}</div>}
+        <h3>Price: ${tutor.pricePerHour * formFields.hours}</h3>
         <form onSubmit={formSubmitHandler}>
           <fieldset>
             <label htmlFor="subject">Subject</label>

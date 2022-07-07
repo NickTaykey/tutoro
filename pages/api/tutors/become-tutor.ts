@@ -19,11 +19,18 @@ export default async function handler(
 ) {
   ensureHttpMethod(req, res, 'PUT', () => {
     serverSideErrorHandler(req, res, (req, res) => {
-      requireAuth(req, res, async (sessionUser, req, res) => {
+      requireAuth(req, res, 'become a Tutor', async (sessionUser, req, res) => {
         await connectDB();
         mongoErrorHandler(req, res, 'User', async () => {
-          const { bio, subjects, location } = sanitize(req.body);
-          if (bio && subjects.length && location) {
+          const { bio, subjects, location, price } = sanitize(req.body);
+          if (
+            bio &&
+            subjects.length &&
+            location &&
+            price &&
+            Number(price) >= 5 &&
+            Number(price) <= 250
+          ) {
             const response = await geoCodeClient
               .forwardGeocode({ query: location, limit: 1 })
               .send();
@@ -33,12 +40,19 @@ export default async function handler(
             sessionUser.bio = bio;
             sessionUser.subjects = subjects;
             sessionUser.location = location;
+            sessionUser.pricePerHour = price;
             await sessionUser.save();
             return res.status(200).json(sessionUser);
           }
           return res.status(400).json({
             errorMessage: `Provide a valid ${
-              !bio ? 'bio' : !subjects.length ? 'subjects list' : 'location'
+              !bio
+                ? 'bio'
+                : !subjects.length
+                ? 'subjects list'
+                : !price || Number(price) < 5 || Number(price) <= 250
+                ? 'price'
+                : 'location'
             }`,
           });
         });

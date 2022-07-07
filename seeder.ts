@@ -33,6 +33,7 @@ const N_REVIEWS = process.argv.length === 4 ? Number(process.argv[3]) : 2;
       fullname: faker.name.findName(),
       email: faker.internet.email(),
       avatar: faker.internet.avatar(),
+      pricePerHour: isTutor ? Math.trunc(Math.random() * 250) + 5 : 0,
       coordinates: isTutor
         ? [Number(coordinates[0]), Number(coordinates[1])]
         : [],

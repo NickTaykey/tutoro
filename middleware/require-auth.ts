@@ -9,6 +9,7 @@ import User from '../models/User';
 const requireAuth = async (
   req: NextApiRequest,
   res: NextApiResponse,
+  contextMessage: string,
   cb: (
     sessionUser: UserDocument,
     req: NextApiRequest,
@@ -16,20 +17,23 @@ const requireAuth = async (
   ) => void
 ): Promise<unknown> => {
   // === ONLY FOR DEVELOPMENT PORPOSE REMOVE IN PRODUCTION
-  const session = await getServerSession({ req, res }, authOptions);
+  /* const session = await getServerSession({ req, res }, authOptions);
   const users = await findTestingUsers();
   let { user: currentUser } = users.user;
   if (session?.user) {
     const user = await User.findById((session.user as UserDocument)._id);
     return cb(user as UserDocument, req, res);
   }
-  return cb(currentUser as UserDocument, req, res);
-  // ===
+  return cb(currentUser as UserDocument, req, res); */
   // === PRODUCTION CODE
-  /* if (session?.user) return cb(session.user as UserDocumentObject, req, res);
+  const session = await getServerSession({ req, res }, authOptions);
+  if (session?.user?.email) {
+    const user = await User.findById((session.user as UserDocument)._id);
+    return cb(user as UserDocument, req, res);
+  }
   return res.status(403).json({
-    errorMessage: 'You have to be authenticated to create a Review.',
-  }); */
+    errorMessage: `You have to be authenticated to ${contextMessage}.`,
+  });
 };
 
 export default requireAuth;

@@ -17,6 +17,7 @@ export const getUserDocumentObject = (
     bio: user.bio || '',
     location: user.location || '',
     subjects: user.subjects || [],
+    pricePerHour: user.pricePerHour,
     reviews: [],
     createdReviews: [],
     bookedSessions: [],

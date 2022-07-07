@@ -21,7 +21,7 @@ export default async function handler(
 ) {
   ensureHttpMethod(req, res, 'POST', () => {
     serverSideErrorHandler(req, res, (req, res) => {
-      requireAuth(req, res, async (sessionUser, req, res) => {
+      requireAuth(req, res, 'book a Session', async (sessionUser, req, res) => {
         await connectDB();
         mongoErrorHandler(req, res, 'Session', async () => {
           const sanitizedBody = sanitize(req.body);

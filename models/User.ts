@@ -17,6 +17,7 @@ type SessionsArray =
 
 interface UserCoreObject {
   email: string;
+  pricePerHour: number;
   fullname: string;
   isTutor: boolean;
   coordinates: [number, number];
@@ -56,6 +57,7 @@ const sessionsArrayObject = {
 
 const userSchema = new Schema<UserDocument, UserModel>({
   email: { type: String, required: true, unique: true },
+  pricePerHour: { type: Number, default: 0 },
   fullname: { type: String, required: true },
   isTutor: { type: Boolean, default: false },
   reviews: [reviewsArrayObject],
