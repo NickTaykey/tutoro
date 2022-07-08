@@ -23,8 +23,16 @@ export default function handler(
       try {
         mongoErrorHandler(req, res, 'User', async () => {
           let coordinates: number[] | null = null;
-          const { location, subject, name, priceMin, priceMax, distance } =
-            sanitize(req.query);
+          const {
+            location,
+            subject,
+            name,
+            priceMin,
+            priceMax,
+            distance,
+            starsMin,
+            starsMax,
+          } = sanitize(req.query);
           let query: Array<any> = [];
           if (subject) {
             query.push({ subjects: subject.toLowerCase() });
@@ -37,6 +45,12 @@ export default function handler(
           }
           if (+priceMax && +priceMax >= 5 && +priceMax <= 250) {
             query.push({ pricePerHour: { $lte: +priceMax } });
+          }
+          if (+starsMin && +starsMin >= 0 && +starsMin <= 5) {
+            query.push({ avgRating: { $gte: +starsMin } });
+          }
+          if (+priceMax && +priceMax >= 0 && +starsMax <= 5) {
+            query.push({ avgRating: { $lte: +starsMax } });
           }
           if (location && Number(distance)) {
             coordinates = location.split(',').map((s: string) => +s);
