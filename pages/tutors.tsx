@@ -21,7 +21,10 @@ const getPoints = (
         cluster: false,
         ...tutor,
       },
-      geometry: { type: 'Point', coordinates: tutor.coordinates },
+      geometry: {
+        type: 'Point',
+        coordinates: tutor.geometry!.coordinates,
+      },
     })
   ),
 });
@@ -37,19 +40,29 @@ const Home: NextPage<Props> = ({ currentUser, points }) => {
   const [filteredPoints, setFilteredPoints] = useState<PointsCollection | null>(
     null
   );
+  const [geoLocatedUser, setGeoLocatedUser] = useState<[number, number] | null>(
+    null
+  );
 
-  const filterTutorsHandler = (filters: TutorFilters) => {
-    console.log('sent');
-    ApiHelper('/api/tutors/filter', filters, 'GET').then(res => {
-      setFilteredPoints(
-        getPoints(res.map((t: UserDocument) => getUserDocumentObject(t)))
-      );
-    });
+  const filterTutorsHandler = (filters: TutorFilters | null) => {
+    if (filters) {
+      ApiHelper('/api/tutors/filter', filters, 'GET').then(res => {
+        setGeoLocatedUser(res.geoLocatedUser);
+        setFilteredPoints(
+          getPoints(
+            res.tutors.map((t: UserDocument) => getUserDocumentObject(t))
+          )
+        );
+      });
+    } else setFilteredPoints(null);
   };
 
   return points ? (
     <>
       <h1 style={{ textAlign: 'center' }}>HomePage</h1>
+      {filteredPoints && (
+        <h3>Found {filteredPoints.features.length} tutors matching</h3>
+      )}
       <section style={{ display: 'flex' }}>
         <section>
           {/* === ONLY TO SAVE ON MAPBOX LOADS IN DEVELOPMENT */}
@@ -61,16 +74,20 @@ const Home: NextPage<Props> = ({ currentUser, points }) => {
                     properties: currentUser,
                     geometry: {
                       type: 'Point',
-                      coordinates: currentUser.coordinates,
+                      coordinates: currentUser.geometry!.coordinates,
                     },
                   } as TutorObjectGeoJSON)
                 : null
             }
+            geoLocatedUser={geoLocatedUser}
             tutors={filteredPoints ? filteredPoints : points}
           />
         </section>
         <section>
-          <FiltersForm filterTutorsHandler={filterTutorsHandler} />
+          <FiltersForm
+            filterTutorsHandler={filterTutorsHandler}
+            setGeoLocatedUser={setGeoLocatedUser}
+          />
         </section>
       </section>
       <ul>

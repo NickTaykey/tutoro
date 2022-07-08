@@ -7,12 +7,18 @@ import User from './models/User';
 import Session from './models/Session';
 import type { UserDocument } from './models/User';
 import type { ReviewDocument } from './models/Review';
+import fakeCoordinates from './seed-coordinates.json';
 
 dotenv.config({ path: __dirname + '/.env.local' });
 
 const LOCATION_CENTER_COORDINATES: [number, number] = [12.21, 46.14];
 const N_USERS = process.argv.length === 6 ? Number(process.argv[3]) : 1;
-const N_TUTORS = process.argv.length === 6 ? Number(process.argv[5]) : 1;
+const N_TUTORS =
+  process.argv.length === 6
+    ? Number(process.argv[5]) > fakeCoordinates.length
+      ? fakeCoordinates.length
+      : Number(process.argv[5])
+    : 1;
 
 const seeder = async () => {
   faker.setLocale('it');
@@ -48,21 +54,25 @@ const seeder = async () => {
   }
 
   for (let i = 0; i < N_TUTORS; i++) {
-    const coordinates = faker.address.nearbyGPSCoordinate(
+    /* const coordinates = faker.address.nearbyGPSCoordinate(
       LOCATION_CENTER_COORDINATES,
       50,
       true
-    );
+    ); */
+    const coordinates = fakeCoordinates[i];
     const tutor = new User({
       fullname: faker.name.findName(),
       email: faker.internet.email(),
       avatar: faker.internet.avatar(),
       pricePerHour: Math.trunc(Math.random() * 250) + 6,
-      coordinates: [Number(coordinates[0]), Number(coordinates[1])],
       subjects: getRandomSubjects(),
       bio: faker.lorem.lines(1),
       location: faker.lorem.words(2),
       isTutor: true,
+      geometry: {
+        type: 'Point',
+        coordinates: [Number(coordinates[0]), Number(coordinates[1])],
+      },
     });
     tutors.push(tutor as UserDocument);
   }

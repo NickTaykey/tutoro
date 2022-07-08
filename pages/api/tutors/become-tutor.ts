@@ -36,9 +36,14 @@ export default async function handler(
               .send();
             const { coordinates } = response.body.features[0].geometry;
             sessionUser.isTutor = true;
-            sessionUser.coordinates = coordinates as [number, number];
+            sessionUser.geometry = {
+              type: 'Point',
+              coordinates: coordinates as [number, number],
+            };
             sessionUser.bio = bio;
-            sessionUser.subjects = subjects.map((s: string) => s.trim().toLowerCase());
+            sessionUser.subjects = subjects.map((s: string) =>
+              s.trim().toLowerCase()
+            );
             sessionUser.location = location;
             sessionUser.pricePerHour = price;
             await sessionUser.save();

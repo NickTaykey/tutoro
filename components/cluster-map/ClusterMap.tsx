@@ -24,9 +24,14 @@ import type { TutorObjectGeoJSON } from '../../types';
 interface Props {
   tutors: FeatureCollection<Geometry, GeoJsonProperties>;
   authenticatedTutor: TutorObjectGeoJSON | null;
+  geoLocatedUser: [number, number] | null;
 }
 
-const ClusterMap: React.FC<Props> = ({ tutors, authenticatedTutor }) => {
+const ClusterMap: React.FC<Props> = ({
+  tutors,
+  authenticatedTutor,
+  geoLocatedUser,
+}) => {
   const [popupInfo, setPopupInfo] = useState<TutorObjectGeoJSON | null>(null);
   const mapRef = useRef<MapRef | null>(null);
 
@@ -56,10 +61,7 @@ const ClusterMap: React.FC<Props> = ({ tutors, authenticatedTutor }) => {
           reviews: JSON.parse(properties!.reviews),
           createdReviews: JSON.parse(properties!.createdReviews),
         },
-        geometry: {
-          type: 'Point',
-          coordinates: JSON.parse(properties!.coordinates),
-        },
+        geometry: JSON.parse(properties!.geometry),
       } as TutorObjectGeoJSON);
     });
   };
@@ -103,6 +105,14 @@ const ClusterMap: React.FC<Props> = ({ tutors, authenticatedTutor }) => {
           onClick={() => {
             setPopupInfo(authenticatedTutor);
           }}
+        />
+      )}
+      {geoLocatedUser && (
+        <Marker
+          longitude={geoLocatedUser[0]}
+          latitude={geoLocatedUser[1]}
+          anchor="top"
+          color="red"
         />
       )}
       {popupInfo && (

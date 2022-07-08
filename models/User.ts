@@ -20,11 +20,14 @@ interface UserCoreObject {
   pricePerHour: number;
   fullname: string;
   isTutor: boolean;
-  coordinates: [number, number];
   subjects: string[];
   bio: string;
   location: string;
   avatar: string;
+  geometry?: {
+    type: 'Point';
+    coordinates: [number, number];
+  };
 }
 
 interface User extends UserCoreObject {
@@ -68,8 +71,20 @@ const userSchema = new Schema<UserDocument, UserModel>({
   bio: String,
   location: String,
   avatar: String,
-  coordinates: [],
+  geometry: {
+    type: { type: String, enum: ['Point'], default: 'Point' },
+    coordinates: [Number],
+  },
 });
+
+userSchema.pre('save', function (next) {
+  if (!this.isTutor && !this.geometry?.coordinates) {
+    this.geometry = undefined;
+  }
+  next();
+});
+
+userSchema.index({ geometry: '2dsphere' });
 
 export default models.User ||
   model<UserDocument, UserModel>('User', userSchema);

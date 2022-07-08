@@ -5,14 +5,11 @@ import type { ReviewDocument } from '../models/Review';
 export const getUserDocumentObject = (
   user: UserDocument
 ): UserDocumentObject => {
-  return {
+  const userObject: UserDocumentObject = {
     _id: user._id.toString(),
     email: user.email,
     fullname: user.fullname,
     isTutor: user.isTutor,
-    coordinates: user.coordinates.length
-      ? [user.coordinates[0], user.coordinates[1]]
-      : [NaN, NaN],
     avatar: user.avatar,
     bio: user.bio || '',
     location: user.location || '',
@@ -23,6 +20,12 @@ export const getUserDocumentObject = (
     bookedSessions: [],
     requestedSessions: [],
   };
+  if (user.isTutor)
+    userObject.geometry = {
+      type: 'Point',
+      coordinates: [...user.geometry!.coordinates] as [number, number],
+    };
+  return userObject;
 };
 
 export const getReviewDocumentObject = (r: ReviewDocument) => ({

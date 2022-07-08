@@ -28,11 +28,21 @@ export type HTTPError = { errorMessage: string; error?: string };
 export type TutorFiltersFormFields = {
   distance: number;
   name: string;
+  location: string;
   priceMin: number;
   priceMax: number;
+  starsMin: number;
+  starsMax: number;
   subject: string;
 };
 
-export type TutorFilters = TutorFiltersFormFields & {
-  location: [number, number] | null;
+export type TutorFilters = {
+  distance: number;
+  name: string;
+  priceMin: number;
+  priceMax: number;
+  starsMin: number;
+  starsMax: number;
+  subject: string;
+  location: [number, number] | string | null;
 };

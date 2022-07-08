@@ -23,6 +23,7 @@ const TutorPage: React.FC<Props> = ({
 }: Props) => {
   const { status, data } = useSession();
   const { query } = useRouter();
+  console.log(data, status);
   let markup = <h1>404 Tutor not found!</h1>;
   if (tutor && tutor.reviews) {
     markup = (
@@ -39,8 +40,7 @@ const TutorPage: React.FC<Props> = ({
               <>
                 <div>Average rating: {calcAvgRating(reviewsCtx.reviews)}</div>
                 {status === 'authenticated' &&
-                  query.tutorId !==
-                    (data.user as UserDocument)._id.toString() && (
+                  data?.user?.email !== tutor.email && (
                     <ReviewForm
                       type={ReviewFormTypes.Create}
                       tutorId={tutor._id}
