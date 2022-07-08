@@ -1,6 +1,5 @@
 import type { TutorObjectGeoJSON } from '../../types/index';
 import Link from 'next/link';
-import calcAvgRating from '../../utils/calc-avg-rating';
 import { FaStar } from 'react-icons/fa';
 
 interface Props {
@@ -12,7 +11,7 @@ const TutorPopup: React.FC<Props> = ({ popupInfo, authenticatedTutor }) => (
   <section data-testid="popup-container">
     <h2>{popupInfo.properties.fullname}</h2>
     <div>
-      {Array(calcAvgRating(popupInfo.properties.reviews))
+      {Array(popupInfo.properties.avgRating)
         .fill(null)
         .map((_, i) => (
           <FaStar key={i} />

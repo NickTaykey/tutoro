@@ -1,14 +1,12 @@
 import ReviewForm, { ReviewFormTypes } from '../reviews/ReviewForm';
 import ReviewsContextProvider from '../../store/ReviewsProvider';
 import ReviewContext from '../../store/reviews-context';
-import calcAvgRating from '../../utils/calc-avg-rating';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/router';
 import Review from '../reviews/Review';
 import Link from 'next/link';
 
 import type { ReviewDocumentObject } from '../../models/Review';
-import type { UserDocument, UserDocumentObject } from '../../models/User';
+import type { UserDocumentObject } from '../../models/User';
 
 interface Props {
   host: String;
@@ -22,8 +20,6 @@ const TutorPage: React.FC<Props> = ({
   host,
 }: Props) => {
   const { status, data } = useSession();
-  const { query } = useRouter();
-  console.log(data, status);
   let markup = <h1>404 Tutor not found!</h1>;
   if (tutor && tutor.reviews) {
     markup = (
@@ -38,7 +34,7 @@ const TutorPage: React.FC<Props> = ({
           <ReviewContext.Consumer>
             {reviewsCtx => (
               <>
-                <div>Average rating: {calcAvgRating(reviewsCtx.reviews)}</div>
+                <div>Average rating: {tutor.avgRating}</div>
                 {status === 'authenticated' &&
                   data?.user?.email !== tutor.email && (
                     <ReviewForm

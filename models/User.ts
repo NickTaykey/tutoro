@@ -2,6 +2,7 @@ import { Schema, model, models, Types } from 'mongoose';
 import type { Model, ObjectId, Document } from 'mongoose';
 import type { ReviewDocument, ReviewDocumentObject } from './Review';
 import type { SessionDocument, SessionDocumentObject } from './Session';
+import calcAvgRating from '../utils/calc-avg-rating';
 
 type ReviewsArray =
   | ObjectId[]
@@ -24,6 +25,7 @@ interface UserCoreObject {
   bio: string;
   location: string;
   avatar: string;
+  avgRating: number;
   geometry?: {
     type: 'Point';
     coordinates: [number, number];
@@ -31,6 +33,7 @@ interface UserCoreObject {
 }
 
 interface User extends UserCoreObject {
+  calculateAvgRating(): void;
   reviews: ReviewsArray;
   createdReviews: ReviewsArray;
   bookedSessions: SessionsArray;
@@ -49,6 +52,10 @@ export interface UserDocumentObject extends UserCoreObject {
 
 type UserModel = Model<UserDocument>;
 
+interface InstanceMethods {
+  calculateAvgRating(): void;
+}
+
 const reviewsArrayObject = {
   type: Schema.Types.ObjectId,
   ref: 'Review',
@@ -58,7 +65,7 @@ const sessionsArrayObject = {
   ref: 'Session',
 };
 
-const userSchema = new Schema<UserDocument, UserModel>({
+const userSchema = new Schema<UserDocument, UserModel, {}, InstanceMethods>({
   email: { type: String, required: true, unique: true },
   pricePerHour: { type: Number, default: 0 },
   fullname: { type: String, required: true },
@@ -75,6 +82,7 @@ const userSchema = new Schema<UserDocument, UserModel>({
     type: { type: String, enum: ['Point'], default: 'Point' },
     coordinates: [Number],
   },
+  avgRating: { type: Number, default: 0 },
 });
 
 userSchema.pre('save', function (next) {
@@ -83,6 +91,14 @@ userSchema.pre('save', function (next) {
   }
   next();
 });
+
+userSchema.methods.calcAvgRating = async function () {
+  await this.populate('reviews');
+  if (this.reviews.length) {
+    this.avgRating = calcAvgRating(this.reviews as ReviewDocument[]);
+  }
+  await this.save();
+};
 
 userSchema.index({ geometry: '2dsphere' });
 

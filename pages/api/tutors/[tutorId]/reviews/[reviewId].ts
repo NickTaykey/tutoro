@@ -52,7 +52,7 @@ export default async function handler(
                   (reviewId: ObjectId) =>
                     reviewId.toString() !== req.query.reviewId
                 );
-                await Promise.all([user.save(), tutor.save()]);
+                await Promise.all([user.save(), tutor.calcAvgRating()]);
                 res.status(200).json(review.toJSON());
               });
             } else if (req.method === 'PUT') {

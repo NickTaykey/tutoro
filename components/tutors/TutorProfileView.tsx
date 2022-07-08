@@ -15,10 +15,14 @@ const TutorProfileView: React.FC<Props> = (props: Props) => {
   return (
     <>
       <h2>Received Reviews</h2>
-      {!!props.currentUser.reviews.length &&
-        props.currentUser.reviews.map((r: ReviewDocumentObject) => (
-          <Review key={r._id} review={r} viewAsTutor />
-        ))}
+      {!!props.currentUser.reviews.length && (
+        <>
+          <div>Your average rating is {props.currentUser.avgRating}</div>
+          {props.currentUser.reviews.map((r: ReviewDocumentObject) => (
+            <Review key={r._id} review={r} viewAsTutor />
+          ))}
+        </>
+      )}
       {!props.currentUser.reviews.length && (
         <div>You have not been reviewed yet!</div>
       )}

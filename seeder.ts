@@ -8,6 +8,7 @@ import Session from './models/Session';
 import type { UserDocument } from './models/User';
 import type { ReviewDocument } from './models/Review';
 import fakeCoordinates from './seed-coordinates.json';
+import calcAvgRating from './utils/calc-avg-rating';
 
 dotenv.config({ path: __dirname + '/.env.local' });
 
@@ -93,10 +94,10 @@ const seeder = async () => {
     }
   }
 
-  await Promise.all([
-    ...users.map(u => u.save()),
-    ...tutors.map(t => t.save()),
-  ]);
+  tutors.forEach(t => {
+    t.avgRating = calcAvgRating(t.reviews as ReviewDocument[]);
+  });
+  Promise.all([...users.map(u => u.save()), ...tutors.map(t => t.save())]);
 
   fs.writeFile(
     'seed-tutors.json',

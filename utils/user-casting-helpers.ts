@@ -15,6 +15,7 @@ export const getUserDocumentObject = (
     location: user.location || '',
     subjects: user.subjects || [],
     pricePerHour: user.pricePerHour,
+    avgRating: user.avgRating,
     reviews: [],
     createdReviews: [],
     bookedSessions: [],
