@@ -2,7 +2,7 @@ import type { GetServerSideProps, NextPage } from 'next';
 import type { SubmitHandler } from 'react-hook-form';
 import type { QueryObject } from '../../types';
 
-import { authOptions } from '../../pages/api/auth/[...nextauth]';
+import { authOptions } from '../api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth';
 import connectDB from '../../middleware/mongo-connect';
 import findTestingUsers from '../../utils/dev-testing-users';

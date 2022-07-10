@@ -19,7 +19,7 @@ export interface SessionDocumentObject extends Session {
   _id: string;
 }
 
-type SessionModel = Model<SessionModel>;
+type SessionModel = Model<SessionDocument>;
 
 const sessionSchema = new Schema<SessionDocument, SessionModel>({
   subject: { type: String, required: true },

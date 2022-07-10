@@ -66,7 +66,7 @@ const Home: NextPage<Props> = ({ currentUser, points }) => {
       <section style={{ display: 'flex' }}>
         <section>
           {/* === ONLY TO SAVE ON MAPBOX LOADS IN DEVELOPMENT */}
-          <ClusterMap
+          {/* <ClusterMap
             authenticatedTutor={
               currentUser?.isTutor
                 ? ({
@@ -81,7 +81,7 @@ const Home: NextPage<Props> = ({ currentUser, points }) => {
             }
             geoLocatedUser={geoLocatedUser}
             tutors={filteredPoints ? filteredPoints : points}
-          />
+          /> */}
         </section>
         <section>
           <FiltersForm
@@ -90,6 +90,9 @@ const Home: NextPage<Props> = ({ currentUser, points }) => {
           />
         </section>
       </section>
+      <Link href="/users/new-post">
+        How just a question, a doubt, a homework? Post your question.
+      </Link>
       <ul>
         {points.features.map(f => (
           <li key={f.properties?._id}>
@@ -100,6 +103,10 @@ const Home: NextPage<Props> = ({ currentUser, points }) => {
               <br />
               <Link href={`/tutors/${f.properties!._id}/sessions/new`}>
                 Book session
+              </Link>
+              <br />
+              <Link href={`/tutors/${f.properties!._id}/posts/new`}>
+                Ask a question
               </Link>
             </div>
           </li>

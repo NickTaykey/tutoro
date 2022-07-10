@@ -1,6 +1,7 @@
 import type { UserDocument, UserDocumentObject } from '../models/User';
 import type { SessionDocument } from '../models/Session';
 import type { ReviewDocument } from '../models/Review';
+import type { PostDocument } from '../models/Post';
 
 export const getUserDocumentObject = (
   user: UserDocument
@@ -12,11 +13,14 @@ export const getUserDocumentObject = (
     isTutor: user.isTutor,
     avatar: user.avatar,
     bio: user.bio || '',
+    receiveOpenPosts: user.receiveOpenPosts,
     location: user.location || '',
     subjects: user.subjects || [],
     pricePerHour: user.pricePerHour,
     avgRating: user.avgRating,
     reviews: [],
+    posts: [],
+    createdPosts: [],
     createdReviews: [],
     bookedSessions: [],
     requestedSessions: [],
@@ -45,4 +49,18 @@ export const getSessionDocumentObject = (s: SessionDocument) => ({
   _id: s._id.toString(),
   user: getUserDocumentObject(s.user as UserDocument),
   tutor: getUserDocumentObject(s.tutor as UserDocument),
+});
+
+export const getPostDocumentObject = (p: PostDocument) => ({
+  subject: p.subject,
+  description: p.description,
+  createdAt: p.createdAt ? p.createdAt.toDateString() : null,
+  updatedAt: p.updatedAt ? p.updatedAt.toDateString() : null,
+  status: p.status,
+  type: p.type,
+  creator: getUserDocumentObject(p.creator as UserDocument),
+  _id: p._id.toString(),
+  answeredBy: p.answeredBy
+    ? getUserDocumentObject(p.answeredBy as UserDocument)
+    : null,
 });

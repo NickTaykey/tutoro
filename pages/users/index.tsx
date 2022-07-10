@@ -1,6 +1,6 @@
 import TutorProfileView from '../../components/tutors/TutorProfileView';
 import UserProfileView from '../../components/users/UserProfileView';
-import { authOptions } from '../../pages/api/auth/[...nextauth]';
+import { authOptions } from '../api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth';
 import User from '../../models/User';
 
@@ -12,6 +12,7 @@ import {
   getUserDocumentObject,
   getReviewDocumentObject,
   getSessionDocumentObject,
+  getPostDocumentObject,
 } from '../../utils/user-casting-helpers';
 
 interface Props {
@@ -38,6 +39,7 @@ import findTestingUsers from '../../utils/dev-testing-users';
 import { useRouter } from 'next/router';
 import Review from '../../models/Review';
 import Session from '../../models/Session';
+import Post from '../../models/Post';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
   await connectDB();
@@ -103,11 +105,20 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
           model: Session,
           ...populateConfig,
         }),
+        user.populate({
+          path: 'posts',
+          model: Post,
+          populate: [
+            { path: 'answeredBy', model: User },
+            { path: 'creator', model: User },
+          ],
+        }),
       ]);
       currentUser.reviews = user.reviews.map(getReviewDocumentObject);
       currentUser.requestedSessions = user.requestedSessions.map(
         getSessionDocumentObject
       );
+      currentUser.posts = user.posts.map(getPostDocumentObject);
     }
     await Promise.all([
       user.populate({
@@ -120,7 +131,16 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
         ...populateConfig,
         model: Session,
       }),
+      user.populate({
+        path: 'createdPosts',
+        model: Post,
+        populate: [
+          { path: 'answeredBy', model: User },
+          { path: 'creator', model: User },
+        ],
+      }),
     ]);
+    currentUser.createdPosts = user.createdPosts.map(getPostDocumentObject);
     currentUser.createdReviews = user.createdReviews.map(
       getReviewDocumentObject
     );

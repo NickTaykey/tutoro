@@ -9,6 +9,7 @@ import type { UserDocument } from './models/User';
 import type { ReviewDocument } from './models/Review';
 import fakeCoordinates from './seed-coordinates.json';
 import calcAvgRating from './utils/calc-avg-rating';
+import Post from './models/Post';
 
 dotenv.config({ path: __dirname + '/.env.local' });
 
@@ -26,6 +27,7 @@ const seeder = async () => {
   await connectDB();
   await Promise.all([
     User.deleteMany({}),
+    Post.deleteMany({}),
     Review.deleteMany({}),
     Session.deleteMany({}),
   ]);

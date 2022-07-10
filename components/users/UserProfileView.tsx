@@ -2,11 +2,15 @@ import Session from '../sessions/Session';
 import Review from '../reviews/Review';
 import SessionsContextProvider from '../../store/SessionsProvider';
 import SessionsContext from '../../store/sessions-context';
+import PostsContext from '../../store/posts-context';
+import PostsContextProvider from '../../store/PostsProvider';
 
 import type { UserDocumentObject } from '../../models/User';
 import type { ReviewDocumentObject } from '../../models/Review';
 import type { SessionDocumentObject } from '../../models/Session';
+import type { PostDocumentObject } from '../../models/Post';
 import Link from 'next/link';
+import Post from '../posts/Post';
 
 interface Props {
   currentUser: UserDocumentObject;
@@ -15,6 +19,16 @@ interface Props {
 const UserProfileView: React.FC<Props> = (props: Props) => {
   return (
     <>
+      <h2>My Posts</h2>
+      <PostsContextProvider posts={props.currentUser.createdPosts}>
+        <PostsContext.Consumer>
+          {ctx => {
+            return ctx.posts.map((p: PostDocumentObject) => (
+              <Post key={p._id} post={p} viewAsTutor={false} />
+            ));
+          }}
+        </PostsContext.Consumer>
+      </PostsContextProvider>
       <h2>My reviews</h2>
       {props.currentUser.createdReviews.map((r: ReviewDocumentObject) => (
         <Review key={r._id} review={r} viewAsTutor={false} />

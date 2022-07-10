@@ -20,9 +20,15 @@ const TutorPopup: React.FC<Props> = ({ popupInfo, authenticatedTutor }) => (
     <Link href={`/tutors/${popupInfo.properties._id}`}>Learn more</Link>
     <br />
     {!authenticatedTutor && (
-      <Link href={`/tutors/${popupInfo.properties._id}/sessions/new`}>
-        Book session
-      </Link>
+      <>
+        <Link href={`/tutors/${popupInfo.properties._id}/sessions/new`}>
+          Book session
+        </Link>
+        <br />
+        <Link href={`/tutors/${popupInfo.properties._id}/new-post`}>
+          Ask a question
+        </Link>
+      </>
     )}
   </section>
 );

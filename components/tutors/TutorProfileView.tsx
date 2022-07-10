@@ -1,11 +1,15 @@
 import Session from '../sessions/Session';
 import Review from '../reviews/Review';
+import Post from '../posts/Post';
 import SessionsContextProvider from '../../store/SessionsProvider';
 import SessionsContext from '../../store/sessions-context';
 import type { UserDocumentObject } from '../../models/User';
 import type { SessionDocumentObject } from '../../models/Session';
 import type { ReviewDocumentObject } from '../../models/Review';
+import type { PostDocumentObject } from '../../models/Post';
 import { SessionStatus } from '../../types';
+import PostsContextProvider from '../../store/PostsProvider';
+import PostsContext from '../../store/posts-context';
 
 interface Props {
   currentUser: UserDocumentObject;
@@ -26,6 +30,16 @@ const TutorProfileView: React.FC<Props> = (props: Props) => {
       {!props.currentUser.reviews.length && (
         <div>You have not been reviewed yet!</div>
       )}
+      <h2>Posts</h2>
+      <PostsContextProvider posts={props.currentUser.posts}>
+        <PostsContext.Consumer>
+          {ctx => {
+            return ctx.posts.map((p: PostDocumentObject) => (
+              <Post key={p._id} post={p} viewAsTutor={true} />
+            ));
+          }}
+        </PostsContext.Consumer>
+      </PostsContextProvider>
       <h2>Requested sessions</h2>
       <SessionsContextProvider
         sessions={props.currentUser.requestedSessions.filter(

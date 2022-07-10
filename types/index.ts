@@ -46,3 +46,19 @@ export type TutorFilters = {
   subject: string;
   location: [number, number] | string | null;
 };
+
+export type NewPostFormFields = {
+  subject: string;
+  description: string;
+};
+
+export enum PostStatus {
+  ANSWERED = 'answered',
+  NOT_ANSWERED = 'not_answered',
+  CLOSED = 'closed',
+}
+
+export enum PostType {
+  GLOBAL = 'global',
+  SPECIFIC = 'specific',
+}

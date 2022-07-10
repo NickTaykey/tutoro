@@ -1,8 +1,9 @@
 import { Schema, model, models, Types } from 'mongoose';
+import calcAvgRating from '../utils/calc-avg-rating';
 import type { Model, ObjectId, Document } from 'mongoose';
 import type { ReviewDocument, ReviewDocumentObject } from './Review';
 import type { SessionDocument, SessionDocumentObject } from './Session';
-import calcAvgRating from '../utils/calc-avg-rating';
+import type { PostDocument, PostDocumentObject } from './Post';
 
 type ReviewsArray =
   | ObjectId[]
@@ -16,7 +17,14 @@ type SessionsArray =
   | Types.Array<ObjectId>
   | Types.Array<SessionDocument>;
 
+type PostsArray =
+  | ObjectId[]
+  | SessionDocument[]
+  | Types.Array<ObjectId>
+  | Types.Array<PostDocument>;
+
 interface UserCoreObject {
+  receiveOpenPosts: boolean;
   email: string;
   pricePerHour: number;
   fullname: string;
@@ -34,6 +42,8 @@ interface UserCoreObject {
 
 interface User extends UserCoreObject {
   calculateAvgRating(): void;
+  posts: PostsArray;
+  createdPosts: PostsArray;
   reviews: ReviewsArray;
   createdReviews: ReviewsArray;
   bookedSessions: SessionsArray;
@@ -44,6 +54,8 @@ export type UserDocument = User & Document;
 
 export interface UserDocumentObject extends UserCoreObject {
   _id: string;
+  posts: PostDocumentObject[];
+  createdPosts: PostDocumentObject[];
   reviews: ReviewDocumentObject[];
   createdReviews: ReviewDocumentObject[];
   bookedSessions: SessionDocumentObject[];
@@ -64,16 +76,23 @@ const sessionsArrayObject = {
   type: Schema.Types.ObjectId,
   ref: 'Session',
 };
+const postsArrayObject = {
+  type: Schema.Types.ObjectId,
+  ref: 'Post',
+};
 
 const userSchema = new Schema<UserDocument, UserModel, {}, InstanceMethods>({
   email: { type: String, required: true, unique: true },
   pricePerHour: { type: Number, default: 0 },
   fullname: { type: String, required: true },
   isTutor: { type: Boolean, default: false },
+  receiveOpenPosts: { type: Boolean, default: true },
   reviews: [reviewsArrayObject],
   createdReviews: [reviewsArrayObject],
   bookedSessions: [sessionsArrayObject],
   requestedSessions: [sessionsArrayObject],
+  posts: [postsArrayObject],
+  createdPosts: [postsArrayObject],
   subjects: [],
   bio: String,
   location: String,
