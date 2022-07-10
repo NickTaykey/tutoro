@@ -7,11 +7,19 @@ type ContextMethodReturnType = Promise<PostDocumentObject | APIError | {}>;
 interface PostsContextObject {
   posts: PostDocumentObject[];
   deletePost(postId: string): ContextMethodReturnType;
+  updatedPostStatus(postId: string): ContextMethodReturnType;
+  answerPost(postId: string, answer: string): ContextMethodReturnType;
 }
 
 const PostsContext = React.createContext<PostsContextObject>({
   posts: [],
   deletePost(postId: string) {
+    return Promise.resolve({});
+  },
+  updatedPostStatus(postId: string) {
+    return Promise.resolve({});
+  },
+  answerPost(postId: string, answer: string) {
     return Promise.resolve({});
   },
 });

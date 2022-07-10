@@ -10,6 +10,7 @@ interface Post {
   postImages: Array<{ url: string; public_id: string }>;
   answerImages: Array<{ url: string; public_id: string }>;
   status: PostStatus;
+  answer: string;
   createdAt: Date | null;
   updatedAt: Date | null;
   type: PostType;
@@ -35,6 +36,7 @@ const PostSchema = new Schema<PostDocument, PostModel>(
       default: PostStatus.NOT_ANSWERED,
       enum: [PostStatus.ANSWERED, PostStatus.NOT_ANSWERED, PostStatus.CLOSED],
     },
+    answer: { type: String, default: '' },
     answeredBy: { type: Schema.Types.ObjectId, ref: 'User', default: null },
     creator: { type: Schema.Types.ObjectId, ref: 'User' },
     type: { type: String, enum: [PostType.GLOBAL, PostType.SPECIFIC] },

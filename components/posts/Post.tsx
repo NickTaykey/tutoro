@@ -14,6 +14,9 @@ const Post: React.FC<Props> = ({ post, viewAsTutor }) => {
   const deletePostHandler = () => {
     ctx.deletePost(post._id);
   };
+  const updatePostStatusHandler = () => {
+    ctx.updatedPostStatus(post._id);
+  };
   return (
     <article>
       <h4>{post.subject}</h4>
@@ -27,6 +30,11 @@ const Post: React.FC<Props> = ({ post, viewAsTutor }) => {
       <div>
         {!viewAsTutor && (
           <button onClick={deletePostHandler}>Delete post</button>
+        )}
+        {viewAsTutor && (
+          <button onClick={updatePostStatusHandler}>
+            {post.status !== PostStatus.CLOSED ? 'Close' : 'Reopen'} post
+          </button>
         )}
       </div>
     </article>
