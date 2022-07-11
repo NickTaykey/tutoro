@@ -15,7 +15,7 @@ export const getUserDocumentObject = (
     bio: user.bio || '',
     receiveOpenPosts: user.receiveOpenPosts,
     location: user.location || '',
-    subjects: user.subjects || [],
+    subjects: user.subjects && user.subjects.length ? [...user.subjects] : [],
     pricePerHour: user.pricePerHour,
     avgRating: user.avgRating,
     reviews: [],
@@ -34,32 +34,33 @@ export const getUserDocumentObject = (
 };
 
 export const getReviewDocumentObject = (r: ReviewDocument) => ({
-  stars: r.stars,
   _id: r._id.toString(),
+  stars: r.stars,
   text: r.text,
   user: getUserDocumentObject(r.user as UserDocument),
   tutor: getUserDocumentObject(r.tutor as UserDocument),
 });
 
 export const getSessionDocumentObject = (s: SessionDocument) => ({
+  _id: s._id.toString(),
   subject: s.subject,
   topic: s.topic,
   hours: s.hours,
   status: s.status,
-  _id: s._id.toString(),
   user: getUserDocumentObject(s.user as UserDocument),
   tutor: getUserDocumentObject(s.tutor as UserDocument),
 });
 
 export const getPostDocumentObject = (p: PostDocument) => ({
+  _id: p._id.toString(),
   subject: p.subject,
   description: p.description,
-  createdAt: p.createdAt ? p.createdAt.toDateString() : null,
-  updatedAt: p.updatedAt ? p.updatedAt.toDateString() : null,
   status: p.status,
+  answer: p.answer,
   type: p.type,
+  postImages: [],
+  answerImages: [],
   creator: getUserDocumentObject(p.creator as UserDocument),
-  _id: p._id.toString(),
   answeredBy: p.answeredBy
     ? getUserDocumentObject(p.answeredBy as UserDocument)
     : null,

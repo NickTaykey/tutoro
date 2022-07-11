@@ -12,6 +12,7 @@ import PostsContextProvider from '../../store/PostsProvider';
 import PostsContext from '../../store/posts-context';
 
 interface Props {
+  pertinentGlobalPosts: PostDocumentObject[];
   currentUser: UserDocumentObject;
 }
 
@@ -54,6 +55,16 @@ const TutorProfileView: React.FC<Props> = (props: Props) => {
           }}
         </SessionsContext.Consumer>
       </SessionsContextProvider>
+      <h2>Tutor global posts</h2>
+      <PostsContextProvider posts={props.pertinentGlobalPosts}>
+        <PostsContext.Consumer>
+          {ctx => {
+            return ctx.posts.map((p: PostDocumentObject) => (
+              <Post key={p._id} post={p} viewAsTutor={true} />
+            ));
+          }}
+        </PostsContext.Consumer>
+      </PostsContextProvider>
     </>
   );
 };

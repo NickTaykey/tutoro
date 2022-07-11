@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import ApiHelper from '../../utils/api-helper';
 
 interface Props {
-  subjects?: string[];
+  subjects: string[] | null;
 }
 
 const NewPostForm: React.FC<Props> = props => {
@@ -13,7 +13,6 @@ const NewPostForm: React.FC<Props> = props => {
   const {
     register,
     handleSubmit,
-    resetField,
     reset,
     formState: { errors },
   } = useForm<NewPostFormFields>({

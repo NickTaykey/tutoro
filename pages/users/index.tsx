@@ -6,7 +6,7 @@ import User from '../../models/User';
 
 import type { GetServerSideProps, NextPage } from 'next';
 import type { UserDocumentObject } from '../../models/User';
-import type { QueryObject } from '../../types';
+import { QueryObject, PostType, PostStatus } from '../../types';
 
 import {
   getUserDocumentObject,
@@ -17,9 +17,13 @@ import {
 
 interface Props {
   currentUser: UserDocumentObject | null;
+  pertinentGlobalPosts: PostDocumentObject[];
 }
 
-const ProfilePage: NextPage<Props> = ({ currentUser }) => {
+const ProfilePage: NextPage<Props> = ({
+  currentUser,
+  pertinentGlobalPosts,
+}) => {
   const { query } = useRouter();
   if (currentUser) {
     return (
@@ -27,7 +31,12 @@ const ProfilePage: NextPage<Props> = ({ currentUser }) => {
         {query['q'] === 'bc' && <div>Congratulations you are a Tutor now!</div>}
         <h1>Hi, {currentUser.fullname}!</h1>
         <UserProfileView currentUser={currentUser} />
-        {currentUser.isTutor && <TutorProfileView currentUser={currentUser} />}
+        {currentUser.isTutor && (
+          <TutorProfileView
+            currentUser={currentUser}
+            pertinentGlobalPosts={pertinentGlobalPosts}
+          />
+        )}
       </>
     );
   }
@@ -39,7 +48,7 @@ import findTestingUsers from '../../utils/dev-testing-users';
 import { useRouter } from 'next/router';
 import Review from '../../models/Review';
 import Session from '../../models/Session';
-import Post from '../../models/Post';
+import Post, { PostDocument, PostDocumentObject } from '../../models/Post';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
   await connectDB();
@@ -93,34 +102,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
   if (query.email) {
     const user = await User.findOne(query);
     const currentUser = getUserDocumentObject(user);
-    if (user.isTutor) {
-      await Promise.all([
-        user.populate({
-          path: 'reviews',
-          model: Review,
-          ...populateConfig,
-        }),
-        user.populate({
-          path: 'requestedSessions',
-          model: Session,
-          ...populateConfig,
-        }),
-        user.populate({
-          path: 'posts',
-          model: Post,
-          populate: [
-            { path: 'answeredBy', model: User },
-            { path: 'creator', model: User },
-          ],
-        }),
-      ]);
-      currentUser.reviews = user.reviews.map(getReviewDocumentObject);
-      currentUser.requestedSessions = user.requestedSessions.map(
-        getSessionDocumentObject
-      );
-      currentUser.posts = user.posts.map(getPostDocumentObject);
-    }
-    await Promise.all([
+    let promises: Array<Promise<unknown>> = [
       user.populate({
         path: 'createdReviews',
         ...populateConfig,
@@ -139,7 +121,49 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
           { path: 'creator', model: User },
         ],
       }),
-    ]);
+    ];
+    if (user.isTutor) {
+      promises = [
+        Post.find({
+          type: PostType.GLOBAL,
+          status: PostStatus.NOT_ANSWERED,
+          subject: { $in: user.subjects },
+        })
+          .populate({ path: 'creator', model: User })
+          .populate({ path: 'answeredBy', model: User })
+          .exec(),
+        user.populate({
+          path: 'reviews',
+          model: Review,
+          ...populateConfig,
+        }),
+        user.populate({
+          path: 'requestedSessions',
+          model: Session,
+          ...populateConfig,
+        }),
+        user.populate({
+          path: 'posts',
+          model: Post,
+          populate: [
+            { path: 'answeredBy', model: User },
+            { path: 'creator', model: User },
+          ],
+        }),
+        ...promises,
+      ];
+    }
+
+    const [pertinentPosts] = await Promise.all(promises);
+
+    if (user.isTutor) {
+      currentUser.reviews = user.reviews.map(getReviewDocumentObject);
+      currentUser.requestedSessions = user.requestedSessions.map(
+        getSessionDocumentObject
+      );
+      currentUser.posts = user.posts.map(getPostDocumentObject);
+    }
+
     currentUser.createdPosts = user.createdPosts.map(getPostDocumentObject);
     currentUser.createdReviews = user.createdReviews.map(
       getReviewDocumentObject
@@ -147,8 +171,16 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
     currentUser.bookedSessions = user.bookedSessions.map(
       getSessionDocumentObject
     );
+
     return {
-      props: { currentUser },
+      props: {
+        currentUser,
+        pertinentGlobalPosts: user.isTutor
+          ? (pertinentPosts as Array<unknown>).map(p => {
+              return getPostDocumentObject(p as PostDocument);
+            })
+          : [],
+      },
     };
   }
   return {

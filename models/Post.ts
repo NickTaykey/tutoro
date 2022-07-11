@@ -11,8 +11,6 @@ interface Post {
   answerImages: Array<{ url: string; public_id: string }>;
   status: PostStatus;
   answer: string;
-  createdAt: Date | null;
-  updatedAt: Date | null;
   type: PostType;
   creator: ObjectId | UserDocument | UserDocumentObject | string;
   answeredBy: ObjectId | UserDocument | UserDocumentObject | string | null;
@@ -52,10 +50,14 @@ PostSchema.pre('remove', async function () {
   user.createdPosts = user.createdPosts.filter(
     (pid: ObjectId) => pid.toString() !== this._id.toString()
   );
-  tutor.posts = tutor.posts.filter(
-    (pid: ObjectId) => pid.toString() !== this._id.toString()
-  );
-  await Promise.all([tutor.save(), user.save()]);
+  const promises: Array<Promise<UserDocument>> = [user.save()];
+  if (tutor) {
+    tutor.posts = tutor.posts.filter(
+      (pid: ObjectId) => pid.toString() !== this._id.toString()
+    );
+    promises.push(tutor.save());
+  }
+  await Promise.all(promises);
 });
 
 export default models.Post ||

@@ -1,7 +1,7 @@
 import React, { useReducer } from 'react';
 import PostsContext, { APIError } from './posts-context';
 import ApiHelper from '../utils/api-helper';
-import { PostStatus, SessionStatus } from '../types';
+import { PostStatus } from '../types';
 import type { PostDocumentObject } from '../models/Post';
 import { UserDocumentObject } from '../models/User';
 
@@ -60,10 +60,11 @@ const PostsContextProvider: React.FC<{
       value={{
         posts,
         async deletePost(
-          postId: string
+          postId: string,
+          tutorId: string = 'global'
         ): Promise<PostDocumentObject | APIError> {
           const apiResponse = await ApiHelper(
-            `/api/posts/${postId}`,
+            `/api/tutors/${tutorId}/posts/${postId}`,
             null,
             'DELETE'
           );
@@ -76,10 +77,11 @@ const PostsContextProvider: React.FC<{
           return apiResponse;
         },
         async updatedPostStatus(
-          postId: string
+          postId: string,
+          tutorId: string = 'global'
         ): Promise<PostDocumentObject | APIError> {
           const apiResponse = await ApiHelper(
-            `/api/posts/${postId}/status`,
+            `/api/tutors/${tutorId}/posts/${postId}/status`,
             null,
             'PUT'
           );
@@ -93,10 +95,11 @@ const PostsContextProvider: React.FC<{
         },
         async answerPost(
           postId: string,
-          answer: string
+          answer: string,
+          tutorId: string = 'global'
         ): Promise<PostDocumentObject | APIError> {
           const apiResponse = await ApiHelper(
-            `/api/posts/${postId}`,
+            `/api/tutors/${tutorId}/posts/${postId}`,
             { answer },
             'PUT'
           );

@@ -13,7 +13,6 @@ import Post from './models/Post';
 
 dotenv.config({ path: __dirname + '/.env.local' });
 
-const LOCATION_CENTER_COORDINATES: [number, number] = [12.21, 46.14];
 const N_USERS = process.argv.length === 6 ? Number(process.argv[3]) : 1;
 const N_TUTORS =
   process.argv.length === 6

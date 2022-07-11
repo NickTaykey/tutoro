@@ -90,7 +90,7 @@ const Home: NextPage<Props> = ({ currentUser, points }) => {
           />
         </section>
       </section>
-      <Link href="/users/new-post">
+      <Link href="/tutors/global/posts/new">
         How just a question, a doubt, a homework? Post your question.
       </Link>
       <ul>

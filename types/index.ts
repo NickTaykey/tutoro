@@ -47,6 +47,10 @@ export type TutorFilters = {
   location: [number, number] | string | null;
 };
 
+export type AnswerFormFields = {
+  text: string;
+};
+
 export type NewPostFormFields = {
   subject: string;
   description: string;
