@@ -12,10 +12,14 @@
     "seed": "ts-node --project tsconfig.seeder.json seeder.ts --users 2 --tutors 60"
   },
   "dependencies": {
+    "@chakra-ui/react": "^2.2.3",
+    "@emotion/react": "^11.9.3",
+    "@emotion/styled": "^11.9.3",
     "@mapbox/mapbox-sdk": "^0.13.3",
     "@sendgrid/mail": "^7.7.0",
     "@types/mapbox__mapbox-sdk": "^0.13.4",
     "@types/react-datepicker": "^4.4.2",
+    "framer-motion": "^6.4.3",
     "mapbox-gl": "^2.8.2",
     "mongoose": "^6.4.0",
     "next": "12.1.6",

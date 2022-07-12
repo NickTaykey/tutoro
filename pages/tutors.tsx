@@ -9,6 +9,7 @@ import {
 } from '../utils/user-casting-helpers';
 import { signIn, signOut } from 'next-auth/react';
 import Link from 'next/link';
+import { Grid, GridItem, Alert, AlertIcon, Box, Flex } from '@chakra-ui/react';
 
 const getPoints = (
   tutors: UserDocumentObject[]
@@ -58,39 +59,53 @@ const Home: NextPage<Props> = ({ currentUser, points }) => {
   };
 
   return points ? (
-    <>
-      <h1 style={{ textAlign: 'center' }}>HomePage</h1>
+    <Box width="90%" mx="auto">
       {filteredPoints && (
-        <h3>Found {filteredPoints.features.length} tutors matching</h3>
+        <Alert status="success" mt="4">
+          <AlertIcon />
+          Found {filteredPoints.features.length} tutors matching
+        </Alert>
       )}
-      <section style={{ display: 'flex' }}>
-        <section>
-          {/* === ONLY TO SAVE ON MAPBOX LOADS IN DEVELOPMENT */}
-          {/* <ClusterMap
-            authenticatedTutor={
-              currentUser?.isTutor
-                ? ({
-                    type: 'Feature',
-                    properties: currentUser,
-                    geometry: {
-                      type: 'Point',
-                      coordinates: currentUser.geometry!.coordinates,
-                    },
-                  } as TutorObjectGeoJSON)
-                : null
-            }
-            geoLocatedUser={geoLocatedUser}
-            tutors={filteredPoints ? filteredPoints : points}
-          /> */}
-        </section>
-        <section>
+      <Grid
+        templateColumns="repeat(12, 1fr)"
+        templateRows="repeat(12, 1fr)"
+        gap={[4, null, null, 6]}
+        my={4}
+      >
+        <GridItem colSpan={[12, null, null, 8, 9]} rowSpan={[5, null, 12]}>
+          <Flex
+            alignItems={[null, null, null, 'center']}
+            justifyContent={[null, null, null, 'center']}
+            width="100%"
+            height="100%"
+          >
+            <ClusterMap
+              authenticatedTutor={
+                currentUser?.isTutor
+                  ? ({
+                      type: 'Feature',
+                      properties: currentUser,
+                      geometry: {
+                        type: 'Point',
+                        coordinates: currentUser.geometry!.coordinates,
+                      },
+                    } as TutorObjectGeoJSON)
+                  : null
+              }
+              geoLocatedUser={geoLocatedUser}
+              tutors={filteredPoints ? filteredPoints : points}
+            />
+          </Flex>
+        </GridItem>
+        <GridItem colSpan={[12, null, null, 4, 3]} rowSpan={[7, null, 12]}>
           <FiltersForm
             filterTutorsHandler={filterTutorsHandler}
             setGeoLocatedUser={setGeoLocatedUser}
           />
-        </section>
-      </section>
-      <Link href="/tutors/global/posts/new">
+        </GridItem>
+      </Grid>
+
+      {/* <Link href="/tutors/global/posts/new">
         How just a question, a doubt, a homework? Post your question.
       </Link>
       <ul>
@@ -111,9 +126,10 @@ const Home: NextPage<Props> = ({ currentUser, points }) => {
             </div>
           </li>
         ))}
-      </ul>
+      </ul> */}
+
       {/* === */}
-      {!currentUser && <button onClick={() => signIn()}>Sign in</button>}
+      {/* {!currentUser && <button onClick={() => signIn()}>Sign in</button>}
       {currentUser && (
         <>
           <div>{currentUser?.email}</div>
@@ -123,14 +139,14 @@ const Home: NextPage<Props> = ({ currentUser, points }) => {
           </div>
           <button onClick={() => signOut()}>Sign out</button>
         </>
-      )}
-      <div>
-        {/* TEMPORARY LINKS ONLY FOR DEVELOPMENT PORPOSE */}
-        <Link href={`/users/?q=USER-TESTING`}>User profile page</Link>
+      )} */}
+      {/* <div> */}
+      {/* TEMPORARY LINKS ONLY FOR DEVELOPMENT PORPOSE */}
+      {/* <Link href={`/users/?q=USER-TESTING`}>User profile page</Link>
         <br />
         <Link href={`/users/?q=TUTOR-TESTING`}>Tutor profile page</Link>
-      </div>
-    </>
+      </div> */}
+    </Box>
   ) : (
     <h1>Loading map</h1>
   );
