@@ -25,6 +25,7 @@ import {
   NumberInputStepper,
   NumberIncrementStepper,
   NumberDecrementStepper,
+  Spinner,
 } from '@chakra-ui/react';
 
 const FiltersForm: React.FC<Props> = props => {
@@ -70,7 +71,7 @@ const FiltersForm: React.FC<Props> = props => {
   const geoLocalizationHandler = (e: FormEvent) => {
     e.preventDefault();
     if (navigator.geolocation) {
-      setGeolocationFeedback('just a moment...');
+      setGeolocationFeedback('loading');
       navigator.geolocation.getCurrentPosition(
         p => {
           props.setGeoLocatedUser([p.coords.longitude, p.coords.latitude]);
@@ -156,7 +157,18 @@ const FiltersForm: React.FC<Props> = props => {
         </FormControl>
         <FormControl my="4">
           <FormLabel htmlFor="tutor-location">Tutor's location</FormLabel>
-          {geolocationFeedback && <Text>{geolocationFeedback}</Text>}
+          {geolocationFeedback && (
+            <>
+              {geolocationFeedback === 'loading' ? (
+                <Flex my="3">
+                  <Spinner />
+                  <Text ml="3">Geolocation in progress..</Text>
+                </Flex>
+              ) : (
+                geolocationFeedback
+              )}
+            </>
+          )}
           <Flex direction={'column'}>
             <Input id="tutor-location" type="text" {...register('location')} />
             <Button colorScheme="green" mt="2" onClick={geoLocalizationHandler}>

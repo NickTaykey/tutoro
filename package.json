@@ -12,7 +12,7 @@
     "seed": "ts-node --project tsconfig.seeder.json seeder.ts --users 2 --tutors 60"
   },
   "dependencies": {
-    "@chakra-ui/react": "^2.2.3",
+    "@chakra-ui/react": "^2.2.1",
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
     "@mapbox/mapbox-sdk": "^0.13.3",
