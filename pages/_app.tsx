@@ -2,14 +2,21 @@ import '../styles/globals.css';
 import type { AppProps } from 'next/app';
 import { SessionProvider } from 'next-auth/react';
 import { ChakraProvider } from '@chakra-ui/react';
+import Head from 'next/head';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <ChakraProvider>
-      <SessionProvider session={pageProps.session} refetchInterval={0}>
-        <Component {...pageProps} />
-      </SessionProvider>
-    </ChakraProvider>
+    <>
+      <Head>
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <title>Tutoro</title>
+      </Head>
+      <ChakraProvider>
+        <SessionProvider session={pageProps.session} refetchInterval={0}>
+          <Component {...pageProps} />
+        </SessionProvider>
+      </ChakraProvider>
+    </>
   );
 }
 

@@ -80,7 +80,7 @@ const ClusterMap: React.FC<Props> = ({
       onLoad={onMapLoad}
       ref={mapRef}
       style={{ width: '90vw', minHeight: '300px', margin: '0 auto' }}
-      mapStyle="mapbox://styles/mapbox/dark-v9"
+      mapStyle="mapbox://styles/mapbox/streets-v10"
       mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
       testMode={true}
     >

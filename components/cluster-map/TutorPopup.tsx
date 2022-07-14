@@ -17,20 +17,18 @@ interface Props {
 
 const TutorPopup: React.FC<Props> = ({ popupInfo, authenticatedTutor }) => {
   return (
-    <Box data-testid="popup-container">
-      <Heading as="h3" size="md" mt="4">
+    <Box data-testid="popup-container" p="1">
+      <Heading as="h3" size="md" mt="5">
         {popupInfo.properties.fullname}
       </Heading>
-      <Flex justify="space-between" alignItems="baseline" my="1">
-        <Flex justify="start">
-          {Array(popupInfo.properties.avgRating)
-            .fill(null)
-            .map((_, i) => (
-              <FaStar key={i} />
-            ))}
-        </Flex>
-        <Text>{popupInfo.properties.reviews.length} Reviews</Text>
+      <Flex justify="start" my="3">
+        {Array(popupInfo.properties.avgRating)
+          .fill(null)
+          .map((_, i) => (
+            <FaStar key={i} />
+          ))}
       </Flex>
+      <Text mb="3">{popupInfo.properties.reviews.length} Reviews</Text>
       <Box mb="1">
         <Text size="md" fontWeight="bold">
           Subjects
@@ -43,7 +41,7 @@ const TutorPopup: React.FC<Props> = ({ popupInfo, authenticatedTutor }) => {
           )}
         </UnorderedList>
       </Box>
-      <Text fontWeight="bold">
+      <Text fontWeight="bold" my="2">
         <Link href={`/tutors/${popupInfo.properties._id}`}>Learn more</Link>
       </Text>
       {/* <br />

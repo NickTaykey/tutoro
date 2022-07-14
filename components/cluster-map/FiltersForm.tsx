@@ -92,7 +92,7 @@ const FiltersForm: React.FC<Props> = props => {
           Filters
         </Heading>
         <FormControl my="4">
-          <FormLabel htmlFor="tutor-name">Tutor's name</FormLabel>
+          <FormLabel htmlFor="tutor-name">Tutor name</FormLabel>
           <Input
             id="tutor-name"
             type="text"
@@ -147,7 +147,7 @@ const FiltersForm: React.FC<Props> = props => {
           <FormHelperText>Select your star rating range.</FormHelperText>
         </FormControl>
         <FormControl my="4">
-          <FormLabel htmlFor="tutor-subject">Tutor's subject</FormLabel>
+          <FormLabel htmlFor="tutor-subject">Tutor subject</FormLabel>
           <Input
             id="tutor-subject"
             type="text"
@@ -156,7 +156,7 @@ const FiltersForm: React.FC<Props> = props => {
           <FormHelperText>Search Tutor by subject.</FormHelperText>
         </FormControl>
         <FormControl my="4">
-          <FormLabel htmlFor="tutor-location">Tutor's location</FormLabel>
+          <FormLabel htmlFor="tutor-location">Tutor location</FormLabel>
           {geolocationFeedback && (
             <>
               {geolocationFeedback === 'loading' ? (
@@ -178,7 +178,7 @@ const FiltersForm: React.FC<Props> = props => {
           <FormHelperText>Where are you looking for a Tutor?</FormHelperText>
         </FormControl>
         <FormControl my="4">
-          <FormLabel htmlFor="tutor-distance">Tutor's distance</FormLabel>
+          <FormLabel htmlFor="tutor-distance">Tutor distance</FormLabel>
           <NumberInput defaultValue={0}>
             <NumberInputField {...register('distance', { min: 0 })} />
             <NumberInputStepper>

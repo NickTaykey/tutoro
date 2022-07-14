@@ -17,16 +17,35 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { signIn, signOut } from 'next-auth/react';
-import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import Logo from './Logo';
 import { UserDocumentObject } from '../../models/User';
 import { FaArrowRight, FaUserCircle } from 'react-icons/fa';
 import { GiHamburgerMenu } from 'react-icons/gi';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { getProviders, useSession } from 'next-auth/react';
+
+import type { ClientSafeProvider, LiteralUnion } from 'next-auth/react';
+
+import { FcGoogle } from 'react-icons/fc';
+import { GoMarkGithub } from 'react-icons/go';
+import { BuiltInProviderType } from 'next-auth/providers';
+
+type ProvidersList = Record<
+  LiteralUnion<BuiltInProviderType, string>,
+  ClientSafeProvider
+>;
 
 const Navbar: React.FC = () => {
   const { status, data } = useSession();
+  const [providersList, setProvidersList] = useState<ProvidersList | null>(
+    null
+  );
+
+  useEffect(() => {
+    getProviders().then((list: ProvidersList | null) => setProvidersList(list));
+  }, [getProviders]);
+
   const currentUser = data?.user as UserDocumentObject;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = React.useRef(null);
@@ -36,7 +55,7 @@ const Navbar: React.FC = () => {
       rounded="md"
       bg="white"
       position="sticky"
-      top={0}
+      top="0"
       p="2"
       zIndex="200"
       width="100%"
@@ -69,27 +88,29 @@ const Navbar: React.FC = () => {
             <DrawerContent>
               <DrawerCloseButton />
               <DrawerBody>
-                {status === 'unauthenticated' && (
-                  <Flex
-                    alignItems="center"
-                    fontWeight="bold"
-                    fontSize="lg"
-                    color={'blackAlpha.600'}
-                    _hover={{
-                      cursor: 'Pointer',
-                      color: 'blackAlpha.800',
-                    }}
-                    justify="center"
-                    direction="column"
-                    height="100%"
-                    onClick={() => signIn()}
-                  >
-                    <FaUserCircle size="40" />
-                    <Text mx="2" mt="4">
-                      Sign In / Sign Up
-                    </Text>
+                {status === 'unauthenticated' && providersList && (
+                  <Flex height="100%" direction="column" justify="center">
+                    <Heading as="h1" size="xl" textAlign="center" my="4">
+                      Join Tutoro
+                    </Heading>
+                    {Object.values(providersList).map(
+                      (provider: ClientSafeProvider) => {
+                        return (
+                          <Button
+                            width="100%"
+                            key={provider.name}
+                            leftIcon={<FcGoogle size="30" />}
+                            aria-label="Google OAuth Icon"
+                            onClick={() => signIn(provider.id)}
+                          >
+                            Google
+                          </Button>
+                        );
+                      }
+                    )}
                   </Flex>
                 )}
+
                 {status === 'authenticated' && (
                   <Flex
                     alignItems="center"
@@ -126,20 +147,22 @@ const Navbar: React.FC = () => {
           </Drawer>
         </Show>
         <Show breakpoint="(min-width: 768px)">
-          {status === 'unauthenticated' && (
-            <Flex
-              alignItems="center"
-              fontWeight="bold"
-              fontSize="lg"
-              color={'blackAlpha.600'}
-              _hover={{
-                cursor: 'Pointer',
-                color: 'blackAlpha.800',
-              }}
-              onClick={() => signIn()}
-            >
-              <FaUserCircle size="40" />
-              <Text mx="2">Sign In / Sign Up</Text>
+          {status === 'unauthenticated' && providersList && (
+            <Flex alignItems="center">
+              <Heading size="md">Join Tutoro</Heading>
+              {Object.values(providersList).map(
+                (provider: ClientSafeProvider) => {
+                  return (
+                    <IconButton
+                      ml="3"
+                      key={provider.name}
+                      icon={<FcGoogle size="30" />}
+                      aria-label="Google OAuth Icon"
+                      onClick={() => signIn(provider.id)}
+                    />
+                  );
+                }
+              )}
             </Flex>
           )}
           {status === 'authenticated' && (

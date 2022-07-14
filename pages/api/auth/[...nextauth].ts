@@ -10,6 +10,9 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_SECRET!,
     }),
   ],
+  pages: {
+    signIn: '/tutors',
+  },
   secret: process.env.NEXT_PUBLIC_SECRET,
   callbacks: {
     async signIn({ user }) {
