@@ -31,7 +31,7 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
       </PostsContextProvider>
       <h2>My reviews</h2>
       {props.currentUser.createdReviews.map((r: ReviewDocumentObject) => (
-        <Review key={r._id} review={r} viewAsTutor={false} />
+        <Review key={r._id} review={r} deleteUserCreateReviewId={null} />
       ))}
       <h2>My sessions</h2>
       <SessionsContextProvider sessions={props.currentUser.bookedSessions}>

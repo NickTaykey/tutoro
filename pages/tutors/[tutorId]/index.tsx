@@ -1,10 +1,10 @@
 import type { GetServerSideProps, NextPage } from 'next';
 import type { UserDocument, UserDocumentObject } from '../../../models/User';
 
+import { getReviewDocumentObject } from '../../../utils/user-casting-helpers';
 import TutorPage from '../../../components/tutors/TutorPage';
 import User from '../../../models/User';
-import Review from '../../../models/Review';
-import type { ReviewDocument } from '../../../models/Review';
+import Review, { ReviewDocumentObject } from '../../../models/Review';
 
 interface Props {
   host: string;
@@ -38,16 +38,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
     connectDB(),
     getServerSession(context, authOptions),
   ]);
-
-  const getReviewDocumentObject = (r: ReviewDocument) => {
-    return {
-      stars: r.stars,
-      _id: r._id.toString(),
-      text: r.text,
-      user: getUserDocumentObject(r.user as UserDocument),
-      tutor: getUserDocumentObject(r.tutor as UserDocument),
-    };
-  };
   try {
     const [user, userTutor] = await Promise.all([
       User.findOne({ email: session?.user?.email }),
@@ -65,12 +55,15 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
         })
         .exec(),
     ]);
+
     const tutor = getUserDocumentObject(userTutor as UserDocument);
     tutor.reviews = userTutor.reviews.map(getReviewDocumentObject);
-
     if (user) {
       const userCreatedReviews: string[] = user.createdReviews.map(
         (r: mongoose.ObjectId) => r.toString()
+      );
+      tutor.reviews.sort((a: ReviewDocumentObject, b: ReviewDocumentObject) =>
+        userCreatedReviews.includes(a._id) ? -1 : 1
       );
       return {
         props: {

@@ -8,9 +8,7 @@ import {
   DrawerOverlay,
   DrawerContent,
   DrawerCloseButton,
-  DrawerHeader,
   DrawerBody,
-  DrawerFooter,
   Show,
   IconButton,
   Box,
@@ -28,7 +26,6 @@ import { getProviders, useSession } from 'next-auth/react';
 import type { ClientSafeProvider, LiteralUnion } from 'next-auth/react';
 
 import { FcGoogle } from 'react-icons/fc';
-import { GoMarkGithub } from 'react-icons/go';
 import { BuiltInProviderType } from 'next-auth/providers';
 
 type ProvidersList = Record<
@@ -130,7 +127,7 @@ const Navbar: React.FC = () => {
                         _hover={{ cursor: 'pointer' }}
                         my="4"
                       >
-                        Hi, {currentUser.fullname.split(' ')[0]}
+                        Hi, {currentUser?.fullname?.split(' ')[0]}
                       </Text>
                     </Link>
                     <Button
@@ -175,7 +172,7 @@ const Navbar: React.FC = () => {
                   mx="2"
                   _hover={{ cursor: 'pointer' }}
                 >
-                  Hi, {currentUser.fullname.split(' ')[0]}
+                  Hi, {currentUser?.fullname?.split(' ')[0]}
                 </Text>
               </Link>
               <Button

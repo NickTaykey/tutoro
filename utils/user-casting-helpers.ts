@@ -33,13 +33,23 @@ export const getUserDocumentObject = (
   return userObject;
 };
 
-export const getReviewDocumentObject = (r: ReviewDocument) => ({
-  _id: r._id.toString(),
-  stars: r.stars,
-  text: r.text,
-  user: getUserDocumentObject(r.user as UserDocument),
-  tutor: getUserDocumentObject(r.tutor as UserDocument),
-});
+export const getReviewDocumentObject = (r: ReviewDocument) => {
+  const createdAt = new Date(r.createdAt!);
+  const updatedAt = new Date(r.updatedAt!);
+  return {
+    _id: r._id.toString(),
+    stars: r.stars,
+    text: r.text,
+    user: getUserDocumentObject(r.user as UserDocument),
+    tutor: getUserDocumentObject(r.tutor as UserDocument),
+    createdAt: createdAt
+      ? `${createdAt.toLocaleDateString()} ${createdAt.toLocaleTimeString()}`
+      : null,
+    updatedAt: updatedAt
+      ? `${updatedAt.toLocaleDateString()} ${updatedAt.toLocaleTimeString()}`
+      : null,
+  };
+};
 
 export const getSessionDocumentObject = (s: SessionDocument) => ({
   _id: s._id.toString(),

@@ -1,7 +1,8 @@
 import React, { useReducer } from 'react';
 import ReviewContext, { APIError } from './reviews-context';
 import ApiHelper from '../utils/api-helper';
-import type { ReviewDocumentObject } from '../models/Review';
+import type { ReviewDocument, ReviewDocumentObject } from '../models/Review';
+import { getReviewDocumentObject } from '../utils/user-casting-helpers';
 
 type ReviewFieldsArg = { stars: number; text?: string };
 
@@ -18,6 +19,8 @@ interface ReviewAction {
     stars: number;
     text?: string;
     ownerAuthenticated: boolean;
+    createdAt: Date;
+    updatedAt: Date;
   };
 }
 
@@ -27,13 +30,26 @@ function reducer(
 ): ReviewDocumentObject[] {
   switch (action.type) {
     case ReviewActionTypes.ADD:
-      return [{ ...action.payload }, ...prevState] as ReviewDocumentObject[];
+      return [
+        {
+          ...getReviewDocumentObject(
+            action.payload as unknown as ReviewDocument
+          ),
+          ownerAuthenticated: true,
+        },
+        ...prevState,
+      ] as ReviewDocumentObject[];
     case ReviewActionTypes.DELETE:
       return prevState.filter(r => r._id !== action.payload._id);
     case ReviewActionTypes.UPDATE:
       return prevState.map(r =>
         r._id === action.payload._id
-          ? ({ ...action.payload } as ReviewDocumentObject)
+          ? ({
+              ...getReviewDocumentObject(
+                action.payload as unknown as ReviewDocument
+              ),
+              ownerAuthenticated: true,
+            } as ReviewDocumentObject)
           : r
       );
     default:
@@ -62,7 +78,12 @@ const ReviewsContextProvider: React.FC<{
           if (!apiResponse.errorMessage) {
             dispatchReviewAction({
               type: ReviewActionTypes.ADD,
-              payload: { ...apiResponse, ownerAuthenticated: true },
+              payload: {
+                ...apiResponse,
+                ownerAuthenticated: true,
+                createdAt: new Date(apiResponse.createdAt),
+                updatedAt: new Date(apiResponse.updatedAt),
+              },
             });
           }
           return apiResponse;

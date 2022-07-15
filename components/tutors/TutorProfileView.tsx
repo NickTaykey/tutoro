@@ -24,7 +24,7 @@ const TutorProfileView: React.FC<Props> = (props: Props) => {
         <>
           <div>Your average rating is {props.currentUser.avgRating}</div>
           {props.currentUser.reviews.map((r: ReviewDocumentObject) => (
-            <Review key={r._id} review={r} viewAsTutor />
+            <Review key={r._id} review={r} deleteUserCreateReviewId={null} />
           ))}
         </>
       )}

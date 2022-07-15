@@ -145,7 +145,7 @@ const Home: NextPage<Props> = ({ currentUser, points }) => {
 import { authOptions } from './api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth';
 import connectDB from '../middleware/mongo-connect';
-import Review from '../models/Review';
+import Review, { ReviewDocumentObject } from '../models/Review';
 import User from '../models/User';
 import FiltersForm from '../components/cluster-map/FiltersForm';
 import { useState } from 'react';
@@ -177,7 +177,9 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
   const populatedTutorObjects = tutors.map(t => {
     const userObject = getUserDocumentObject(t as UserDocument);
     const reviewDocuments = t.reviews as ReviewDocument[];
-    userObject.reviews = reviewDocuments.map(r => getReviewDocumentObject(r));
+    userObject.reviews = reviewDocuments.map(r =>
+      getReviewDocumentObject(r)
+    ) as ReviewDocumentObject[];
     return userObject;
   });
 

@@ -9,15 +9,24 @@ export enum ReviewFormTypes {
   Edit,
 }
 
+import {
+  FormControl,
+  FormLabel,
+  Textarea,
+  Button,
+  Alert,
+} from '@chakra-ui/react';
+
 type CreateReviewFormProps = {
   type: ReviewFormTypes.Create;
   tutorId: string;
+  addUserCreateReviewId(reviewId: string): void;
 };
 
 type EditReviewFormProps = {
   type: ReviewFormTypes.Edit;
   review: ReviewDocumentObject;
-  hideForm: () => void;
+  hideForm(): void;
 };
 
 const ReviewForm: React.FC<
@@ -43,6 +52,7 @@ const ReviewForm: React.FC<
         setStars(0);
         setText('');
         setErrorAlert('');
+        props.addUserCreateReviewId(apiResponse._id);
         imperativeHandlingRef.current!.reset();
       }
     }
@@ -67,23 +77,22 @@ const ReviewForm: React.FC<
     }
   };
 
-  const formSubmitHandler = async (e: FormEvent) => {
+  const formSubmitHandler = (e: FormEvent) => {
     e.preventDefault();
-    if (props.type === ReviewFormTypes.Create && !stars) {
-      const r = confirm('Are you sure you want to give 0 stars?');
-      if (r) createReviewHandler();
-    } else if (props.type === ReviewFormTypes.Create && stars) {
+    if (props.type === ReviewFormTypes.Create) {
       createReviewHandler();
-    } else if (props.type === ReviewFormTypes.Edit && !stars) {
-      updateReviewHandler();
-    } else if (props.type === ReviewFormTypes.Edit && stars) {
+    } else {
       updateReviewHandler();
     }
   };
 
   return (
     <form onSubmit={formSubmitHandler}>
-      {errorAlert && <div>{errorAlert}</div>}
+      {errorAlert && (
+        <Alert status="error" my="3">
+          {errorAlert}
+        </Alert>
+      )}
       <fieldset>
         <StarRating
           ref={imperativeHandlingRef}
@@ -91,18 +100,22 @@ const ReviewForm: React.FC<
           setStars={setStars}
         />
       </fieldset>
-      <fieldset>
-        <label>
-          (optional) your review
-          <textarea
-            cols={30}
-            rows={10}
-            onChange={e => setText(e.target.value)}
-            value={text}
-          ></textarea>
-        </label>
-      </fieldset>
-      <button type="submit">{isEdit ? 'Update' : 'Post'} review</button>
+      <FormControl>
+        <FormLabel htmlFor="email">
+          Describe your experience (optional)
+        </FormLabel>
+        <Textarea
+          id="text"
+          name="text"
+          value={text}
+          cols={100}
+          rows={5}
+          onChange={e => setText(e.target.value)}
+        />
+      </FormControl>
+      <Button type="submit" colorScheme="blue" my="3">
+        {isEdit ? 'Update' : 'Post'} review
+      </Button>
     </form>
   );
 };
