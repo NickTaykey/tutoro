@@ -9,6 +9,7 @@ import type { ReviewDocumentObject } from '../../models/Review';
 interface Props {
   review: ReviewDocumentObject;
   deleteUserCreateReviewId: ((rid: string) => void) | null;
+  staticView?: boolean;
 }
 
 import {
@@ -16,6 +17,7 @@ import {
   FaTrashAlt,
   FaPencilAlt,
   FaRegTimesCircle,
+  FaExpandArrowsAlt,
 } from 'react-icons/fa';
 import {
   Modal,
@@ -33,16 +35,21 @@ import {
   useDisclosure,
   Button,
 } from '@chakra-ui/react';
+import Link from 'next/link';
 
-const Review: React.FC<Props> = ({ review, deleteUserCreateReviewId }) => {
+const Review: React.FC<Props> = ({
+  review,
+  deleteUserCreateReviewId,
+  staticView,
+}) => {
+  const [showFullText, setShowFullText] = useState<boolean>(false);
   const ctx = useContext(ReviewContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { status } = useSession();
   const [showUpdateForm, setShowUpdateForm] = useState<boolean>(false);
   const { tutor, user } = review;
-  const { _id: tutorId } = tutor as UserDocumentObject;
+  const { _id: tutorId, fullname: tutorFullname } = tutor as UserDocumentObject;
   const { fullname: userFullname, avatar } = user as UserDocumentObject;
-
   const deleteReviewClickHandler = () => {
     if (deleteUserCreateReviewId) {
       deleteUserCreateReviewId(review._id);
@@ -70,7 +77,7 @@ const Review: React.FC<Props> = ({ review, deleteUserCreateReviewId }) => {
         <>
           <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
-            <ModalContent>
+            <ModalContent width="90%">
               <ModalHeader>This action is irreversibile</ModalHeader>
               <ModalCloseButton />
               <ModalFooter>
@@ -83,12 +90,22 @@ const Review: React.FC<Props> = ({ review, deleteUserCreateReviewId }) => {
               </ModalFooter>
             </ModalContent>
           </Modal>
-          <Flex alignItems="center">
-            <Avatar name={userFullname} src={avatar} />
-            <Heading as="h3" size="sm" mx="3">
-              {userFullname}
+          {staticView && (
+            <Heading as="h3" size="sm">
+              {tutorFullname}
             </Heading>
-          </Flex>
+          )}
+          {!staticView && (
+            <Flex
+              justify={staticView ? 'space-between' : 'start'}
+              alignItems="center"
+            >
+              <Avatar name={userFullname} src={avatar} />
+              <Heading as="h3" size="sm" mx="3">
+                {userFullname}
+              </Heading>
+            </Flex>
+          )}
           <Flex justify="space-between" align="center">
             <Flex justify="start" my="3">
               {Array(review.stars ? review.stars : 5)
@@ -101,30 +118,54 @@ const Review: React.FC<Props> = ({ review, deleteUserCreateReviewId }) => {
                   />
                 ))}
             </Flex>
-            <time
-              dateTime={
-                review.updatedAt!.toString() === review.updatedAt!.toString()
-                  ? review.createdAt!.toString()
-                  : review.updatedAt!.toString()
-              }
-              style={{ float: 'right' }}
-            >
-              {review.updatedAt!.toString() === review.updatedAt!.toString()
-                ? review
-                    .createdAt!.toString()
-                    .slice(
-                      0,
-                      review.createdAt!.toString().length === 18 ? -3 : -6
-                    )
-                : review
-                    .updatedAt!.toString()
-                    .slice(
-                      0,
-                      review.updatedAt!.toString().length === 18 ? -3 : -6
-                    )}
-            </time>
+            <Flex alignItems="center">
+              <time
+                dateTime={
+                  review.updatedAt!.toString() === review.updatedAt!.toString()
+                    ? review.createdAt!.toString()
+                    : review.updatedAt!.toString()
+                }
+                style={{ float: 'right' }}
+              >
+                {review.updatedAt!.toString() === review.updatedAt!.toString()
+                  ? review
+                      .createdAt!.toString()
+                      .slice(
+                        0,
+                        review.createdAt!.toString().length === 18 ? -3 : -6
+                      )
+                  : review
+                      .updatedAt!.toString()
+                      .slice(
+                        0,
+                        review.updatedAt!.toString().length === 18 ? -3 : -6
+                      )}
+              </time>
+              {staticView && (
+                <Link href={`/tutors/${tutorId}`} style={{ float: 'left' }}>
+                  <IconButton
+                    ml="3"
+                    aria-label="view tutor page"
+                    icon={<FaExpandArrowsAlt />}
+                  />
+                </Link>
+              )}
+            </Flex>
           </Flex>
-          {review.text && <Text>{review.text}</Text>}
+          {review.text && (
+            <Text mb="3">
+              {showFullText || review.text.length < 100 ? (
+                review.text
+              ) : (
+                <>
+                  {`${review.text.slice(0, 100)} ... `}
+                  <strong onClick={() => setShowFullText(true)}>
+                    View more
+                  </strong>
+                </>
+              )}
+            </Text>
+          )}
           {status === 'authenticated' && review.ownerAuthenticated && (
             <Box mt="2">
               <IconButton

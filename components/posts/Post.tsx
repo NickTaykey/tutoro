@@ -1,10 +1,11 @@
 import { PostDocumentObject } from '../../models/Post';
 import { PostType, PostStatus } from '../../types';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import Link from 'next/link';
 import PostsContext from '../../store/posts-context';
 import { useSession } from 'next-auth/react';
 import { UserDocumentObject } from '../../models/User';
+import { Avatar, Badge, Box, Flex, Heading, Text } from '@chakra-ui/react';
 
 interface Props {
   post: PostDocumentObject;
@@ -28,29 +29,78 @@ const Post: React.FC<Props> = ({ post, viewAsTutor }) => {
   };
   const currentUser = data?.user as unknown as UserDocumentObject;
   const creator = post.creator as UserDocumentObject;
-  const answerdBy = post.answeredBy as UserDocumentObject;
+  const answeredBy = post.answeredBy as UserDocumentObject;
+  const [showFullPostDescription, setShowFullPostDescription] =
+    useState<boolean>(false);
   return (
-    <article>
-      <h4>{post.subject}</h4>
-      <h4>
-        {status !== 'loading' && currentUser.isTutor
-          ? creator.fullname
-          : post.type === PostType.GLOBAL
-          ? 'Global'
-          : answerdBy?.fullname}
-      </h4>
-      <p>{post.description}</p>
-      {status !== 'loading' && post.status === PostStatus.ANSWERED && (
+    <Box shadow="md" borderWidth="1px" p="6" width="100%" borderRadius="md">
+      <Flex direction={['column', 'row']} alignItems="center">
+        {post.type === PostType.SPECIFIC ? (
+          <Avatar src={answeredBy.avatar} name={answeredBy.fullname} />
+        ) : (
+          <Avatar />
+        )}
+        <Heading as="h3" size="md" ml="3" mt={[3, 3, 0, 0, 0]}>
+          {status !== 'loading' && currentUser.isTutor
+            ? creator.fullname
+            : post.type === PostType.GLOBAL
+            ? 'Global'
+            : answeredBy?.fullname}
+        </Heading>
+        <Badge
+          fontSize="0.8em"
+          bg="purple.600"
+          color="white"
+          ml="3"
+          mt={[3, 3, 0, 0, 0]}
+        >
+          {post.subject}
+        </Badge>
+        <Badge
+          fontSize="0.8em"
+          colorScheme={
+            post.status === PostStatus.ANSWERED
+              ? 'green'
+              : post.status === PostStatus.CLOSED
+              ? 'red'
+              : 'gray'
+          }
+          ml="3"
+          mt={[3, 3, 0, 0, 0]}
+        >
+          {post.status === PostStatus.ANSWERED
+            ? 'Approved!'
+            : post.status === PostStatus.CLOSED
+            ? 'Closed'
+            : 'Not answered!'}
+        </Badge>
+      </Flex>
+      <Text my="3">
+        {showFullPostDescription || post.description.length < 100 ? (
+          post.description
+        ) : (
+          <>
+            {`${post.description.slice(0, 100)} ... `}
+            <strong onClick={() => setShowFullPostDescription(true)}>
+              View more
+            </strong>
+          </>
+        )}
+      </Text>
+      <Box>
+        <strong>Date: </strong>
+        <time dateTime={post.createdAt!.toString()}>
+          {post.createdAt!.toString()}
+        </time>
+      </Box>
+      {/* {status !== 'loading' && post.status === PostStatus.ANSWERED && (
         <>
           <div>Answer:</div>
           <div>{post.answer}</div>
           <div>Answered by: {answerdBy.fullname}</div>
         </>
-      )}
-      {status !== 'loading' && post.status === PostStatus.NOT_ANSWERED && (
-        <div>Not answered</div>
-      )}
-      {viewAsTutor &&
+      )} */}
+      {/* {viewAsTutor &&
         status !== 'loading' &&
         post.status !== PostStatus.CLOSED && (
           <Link
@@ -62,8 +112,8 @@ const Post: React.FC<Props> = ({ post, viewAsTutor }) => {
           >
             Answer Post
           </Link>
-        )}
-      {!viewAsTutor &&
+        )} */}
+      {/* {!viewAsTutor &&
         status !== 'loading' &&
         post.status === PostStatus.CLOSED && (
           <div>
@@ -71,25 +121,14 @@ const Post: React.FC<Props> = ({ post, viewAsTutor }) => {
           </div>
         )}
       <div>
-        {!viewAsTutor && (
-          <button onClick={deletePostHandler}>Delete post</button>
-        )}
         {viewAsTutor && post.status !== PostStatus.ANSWERED && (
           <button onClick={updatePostStatusHandler}>
             {post.status !== PostStatus.CLOSED ? 'Close' : 'Reopen'} post
           </button>
         )}
-      </div>
-    </article>
+      </div> */}
+    </Box>
   );
 };
 
 export default Post;
-
-/* 
-- 
-
-
-
-
-*/

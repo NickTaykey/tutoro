@@ -31,7 +31,7 @@ const TutorPopup: React.FC<Props> = ({ popupInfo, authenticatedTutor }) => {
           ))}
       </Flex>
       <Text mb="3">{popupInfo.properties.reviews.length} Reviews</Text>
-      <Box mb="1">
+      <Box mb="3">
         <Text size="md" fontWeight="bold">
           Subjects
         </Text>
@@ -43,23 +43,30 @@ const TutorPopup: React.FC<Props> = ({ popupInfo, authenticatedTutor }) => {
           )}
         </UnorderedList>
       </Box>
-      <Text fontWeight="bold" my="2">
-        <Link href={`/tutors/${popupInfo.properties._id}`}>Learn more</Link>
-      </Text>
-      {!authenticatedTutor && (
-        <VStack>
-          <Button colorScheme="green" size="xs" width="100%">
-            <Link href={`/tutors/${popupInfo.properties._id}/sessions/new`}>
-              Book session
-            </Link>
-          </Button>
-          <Button colorScheme="blue" size="xs" width="100%">
-            <Link href={`/tutors/${popupInfo.properties._id}/new-post`}>
-              Ask a question
-            </Link>
-          </Button>
-        </VStack>
-      )}
+      <VStack>
+        <Button colorScheme="gray" size="xs" width="100%">
+          <Link
+            href={`/tutors/${popupInfo.properties._id}`}
+            style={{ fontWeight: 'bold' }}
+          >
+            Learn more
+          </Link>
+        </Button>
+        {!authenticatedTutor && (
+          <>
+            <Button colorScheme="green" size="xs" width="100%">
+              <Link href={`/tutors/${popupInfo.properties._id}/sessions/new`}>
+                Book session
+              </Link>
+            </Button>
+            <Button colorScheme="blue" size="xs" width="100%">
+              <Link href={`/tutors/${popupInfo.properties._id}/posts/new`}>
+                Ask a question
+              </Link>
+            </Button>
+          </>
+        )}
+      </VStack>
     </Box>
   );
 };

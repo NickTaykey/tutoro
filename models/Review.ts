@@ -7,8 +7,8 @@ export interface Review {
   tutor: ObjectId | UserDocument | UserDocumentObject | string;
   user: ObjectId | UserDocument | UserDocumentObject | string;
   text?: string;
-  createdAt?: Date | string;
-  updatedAt?: Date | string;
+  createdAt?: Date | string | null;
+  updatedAt?: Date | string | null;
 }
 
 export interface ReviewDocumentObject extends Review {

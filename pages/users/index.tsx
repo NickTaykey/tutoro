@@ -24,20 +24,20 @@ const ProfilePage: NextPage<Props> = ({
   currentUser,
   pertinentGlobalPosts,
 }) => {
-  const { query } = useRouter();
   if (currentUser) {
     return (
-      <>
-        {query['q'] === 'bc' && <div>Congratulations you are a Tutor now!</div>}
-        <h1>Hi, {currentUser.fullname}!</h1>
+      <Layout>
+        <Heading as="h1" size="xl" textAlign="center" my="10">
+          Hello, {currentUser.fullname}!
+        </Heading>
         <UserProfileView currentUser={currentUser} />
-        {currentUser.isTutor && (
+        {/* {currentUser.isTutor && (
           <TutorProfileView
-            currentUser={currentUser}
-            pertinentGlobalPosts={pertinentGlobalPosts}
+          currentUser={currentUser}
+          pertinentGlobalPosts={pertinentGlobalPosts}
           />
-        )}
-      </>
+        )} */}
+      </Layout>
     );
   }
   return <h1>You have to be authenticated to visit this page!</h1>;
@@ -49,6 +49,8 @@ import { useRouter } from 'next/router';
 import Review from '../../models/Review';
 import Session from '../../models/Session';
 import Post, { PostDocument, PostDocumentObject } from '../../models/Post';
+import { Box, Heading } from '@chakra-ui/react';
+import Layout from '../../components/global/Layout';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
   await connectDB();

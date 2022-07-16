@@ -199,10 +199,7 @@ const Page: NextPage<Props> = ({ tutor }) => {
                 onChange={hoursChangeHandler}
                 value={formFields.hours}
               >
-                <NumberInputField
-                  id="session-hours"
-                  onChange={e => console.log(e)}
-                />
+                <NumberInputField id="session-hours" />
                 <NumberInputStepper>
                   <NumberIncrementStepper />
                   <NumberDecrementStepper />

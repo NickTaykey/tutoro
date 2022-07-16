@@ -61,7 +61,7 @@ const Navbar: React.FC = () => {
         <Flex alignItems="center">
           <Logo width="80" height="80" />
           <Heading size="xl" fontFamily="itim" ml="1">
-            TUTORO
+            <Link href="/tutors">TUTORO</Link>
           </Heading>
         </Flex>
         <Show breakpoint="(max-width: 767px)">

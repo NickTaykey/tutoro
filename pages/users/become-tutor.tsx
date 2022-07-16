@@ -53,7 +53,7 @@ const BecomeTutorPage: NextPage = () => {
       'PUT'
     );
     if (res.errorMessage) return setApiError(res.errorMessage);
-    return router.replace('/users?q=bc');
+    return router.replace('/users');
   };
 
   return (

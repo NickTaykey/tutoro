@@ -57,21 +57,28 @@ export const getSessionDocumentObject = (s: SessionDocument) => ({
   topic: s.topic,
   hours: s.hours,
   status: s.status,
+  date: new Date(s.date).toLocaleString(),
   user: getUserDocumentObject(s.user as UserDocument),
   tutor: getUserDocumentObject(s.tutor as UserDocument),
 });
 
-export const getPostDocumentObject = (p: PostDocument) => ({
-  _id: p._id.toString(),
-  subject: p.subject,
-  description: p.description,
-  status: p.status,
-  answer: p.answer,
-  type: p.type,
-  postImages: [],
-  answerImages: [],
-  creator: getUserDocumentObject(p.creator as UserDocument),
-  answeredBy: p.answeredBy
-    ? getUserDocumentObject(p.answeredBy as UserDocument)
-    : null,
-});
+export const getPostDocumentObject = (p: PostDocument) => {
+  const createdAt = new Date(p.createdAt!);
+  const updatedAt = new Date(p.updatedAt!);
+  return {
+    _id: p._id.toString(),
+    subject: p.subject,
+    description: p.description,
+    status: p.status,
+    answer: p.answer,
+    type: p.type,
+    postImages: [],
+    answerImages: [],
+    createdAt: createdAt ? createdAt.toLocaleDateString() : null,
+    updatedAt: updatedAt ? updatedAt.toLocaleDateString() : null,
+    creator: getUserDocumentObject(p.creator as UserDocument),
+    answeredBy: p.answeredBy
+      ? getUserDocumentObject(p.answeredBy as UserDocument)
+      : null,
+  };
+};

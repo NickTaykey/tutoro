@@ -14,6 +14,8 @@ interface Post {
   type: PostType;
   creator: ObjectId | UserDocument | UserDocumentObject | string;
   answeredBy: ObjectId | UserDocument | UserDocumentObject | string | null;
+  createdAt?: Date | string | null;
+  updatedAt?: Date | string | null;
 }
 
 export type PostDocument = Post & Document;
@@ -39,7 +41,7 @@ const PostSchema = new Schema<PostDocument, PostModel>(
     creator: { type: Schema.Types.ObjectId, ref: 'User' },
     type: { type: String, enum: [PostType.GLOBAL, PostType.SPECIFIC] },
   },
-  { timestamps: { createdAt: 'created_at' } }
+  { timestamps: { createdAt: 'createdAt' } }
 );
 
 PostSchema.pre('remove', async function () {
