@@ -8,6 +8,8 @@ import {
   Text,
   UnorderedList,
   ListItem,
+  Button,
+  VStack,
 } from '@chakra-ui/react';
 
 interface Props {
@@ -44,18 +46,20 @@ const TutorPopup: React.FC<Props> = ({ popupInfo, authenticatedTutor }) => {
       <Text fontWeight="bold" my="2">
         <Link href={`/tutors/${popupInfo.properties._id}`}>Learn more</Link>
       </Text>
-      {/* <br />
-    {!authenticatedTutor && (
-      <>
-        <Link href={`/tutors/${popupInfo.properties._id}/sessions/new`}>
-          Book session
-        </Link>
-        <br />
-        <Link href={`/tutors/${popupInfo.properties._id}/new-post`}>
-          Ask a question
-        </Link>
-      </>
-    )} */}
+      {!authenticatedTutor && (
+        <VStack>
+          <Button colorScheme="green" size="xs" width="100%">
+            <Link href={`/tutors/${popupInfo.properties._id}/sessions/new`}>
+              Book session
+            </Link>
+          </Button>
+          <Button colorScheme="blue" size="xs" width="100%">
+            <Link href={`/tutors/${popupInfo.properties._id}/new-post`}>
+              Ask a question
+            </Link>
+          </Button>
+        </VStack>
+      )}
     </Box>
   );
 };

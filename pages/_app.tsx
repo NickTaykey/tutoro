@@ -3,6 +3,7 @@ import type { AppProps } from 'next/app';
 import { SessionProvider } from 'next-auth/react';
 import { ChakraProvider } from '@chakra-ui/react';
 import Head from 'next/head';
+import '../styles/react-datepicker.css';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (

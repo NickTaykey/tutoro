@@ -6,8 +6,26 @@ import { getUserDocumentObject } from '../../../../utils/user-casting-helpers';
 import ApiHelper from '../../../../utils/api-helper';
 import User from '../../../../models/User';
 import Review from '../../../../models/Review';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import ReactDatePicker from 'react-datepicker';
+
+import {
+  FormControl,
+  FormLabel,
+  Button,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
+  Textarea,
+  Box,
+  Select,
+  Input,
+  Text,
+  Heading,
+  Flex,
+  Alert,
+} from '@chakra-ui/react';
 
 interface Props {
   tutor: UserDocumentObject | null;
@@ -45,8 +63,23 @@ const Page: NextPage<Props> = ({ tutor }) => {
     }));
   };
 
-  const dateChangeHandler = (date: Date) => {
-    setFormFields(prevState => ({ ...prevState, date: date }));
+  const dateChangeHandler = (date: Date | null) => {
+    if (date) {
+      date.setHours(formFields.date.getHours());
+      date.setMinutes(formFields.date.getMinutes());
+      return setFormFields(prevState => ({ ...prevState, date: date }));
+    }
+    setFormFields(prevState => ({
+      ...prevState,
+      date: new Date(Date.now() + 3.6 * 10 ** 6),
+    }));
+  };
+
+  const hoursChangeHandler = (_: string, hours: number) => {
+    setFormFields(prevState => ({
+      ...prevState,
+      hours,
+    }));
   };
 
   const timeChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,15 +91,21 @@ const Page: NextPage<Props> = ({ tutor }) => {
     });
   };
 
+  const resetFormHandler = () => {
+    setFormFields(DEFAULT_FORM_VALUES);
+    setValidationError(null);
+  };
+
   const formValidator = (): { errorMessage: string } | null => {
-    if (!formFields.hours) return { errorMessage: 'Invalid number of hours' };
+    if (!formFields.hours)
+      return { errorMessage: 'Provide a valid number of hours' };
     if (
       !formFields.date ||
       new Date(Date.now()).getTime() > formFields.date.getTime()
     )
-      return { errorMessage: 'Invalid date' };
+      return { errorMessage: 'Provide a valid date' };
     if (!formFields.topic.length)
-      return { errorMessage: 'Invalid session topic' };
+      return { errorMessage: 'Provide a valid session topic' };
     return null;
   };
 
@@ -100,63 +139,115 @@ const Page: NextPage<Props> = ({ tutor }) => {
   let markup = <h1>404 Tutor not found!</h1>;
   if (tutor && tutor.reviews) {
     markup = (
-      <>
-        <h1>Book a session with {tutor.fullname}</h1>
-        {validationError?.length && <div>{validationError}</div>}
-        <h3>Price: ${tutor.pricePerHour * formFields.hours}</h3>
-        <form onSubmit={formSubmitHandler}>
-          <fieldset>
-            <label htmlFor="subject">Subject</label>
-            <select name="subject" id="subject" onChange={formFieldUpdater}>
-              {tutor.subjects.map(s => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
-          </fieldset>
-          <fieldset>
-            <label htmlFor="topic">Topic</label>
-            <textarea
-              name="topic"
-              id="topic"
-              onChange={formFieldUpdater}
-              value={formFields.topic}
-            />
-          </fieldset>
-          <fieldset>
-            <label htmlFor="hours">How many hours you need?</label>
-            <input
-              type="number"
-              name="hours"
-              id="hours"
-              min={1}
-              max={6}
-              onChange={formFieldUpdater}
-              value={formFields.hours}
-            />
-          </fieldset>
-          <fieldset>
-            <div>When would you like to have this session?</div>
-            <label htmlFor="date">Date</label>
-            <DatePicker
-              id="date"
-              selected={formFields.date}
-              onChange={dateChangeHandler}
-              minDate={new Date(Date.now())}
-            />
-            <label htmlFor="time">Time</label>
-            <input
-              type="time"
-              name="time"
-              id="time"
-              onChange={timeChangeHandler}
-              value={`${currentHour}:${currentMinutes}`}
-            />
-          </fieldset>
-          <button type="submit">Submit request</button>
-        </form>
-      </>
+      <Layout>
+        <Flex
+          height={[null, null, null, '85vh']}
+          width={['90%', null, null, '40%']}
+          mx="auto"
+          my="5"
+          align="center"
+          justify="center"
+          display="flex"
+          direction="column"
+        >
+          <Heading as="h1" size="lg" textAlign="center">
+            Book a session with {tutor.fullname}
+          </Heading>
+          <Heading as="h3" size="md" my="5">
+            Price: ${tutor.pricePerHour * formFields.hours}
+          </Heading>
+          <form onSubmit={formSubmitHandler} style={{ width: '100%' }}>
+            {validationError && (
+              <Alert status="error" mb="5" fontWeight="bold">
+                {validationError}
+              </Alert>
+            )}
+            <FormControl mb="4">
+              <FormLabel htmlFor="session-subject" fontWeight="bold">
+                Subject
+              </FormLabel>
+              <Select
+                id="session-subject"
+                name="subject"
+                onChange={formFieldUpdater}
+              >
+                {tutor.subjects.map(s => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl mb="4">
+              <FormLabel htmlFor="session-topic" fontWeight="bold">
+                Topic of the session
+              </FormLabel>
+              <Textarea
+                id="session-topic"
+                onChange={formFieldUpdater}
+                value={formFields.topic}
+                name="topic"
+              />
+            </FormControl>
+            <FormControl mb="4">
+              <FormLabel htmlFor="session-hours" fontWeight="bold">
+                How many hours do you need?
+              </FormLabel>
+              <NumberInput
+                min={1}
+                max={6}
+                onChange={hoursChangeHandler}
+                value={formFields.hours}
+              >
+                <NumberInputField
+                  id="session-hours"
+                  onChange={e => console.log(e)}
+                />
+                <NumberInputStepper>
+                  <NumberIncrementStepper />
+                  <NumberDecrementStepper />
+                </NumberInputStepper>
+              </NumberInput>
+            </FormControl>
+            <Text mb="3">When would you like to have this session?</Text>
+            <FormControl>
+              <Text fontWeight="bold" mb="2">
+                Date
+              </Text>
+              <Box mb="4">
+                <ReactDatePicker
+                  id="date"
+                  selected={formFields.date}
+                  onChange={dateChangeHandler}
+                  minDate={new Date(Date.now())}
+                />
+              </Box>
+              <FormLabel htmlFor="time" fontWeight="bold">
+                Time
+              </FormLabel>
+              <Input
+                type="time"
+                name="time"
+                id="time"
+                onChange={timeChangeHandler}
+                value={`${currentHour}:${currentMinutes}`}
+              />
+            </FormControl>
+            <Button colorScheme="blue" type="submit" w="100%" mt="3">
+              Submit request
+            </Button>
+            <Button
+              mt="3"
+              colorScheme="red"
+              type="reset"
+              onClick={resetFormHandler}
+              w="100%"
+            >
+              Reset
+            </Button>
+          </form>
+        </Flex>
+      </Layout>
     );
   }
   return markup;
@@ -166,6 +257,7 @@ import { getServerSession } from 'next-auth';
 import connectDB from '../../../../middleware/mongo-connect';
 import { authOptions } from '../../../api/auth/[...nextauth]';
 import { useRouter } from 'next/router';
+import Layout from '../../../../components/global/Layout';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
   const [, session] = await Promise.all([
