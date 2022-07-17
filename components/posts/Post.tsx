@@ -1,7 +1,6 @@
 import { PostDocumentObject } from '../../models/Post';
 import { PostType, PostStatus } from '../../types';
 import { useContext, useState } from 'react';
-import Link from 'next/link';
 import PostsContext from '../../store/posts-context';
 import { useSession } from 'next-auth/react';
 import { UserDocumentObject } from '../../models/User';
@@ -41,7 +40,7 @@ const Post: React.FC<Props> = ({ post, viewAsTutor }) => {
           <Avatar />
         )}
         <Heading as="h3" size="md" ml="3" mt={[3, 3, 0, 0, 0]}>
-          {status !== 'loading' && currentUser.isTutor
+          {status !== 'loading' && viewAsTutor
             ? creator.fullname
             : post.type === PostType.GLOBAL
             ? 'Global'
@@ -93,40 +92,6 @@ const Post: React.FC<Props> = ({ post, viewAsTutor }) => {
           {post.createdAt!.toString()}
         </time>
       </Box>
-      {/* {status !== 'loading' && post.status === PostStatus.ANSWERED && (
-        <>
-          <div>Answer:</div>
-          <div>{post.answer}</div>
-          <div>Answered by: {answerdBy.fullname}</div>
-        </>
-      )} */}
-      {/* {viewAsTutor &&
-        status !== 'loading' &&
-        post.status !== PostStatus.CLOSED && (
-          <Link
-            href={`/tutors/${
-              post.type === PostType.SPECIFIC
-                ? (post.answeredBy as UserDocumentObject)._id
-                : currentUser._id
-            }/posts/${post._id}/answer`}
-          >
-            Answer Post
-          </Link>
-        )} */}
-      {/* {!viewAsTutor &&
-        status !== 'loading' &&
-        post.status === PostStatus.CLOSED && (
-          <div>
-            Closed by {post.type === PostType.GLOBAL ? 'a' : 'the'} Tutor.
-          </div>
-        )}
-      <div>
-        {viewAsTutor && post.status !== PostStatus.ANSWERED && (
-          <button onClick={updatePostStatusHandler}>
-            {post.status !== PostStatus.CLOSED ? 'Close' : 'Reopen'} post
-          </button>
-        )}
-      </div> */}
     </Box>
   );
 };

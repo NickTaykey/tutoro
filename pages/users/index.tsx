@@ -7,6 +7,7 @@ import User from '../../models/User';
 import type { GetServerSideProps, NextPage } from 'next';
 import type { UserDocumentObject } from '../../models/User';
 import { QueryObject, PostType, PostStatus } from '../../types';
+import { FaUserAlt } from 'react-icons/fa';
 
 import {
   getUserDocumentObject,
@@ -15,8 +16,20 @@ import {
   getPostDocumentObject,
 } from '../../utils/user-casting-helpers';
 
+import {
+  Text,
+  Box,
+  Heading,
+  Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionPanel,
+  AccordionIcon,
+  Flex,
+} from '@chakra-ui/react';
+
 interface Props {
-  currentUser: UserDocumentObject | null;
+  currentUser: UserDocumentObject;
   pertinentGlobalPosts: PostDocumentObject[];
 }
 
@@ -24,32 +37,48 @@ const ProfilePage: NextPage<Props> = ({
   currentUser,
   pertinentGlobalPosts,
 }) => {
-  if (currentUser) {
-    return (
-      <Layout>
-        <Heading as="h1" size="xl" textAlign="center" my="10">
-          Hello, {currentUser.fullname}!
-        </Heading>
+  return (
+    <Layout>
+      <Heading as="h1" size="xl" textAlign="center" my={[5, 10]}>
+        Hello, {currentUser.fullname}!
+      </Heading>
+      {currentUser.isTutor ? (
+        <Accordion width={['100%', null, '80%']} mx="auto" allowMultiple>
+          <AccordionItem>
+            <h2>
+              <AccordionButton>
+                <Flex flex="1" textAlign="left">
+                  <Box mr="3">
+                    <FaUserAlt size={25} />
+                  </Box>
+                  <Text fontWeight="bold">User profile</Text>
+                </Flex>
+                <AccordionIcon />
+              </AccordionButton>
+            </h2>
+            <AccordionPanel pb={4}>
+              <UserProfileView currentUser={currentUser} />
+            </AccordionPanel>
+          </AccordionItem>
+          {currentUser.isTutor && (
+            <TutorProfileView
+              currentUser={currentUser}
+              pertinentGlobalPosts={pertinentGlobalPosts}
+            />
+          )}
+        </Accordion>
+      ) : (
         <UserProfileView currentUser={currentUser} />
-        {/* {currentUser.isTutor && (
-          <TutorProfileView
-          currentUser={currentUser}
-          pertinentGlobalPosts={pertinentGlobalPosts}
-          />
-        )} */}
-      </Layout>
-    );
-  }
-  return <h1>You have to be authenticated to visit this page!</h1>;
+      )}
+    </Layout>
+  );
 };
 
 import connectDB from '../../middleware/mongo-connect';
 import findTestingUsers from '../../utils/dev-testing-users';
-import { useRouter } from 'next/router';
 import Review from '../../models/Review';
 import Session from '../../models/Session';
 import Post, { PostDocument, PostDocumentObject } from '../../models/Post';
-import { Box, Heading } from '@chakra-ui/react';
 import Layout from '../../components/global/Layout';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {

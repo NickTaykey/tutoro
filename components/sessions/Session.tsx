@@ -5,7 +5,6 @@ import {
   Heading,
   Text,
   Badge,
-  Button,
   IconButton,
 } from '@chakra-ui/react';
 import { useContext, useState } from 'react';
@@ -47,7 +46,18 @@ const Session: React.FC<Props> = ({ session, viewAsTutor }) => {
   return (
     <Box shadow="md" borderWidth="1px" p="6" width="100%">
       <Flex alignItems="center" direction={['column', 'row']}>
-        <Avatar src={tutor.avatar} name={tutor.fullname} />
+        <Avatar
+          src={
+            viewAsTutor
+              ? (session.user as UserDocumentObject).avatar
+              : tutor.avatar
+          }
+          name={
+            viewAsTutor
+              ? (session.user as UserDocumentObject).avatar
+              : tutor.fullname
+          }
+        />
         <Heading as="h3" size="md" ml="3" mt={[3, 3, 0, 0, 0]}>
           {viewAsTutor ? user.fullname : tutor.fullname}
         </Heading>
@@ -79,7 +89,7 @@ const Session: React.FC<Props> = ({ session, viewAsTutor }) => {
             : 'Not approved!'}
         </Badge>
       </Flex>
-      <Text my="4">
+      <Text my="3">
         {showFullTopic || session.topic.length < 100 ? (
           session.topic
         ) : (
@@ -97,25 +107,26 @@ const Session: React.FC<Props> = ({ session, viewAsTutor }) => {
             .slice(0, session.date.toString().length === 10 ? 10 : 9)}
         </time>
       </Box>
-      <Text>
+      <Text mb="3">
         <strong>Hours: </strong>
         {startHour} - {endHour}
       </Text>
       {session.status === SessionStatus.NOT_APPROVED && viewAsTutor && (
-        <Flex direction={['column', 'row']} justify="stretch" align="stretch">
+        <Flex direction={['column', 'row']}>
           <IconButton
             aria-label="approve session"
             colorScheme="green"
             onClick={approveSessionHandler}
             icon={<FaCheck size={25} />}
-            mb="3"
+            mb="1"
+            mr={[0, 1]}
           />
           <IconButton
             aria-label="reject session"
             colorScheme="red"
             onClick={rejectSessionHandler}
             icon={<FaRegTimesCircle size={25} />}
-            mb="3"
+            mb="1"
           />
         </Flex>
       )}

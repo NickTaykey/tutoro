@@ -9,6 +9,7 @@ import type { UserDocumentObject } from '../../models/User';
 import type { ReviewDocumentObject } from '../../models/Review';
 import type { SessionDocumentObject } from '../../models/Session';
 import type { PostDocumentObject } from '../../models/Post';
+
 import Link from 'next/link';
 import Post from '../posts/Post';
 import {
@@ -31,17 +32,17 @@ interface Props {
 
 const UserProfileView: React.FC<Props> = (props: Props) => {
   return (
-    <Box width={['100%', null, '80%']} mx="auto">
+    <Box width="100%" mx="auto">
       <Tabs isFitted variant="soft-rounded" colorScheme="blue">
-        <TabList mb="1em" width="95%" mx="auto">
-          <Tab fontSize="sm">My posts</Tab>
+        <TabList my="1em" width="95%" mx="auto">
+          <Tab fontSize="sm">Posts</Tab>
           <Tab mx="1" fontSize="sm">
-            My sessions
+            Sessions
           </Tab>
-          <Tab fontSize="sm">My reviews</Tab>
+          <Tab fontSize="sm">Reviews</Tab>
         </TabList>
-        <TabPanels>
-          <TabPanel>
+        <TabPanels height={['55vh', null, null, '45vh']}>
+          <TabPanel height="100%" overflowY="scroll">
             {props.currentUser.createdPosts.length ? (
               <PostsContextProvider posts={props.currentUser.createdPosts}>
                 <PostsContext.Consumer>
@@ -55,14 +56,14 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
                 </PostsContext.Consumer>
               </PostsContextProvider>
             ) : (
-              <Flex justify="center" align="center" height="50vh">
-                <Heading as="h2" size="md">
+              <Flex justify="center" align="center">
+                <Heading as="h2" size="md" textAlign="center">
                   You dont't have any posts for now!
                 </Heading>
               </Flex>
             )}
           </TabPanel>
-          <TabPanel>
+          <TabPanel height="100%" overflowY="scroll" mb="20">
             {props.currentUser.bookedSessions.length ? (
               <SessionsContextProvider
                 sessions={props.currentUser.bookedSessions}
@@ -78,38 +79,40 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
                 </SessionsContext.Consumer>
               </SessionsContextProvider>
             ) : (
-              <Flex justify="center" align="center" height="50vh">
-                <Heading as="h2" size="md">
+              <Flex justify="center" align="center">
+                <Heading as="h2" size="md" textAlign="center">
                   You dont't have any booked sessions for now!
                 </Heading>
               </Flex>
             )}
           </TabPanel>
-          <TabPanel>
-            <VStack>
-              {props.currentUser.createdReviews.map(
-                (r: ReviewDocumentObject) => (
-                  <Box key={r._id} width="100%">
-                    <Review
-                      review={r}
-                      deleteUserCreateReviewId={null}
-                      staticView
-                    />
-                  </Box>
-                )
-              )}
-            </VStack>
+          <TabPanel height="100%" overflowY="scroll" mb="20">
+            {props.currentUser.createdReviews.length ? (
+              <VStack>
+                {props.currentUser.createdReviews.map(
+                  (r: ReviewDocumentObject) => (
+                    <Box key={r._id} width="100%">
+                      <Review
+                        review={r}
+                        deleteUserCreateReviewId={null}
+                        staticView
+                      />
+                    </Box>
+                  )
+                )}
+              </VStack>
+            ) : (
+              <Flex justify="center" align="center">
+                <Heading as="h2" size="md" textAlign="center">
+                  You have written no reviews yet!
+                </Heading>
+              </Flex>
+            )}
           </TabPanel>
         </TabPanels>
       </Tabs>
       {!props.currentUser.isTutor && (
-        <Box
-          my="5"
-          display="flex"
-          width={['100%', null, '80%']}
-          position="fixed"
-          bottom="0px"
-        >
+        <Box my="5" display="flex" width="100%" position="fixed" bottom="0px">
           <Button
             boxShadow="dark-lg"
             colorScheme="pink"
