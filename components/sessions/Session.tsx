@@ -8,7 +8,7 @@ import {
   IconButton,
 } from '@chakra-ui/react';
 import { useContext, useState } from 'react';
-import { FaCheck, FaRegTimesCircle } from 'react-icons/fa';
+import { FaArrowUp, FaCheck, FaRegTimesCircle } from 'react-icons/fa';
 import type { SessionDocumentObject } from '../../models/Session';
 import type { UserDocumentObject } from '../../models/User';
 import SessionsContext from '../../store/sessions-context';
@@ -28,15 +28,27 @@ const Session: React.FC<Props> = ({ session, viewAsTutor }) => {
   user = user as UserDocumentObject;
 
   const approveSessionHandler = () => {
-    ctx.setSessionStatus(session._id, tutorId.toString(), true);
+    ctx.setSessionStatus(
+      session._id,
+      tutorId.toString(),
+      SessionStatus.APPROVED
+    );
   };
 
   const rejectSessionHandler = () => {
-    ctx.setSessionStatus(session._id, tutorId.toString(), false);
+    ctx.setSessionStatus(
+      session._id,
+      tutorId.toString(),
+      SessionStatus.REJECTED
+    );
   };
 
-  const deleteSessionHandler = () => {
-    ctx.deleteSession(session._id, tutorId.toString());
+  const resetSessionHandler = () => {
+    ctx.setSessionStatus(
+      session._id,
+      tutorId.toString(),
+      SessionStatus.NOT_APPROVED
+    );
   };
 
   const date = new Date(session.date);
@@ -58,7 +70,7 @@ const Session: React.FC<Props> = ({ session, viewAsTutor }) => {
               : tutor.fullname
           }
         />
-        <Heading as="h3" size="md" ml="3" mt={[3, 3, 0, 0, 0]}>
+        <Heading as="h3" size="md" ml="3" mt={[3, 0, 0, 0, 0]}>
           {viewAsTutor ? user.fullname : tutor.fullname}
         </Heading>
         <Badge
@@ -66,12 +78,12 @@ const Session: React.FC<Props> = ({ session, viewAsTutor }) => {
           bg="purple.600"
           color="white"
           ml="3"
-          mt={[3, 3, 0, 0, 0]}
+          mt={[3, 0, 0, 0, 0]}
         >
           {session.subject}
         </Badge>
         <Badge
-          mt={[3, 3, 0, 0, 0]}
+          mt={[3, 0, 0, 0, 0]}
           fontSize="0.8em"
           colorScheme={
             session.status === SessionStatus.APPROVED
@@ -111,24 +123,33 @@ const Session: React.FC<Props> = ({ session, viewAsTutor }) => {
         <strong>Hours: </strong>
         {startHour} - {endHour}
       </Text>
-      {session.status === SessionStatus.NOT_APPROVED && viewAsTutor && (
-        <Flex direction={['column', 'row']}>
-          <IconButton
-            aria-label="approve session"
-            colorScheme="green"
-            onClick={approveSessionHandler}
-            icon={<FaCheck size={25} />}
-            mb="1"
-            mr={[0, 1]}
-          />
-          <IconButton
-            aria-label="reject session"
-            colorScheme="red"
-            onClick={rejectSessionHandler}
-            icon={<FaRegTimesCircle size={25} />}
-            mb="1"
-          />
-        </Flex>
+      {viewAsTutor && session.status === SessionStatus.REJECTED && (
+        <IconButton
+          onClick={resetSessionHandler}
+          aria-label="reset session status"
+          colorScheme="blue"
+          icon={<FaArrowUp />}
+        />
+      )}
+      {viewAsTutor && session.status !== SessionStatus.REJECTED && (
+        <IconButton
+          aria-label="reject session"
+          colorScheme="red"
+          onClick={rejectSessionHandler}
+          icon={<FaRegTimesCircle size={25} />}
+          mb={[1, 0]}
+          mr={[0, 1]}
+        />
+      )}
+      {viewAsTutor && session.status === SessionStatus.NOT_APPROVED && (
+        <IconButton
+          aria-label="approve session"
+          colorScheme="green"
+          onClick={approveSessionHandler}
+          icon={<FaCheck size={25} />}
+          mb={[1, 0]}
+          mr={[0, 1]}
+        />
       )}
     </Box>
   );

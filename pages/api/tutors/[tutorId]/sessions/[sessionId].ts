@@ -93,37 +93,36 @@ export default async function handler(
                 (id: ObjectId) => id.toString() === req.query.sessionId
               );
               if (sessionRegisteredOnTutor) {
-                const isSessionApproved = Boolean(sanitize(req.body).approve);
-                session.status = isSessionApproved
-                  ? SessionStatus.APPROVED
-                  : SessionStatus.REJECTED;
-                const emailMessage = {
-                  to: user.email,
-                  from: 'authteam.tutorbookingapp@gmail.com',
-                  subject: isSessionApproved
-                    ? `the Tutor you chose: ${tutor.fullname} accepted your session request!`
-                    : `Unfortunately the Tutor you chose: ${tutor.fullname} rejected your session request!`,
-                  html: `${
-                    !isSessionApproved
-                      ? "<h2>Don't worry you can still find many tutors who are willing to help You!</h2>"
-                      : ''
-                  }
-                  <div><u>Details of the session</u></div>
-                  <div><strong>Subject:<strong> ${session.subject}</div>
-                  <div><strong>Topic:<strong></div>
-                  <p>${session.topic}</p>
-                  <div><strong>Scheduled date:<strong> ${session.date}</div>
-                  <div><a href="http://${
-                    req.headers.host
-                  }/tutors">Visit Tutoro Home page</a> To find the best tutors for You!`.replace(
-                    /			/g,
-                    ''
-                  ),
-                };
-                await Promise.all([
-                  session.save(),
-                  // sgMail.send(emailMessage)
-                ]);
+                session.status = sanitize(req.body).newStatus;
+                const promises: Promise<unknown>[] = [session.save()];
+                if (session.status !== SessionStatus.NOT_APPROVED) {
+                  const emailMessage = {
+                    to: user.email,
+                    from: 'authteam.tutorbookingapp@gmail.com',
+                    subject:
+                      session.status === SessionStatus.APPROVED
+                        ? `the Tutor you chose: ${tutor.fullname} accepted your session request!`
+                        : `Unfortunately the Tutor you chose: ${tutor.fullname} rejected your session request!`,
+                    html: `${
+                      session.status === SessionStatus.REJECTED
+                        ? "<h2>Don't worry you can still find many tutors who are willing to help You!</h2>"
+                        : ''
+                    }
+                    <div><u>Details of the session</u></div>
+                    <div><strong>Subject:<strong> ${session.subject}</div>
+                    <div><strong>Topic:<strong></div>
+                    <p>${session.topic}</p>
+                    <div><strong>Scheduled date:<strong> ${session.date}</div>
+                    <div><a href="http://${
+                      req.headers.host
+                    }/tutors">Visit Tutoro Home page</a> To find the best tutors for You!`.replace(
+                      /			/g,
+                      ''
+                    ),
+                  };
+                  promises.push(sgMail.send(emailMessage));
+                }
+                await Promise.all(promises);
                 return res.status(200).json(session.toObject());
               }
               return res.status(403).json({

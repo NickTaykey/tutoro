@@ -7,7 +7,7 @@ import type { UserDocumentObject } from '../../models/User';
 import type { SessionDocumentObject } from '../../models/Session';
 import type { ReviewDocumentObject } from '../../models/Review';
 import type { PostDocumentObject } from '../../models/Post';
-import { SessionStatus } from '../../types';
+import { PostStatus, SessionStatus } from '../../types';
 import PostsContextProvider from '../../store/PostsProvider';
 import PostsContext from '../../store/posts-context';
 import {
@@ -43,6 +43,27 @@ interface Props {
 }
 
 const TutorProfileView: React.FC<Props> = (props: Props) => {
+  const { requestedSessions } = props.currentUser;
+  const getApprovedSessions = (sessions: SessionDocumentObject[]) => {
+    return sessions.filter(s => s.status === SessionStatus.APPROVED);
+  };
+  const getNotApprovedSessions = (sessions: SessionDocumentObject[]) => {
+    return sessions.filter(s => s.status === SessionStatus.NOT_APPROVED);
+  };
+  const getRejectedSessions = (sessions: SessionDocumentObject[]) => {
+    return sessions.filter(s => s.status === SessionStatus.REJECTED);
+  };
+  const { posts } = props.currentUser;
+  const getAnsweredPosts = (posts: PostDocumentObject[]) => {
+    return posts.filter(p => p.status === PostStatus.ANSWERED);
+  };
+  const getClosedPosts = (posts: PostDocumentObject[]) => {
+    return posts.filter(p => p.status === PostStatus.CLOSED);
+  };
+  const getNotAnsweredPosts = (posts: PostDocumentObject[]) => {
+    return posts.filter(p => p.status === PostStatus.NOT_ANSWERED);
+  };
+
   return (
     <>
       <AccordionItem>
@@ -105,30 +126,86 @@ const TutorProfileView: React.FC<Props> = (props: Props) => {
               </Tab>
               <Tab fontSize="sm">Reviews</Tab>
             </TabList>
-            <TabPanels height={['55vh', null, null, '45vh']}>
-              <TabPanel height="100%" overflowY="scroll">
-                {props.currentUser.posts.length ? (
-                  <PostsContextProvider posts={props.currentUser.posts}>
+            <TabPanels height={['55vh', null, null, '400px']}>
+              <TabPanel height="100%">
+                <Tabs isFitted variant="soft-rounded" height="100%">
+                  <TabList mb="1em">
+                    <Tab
+                      color="gray"
+                      _selected={{ bg: 'gray.100', color: 'gray' }}
+                    >
+                      <FaHourglassHalf size="25" />
+                    </Tab>
+                    <Tab color="green" _selected={{ bg: 'green.100' }}>
+                      <FaCheckCircle size="25" />
+                    </Tab>
+                    <Tab color="red.500" _selected={{ bg: 'red.100' }}>
+                      <FaTimesCircle size="25" />
+                    </Tab>
+                  </TabList>
+                  <PostsContextProvider posts={posts}>
                     <PostsContext.Consumer>
-                      {ctx => (
-                        <VStack>
-                          {ctx.posts.map((p: PostDocumentObject) => (
-                            <Post key={p._id} post={p} viewAsTutor />
-                          ))}
-                        </VStack>
+                      {({ posts }) => (
+                        <TabPanels overflowY="auto" height="90%">
+                          <TabPanel>
+                            {getNotAnsweredPosts(posts).length ? (
+                              <VStack>
+                                {getNotAnsweredPosts(posts).map(
+                                  (p: PostDocumentObject) => (
+                                    <Post key={p._id} post={p} viewAsTutor />
+                                  )
+                                )}
+                              </VStack>
+                            ) : (
+                              <Flex justify="center" align="center">
+                                <Heading as="h2" size="md" textAlign="center">
+                                  No Posts waiting to be answered!
+                                </Heading>
+                              </Flex>
+                            )}
+                          </TabPanel>
+                          <TabPanel>
+                            {getAnsweredPosts(posts).length ? (
+                              <VStack>
+                                {getAnsweredPosts(posts).map(
+                                  (p: PostDocumentObject) => (
+                                    <Post key={p._id} post={p} viewAsTutor />
+                                  )
+                                )}
+                              </VStack>
+                            ) : (
+                              <Flex justify="center" align="center">
+                                <Heading as="h2" size="md" textAlign="center">
+                                  No answered posts!
+                                </Heading>
+                              </Flex>
+                            )}
+                          </TabPanel>
+                          <TabPanel>
+                            {getClosedPosts(posts).length ? (
+                              <VStack>
+                                {getClosedPosts(posts).map(
+                                  (p: PostDocumentObject) => (
+                                    <Post key={p._id} post={p} viewAsTutor />
+                                  )
+                                )}
+                              </VStack>
+                            ) : (
+                              <Flex justify="center" align="center">
+                                <Heading as="h2" size="md" textAlign="center">
+                                  No closed posts!
+                                </Heading>
+                              </Flex>
+                            )}
+                          </TabPanel>
+                        </TabPanels>
                       )}
                     </PostsContext.Consumer>
                   </PostsContextProvider>
-                ) : (
-                  <Flex justify="center" align="center">
-                    <Heading as="h2" size="md" textAlign="center">
-                      You don't have any posts for now!
-                    </Heading>
-                  </Flex>
-                )}
+                </Tabs>
               </TabPanel>
               <TabPanel height="100%">
-                {props.currentUser.requestedSessions.length ? (
+                {requestedSessions.length ? (
                   <Tabs isFitted variant="soft-rounded" height="100%">
                     <TabList mb="1em">
                       <Tab
@@ -144,20 +221,36 @@ const TutorProfileView: React.FC<Props> = (props: Props) => {
                         <FaTimesCircle size="25" />
                       </Tab>
                     </TabList>
-                    <TabPanels overflowY="scroll" height="90%">
-                      <TabPanel>
-                        {props.currentUser.requestedSessions.filter(
-                          s => s.status === SessionStatus.NOT_APPROVED
-                        ).length ? (
-                          <VStack>
-                            <SessionsContextProvider
-                              sessions={props.currentUser.requestedSessions.filter(
-                                s => s.status === SessionStatus.NOT_APPROVED
+                    <SessionsContextProvider sessions={requestedSessions}>
+                      <SessionsContext.Consumer>
+                        {({ sessions: requestedSessions }) => (
+                          <TabPanels overflowY="auto" height="90%">
+                            <TabPanel>
+                              {getNotApprovedSessions(requestedSessions)
+                                .length ? (
+                                <VStack>
+                                  {getNotApprovedSessions(
+                                    requestedSessions
+                                  ).map((s: SessionDocumentObject) => (
+                                    <Session
+                                      key={s._id}
+                                      session={s}
+                                      viewAsTutor
+                                    />
+                                  ))}
+                                </VStack>
+                              ) : (
+                                <Flex justify="center" align="center">
+                                  <Heading as="h2" size="md" textAlign="center">
+                                    No sessions waiting to be approved!
+                                  </Heading>
+                                </Flex>
                               )}
-                            >
-                              <SessionsContext.Consumer>
-                                {ctx => {
-                                  return ctx.sessions.map(
+                            </TabPanel>
+                            <TabPanel>
+                              {getApprovedSessions(requestedSessions).length ? (
+                                <VStack>
+                                  {getApprovedSessions(requestedSessions).map(
                                     (s: SessionDocumentObject) => (
                                       <Session
                                         key={s._id}
@@ -165,32 +258,20 @@ const TutorProfileView: React.FC<Props> = (props: Props) => {
                                         viewAsTutor
                                       />
                                     )
-                                  );
-                                }}
-                              </SessionsContext.Consumer>
-                            </SessionsContextProvider>
-                          </VStack>
-                        ) : (
-                          <Flex justify="center" align="center">
-                            <Heading as="h2" size="md" textAlign="center">
-                              No sessions waiting to be approved!
-                            </Heading>
-                          </Flex>
-                        )}
-                      </TabPanel>
-                      <TabPanel>
-                        {props.currentUser.requestedSessions.filter(
-                          s => s.status === SessionStatus.APPROVED
-                        ).length ? (
-                          <VStack>
-                            <SessionsContextProvider
-                              sessions={props.currentUser.requestedSessions.filter(
-                                s => s.status === SessionStatus.APPROVED
+                                  )}
+                                </VStack>
+                              ) : (
+                                <Flex justify="center" align="center">
+                                  <Heading as="h2" size="md" textAlign="center">
+                                    No approved sessions!
+                                  </Heading>
+                                </Flex>
                               )}
-                            >
-                              <SessionsContext.Consumer>
-                                {ctx => {
-                                  return ctx.sessions.map(
+                            </TabPanel>
+                            <TabPanel>
+                              {getRejectedSessions(requestedSessions).length ? (
+                                <VStack>
+                                  {getRejectedSessions(requestedSessions).map(
                                     (s: SessionDocumentObject) => (
                                       <Session
                                         key={s._id}
@@ -198,53 +279,20 @@ const TutorProfileView: React.FC<Props> = (props: Props) => {
                                         viewAsTutor
                                       />
                                     )
-                                  );
-                                }}
-                              </SessionsContext.Consumer>
-                            </SessionsContextProvider>
-                          </VStack>
-                        ) : (
-                          <Flex justify="center" align="center">
-                            <Heading as="h2" size="md" textAlign="center">
-                              No approved sessions!
-                            </Heading>
-                          </Flex>
-                        )}
-                      </TabPanel>
-                      <TabPanel>
-                        {props.currentUser.requestedSessions.filter(
-                          s => s.status === SessionStatus.REJECTED
-                        ).length ? (
-                          <VStack>
-                            <SessionsContextProvider
-                              sessions={props.currentUser.requestedSessions.filter(
-                                s => s.status === SessionStatus.REJECTED
+                                  )}
+                                </VStack>
+                              ) : (
+                                <Flex justify="center" align="center">
+                                  <Heading as="h2" size="md" textAlign="center">
+                                    No rejected sessions!
+                                  </Heading>
+                                </Flex>
                               )}
-                            >
-                              <SessionsContext.Consumer>
-                                {ctx => {
-                                  return ctx.sessions.map(
-                                    (s: SessionDocumentObject) => (
-                                      <Session
-                                        key={s._id}
-                                        session={s}
-                                        viewAsTutor
-                                      />
-                                    )
-                                  );
-                                }}
-                              </SessionsContext.Consumer>
-                            </SessionsContextProvider>
-                          </VStack>
-                        ) : (
-                          <Flex justify="center" align="center">
-                            <Heading as="h2" size="md" textAlign="center">
-                              No rejected sessions!
-                            </Heading>
-                          </Flex>
+                            </TabPanel>
+                          </TabPanels>
                         )}
-                      </TabPanel>
-                    </TabPanels>
+                      </SessionsContext.Consumer>
+                    </SessionsContextProvider>
                   </Tabs>
                 ) : (
                   <Flex justify="center" align="center">
@@ -254,7 +302,7 @@ const TutorProfileView: React.FC<Props> = (props: Props) => {
                   </Flex>
                 )}
               </TabPanel>
-              <TabPanel height="100%" overflowY="scroll">
+              <TabPanel height="100%" overflowY="auto">
                 {props.currentUser.createdReviews.length ? (
                   <VStack>
                     {props.currentUser.reviews.map(

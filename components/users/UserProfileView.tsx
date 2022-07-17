@@ -41,8 +41,8 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
           </Tab>
           <Tab fontSize="sm">Reviews</Tab>
         </TabList>
-        <TabPanels height={['55vh', null, null, '45vh']}>
-          <TabPanel height="100%" overflowY="scroll">
+        <TabPanels height={['55vh', null, null, '400px']}>
+          <TabPanel height="100%" overflowY="auto">
             {props.currentUser.createdPosts.length ? (
               <PostsContextProvider posts={props.currentUser.createdPosts}>
                 <PostsContext.Consumer>
@@ -63,7 +63,7 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
               </Flex>
             )}
           </TabPanel>
-          <TabPanel height="100%" overflowY="scroll" mb="20">
+          <TabPanel height="100%" overflowY="auto">
             {props.currentUser.bookedSessions.length ? (
               <SessionsContextProvider
                 sessions={props.currentUser.bookedSessions}
@@ -86,7 +86,7 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
               </Flex>
             )}
           </TabPanel>
-          <TabPanel height="100%" overflowY="scroll" mb="20">
+          <TabPanel height="100%" overflowY="auto">
             {props.currentUser.createdReviews.length ? (
               <VStack>
                 {props.currentUser.createdReviews.map(

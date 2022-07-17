@@ -4,7 +4,16 @@ import { useContext, useState } from 'react';
 import PostsContext from '../../store/posts-context';
 import { useSession } from 'next-auth/react';
 import { UserDocumentObject } from '../../models/User';
-import { Avatar, Badge, Box, Flex, Heading, Text } from '@chakra-ui/react';
+import {
+  Avatar,
+  Badge,
+  Box,
+  Flex,
+  Heading,
+  IconButton,
+  Text,
+} from '@chakra-ui/react';
+import { FaArrowUp, FaPencilAlt, FaTimesCircle } from 'react-icons/fa';
 
 interface Props {
   post: PostDocumentObject;
@@ -26,6 +35,7 @@ const Post: React.FC<Props> = ({ post, viewAsTutor }) => {
       post.answeredBy ? (post.answeredBy as UserDocumentObject)._id : 'global'
     );
   };
+
   const currentUser = data?.user as unknown as UserDocumentObject;
   const creator = post.creator as UserDocumentObject;
   const answeredBy = post.answeredBy as UserDocumentObject;
@@ -34,12 +44,14 @@ const Post: React.FC<Props> = ({ post, viewAsTutor }) => {
   return (
     <Box shadow="md" borderWidth="1px" p="6" width="100%" borderRadius="md">
       <Flex direction={['column', 'row']} alignItems="center">
-        {post.type === PostType.SPECIFIC ? (
+        {post.type === PostType.SPECIFIC && !viewAsTutor ? (
           <Avatar src={answeredBy.avatar} name={answeredBy.fullname} />
+        ) : viewAsTutor ? (
+          <Avatar src={creator.avatar} name={creator.fullname} />
         ) : (
           <Avatar />
         )}
-        <Heading as="h3" size="md" ml="3" mt={[3, 3, 0, 0, 0]}>
+        <Heading as="h3" size="md" ml="3" mt={[3, 0, 0, 0, 0]}>
           {status !== 'loading' && viewAsTutor
             ? creator.fullname
             : post.type === PostType.GLOBAL
@@ -51,7 +63,7 @@ const Post: React.FC<Props> = ({ post, viewAsTutor }) => {
           bg="purple.600"
           color="white"
           ml="3"
-          mt={[3, 3, 0, 0, 0]}
+          mt={[3, 0, 0, 0, 0]}
         >
           {post.subject}
         </Badge>
@@ -65,7 +77,7 @@ const Post: React.FC<Props> = ({ post, viewAsTutor }) => {
               : 'gray'
           }
           ml="3"
-          mt={[3, 3, 0, 0, 0]}
+          mt={[3, 0, 0, 0, 0]}
         >
           {post.status === PostStatus.ANSWERED
             ? 'Approved!'
@@ -92,6 +104,49 @@ const Post: React.FC<Props> = ({ post, viewAsTutor }) => {
           {post.createdAt!.toString()}
         </time>
       </Box>
+      {/* {status !== 'loading' && post.status === PostStatus.ANSWERED && (
+        <>
+          <div>Answer:</div>
+          <div>{post.answer}</div>
+          <div>Answered by: {answeredBy.fullname}</div>
+        </>
+      )} */}
+      {/* {!viewAsTutor &&
+          status !== 'loading' &&
+          post.status === PostStatus.CLOSED && (
+            <div>
+              Closed by {post.type === PostType.GLOBAL ? 'a' : 'the'} Tutor.
+            </div>
+          )} */}
+      <Flex mt="3" direction={['column', 'row']}>
+        {viewAsTutor && post.status === PostStatus.CLOSED && (
+          <IconButton
+            onClick={updatePostStatusHandler}
+            aria-label="re-open post"
+            colorScheme="blue"
+            icon={<FaArrowUp />}
+          />
+        )}
+        {viewAsTutor && post.status !== PostStatus.CLOSED && (
+          <>
+            <IconButton
+              colorScheme="green"
+              aria-label="answer post"
+              icon={<FaPencilAlt />}
+              mr={[0, 1]}
+              mb={[1, 0]}
+            />
+            <IconButton
+              onClick={updatePostStatusHandler}
+              aria-label="close post"
+              colorScheme="red"
+              icon={<FaTimesCircle />}
+              mr={[0, 1]}
+              mb={[1, 0]}
+            />
+          </>
+        )}
+      </Flex>
     </Box>
   );
 };
