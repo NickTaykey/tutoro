@@ -26,6 +26,8 @@ import {
   AccordionPanel,
   AccordionIcon,
   Flex,
+  Alert,
+  Center,
 } from '@chakra-ui/react';
 
 interface Props {
@@ -37,39 +39,50 @@ const ProfilePage: NextPage<Props> = ({
   currentUser,
   pertinentGlobalPosts,
 }) => {
+  const [successAlert, setSuccessAlert] = useState<string | null>(null);
   return (
     <Layout>
-      <Heading as="h1" size="xl" textAlign="center" my={[5, 10]}>
-        Hello, {currentUser.fullname}!
-      </Heading>
-      {currentUser.isTutor ? (
-        <Accordion width={['100%', null, '80%']} mx="auto" allowMultiple>
-          <AccordionItem>
-            <h2>
-              <AccordionButton>
-                <Flex flex="1" textAlign="left">
-                  <Box mr="3">
-                    <FaUserAlt size={25} />
-                  </Box>
-                  <Text fontWeight="bold">User profile</Text>
-                </Flex>
-                <AccordionIcon />
-              </AccordionButton>
-            </h2>
-            <AccordionPanel pb={4}>
-              <UserProfileView currentUser={currentUser} />
-            </AccordionPanel>
-          </AccordionItem>
-          {currentUser.isTutor && (
-            <TutorProfileView
-              currentUser={currentUser}
-              pertinentGlobalPosts={pertinentGlobalPosts}
-            />
-          )}
-        </Accordion>
-      ) : (
-        <UserProfileView currentUser={currentUser} />
-      )}
+      <Box width={['100%', null, '80%']} mx="auto">
+        <Heading as="h1" size="xl" textAlign="center" my={[5, 10]}>
+          Hello, {currentUser.fullname}!
+        </Heading>
+        {currentUser.isTutor ? (
+          <>
+            {successAlert && (
+              <Alert mb="5" status="success" width={'90%'} mx="auto">
+                <Center>{successAlert}</Center>
+              </Alert>
+            )}
+            <Accordion allowMultiple>
+              <AccordionItem>
+                <h2>
+                  <AccordionButton>
+                    <Flex flex="1" textAlign="left">
+                      <Box mr="3">
+                        <FaUserAlt size={25} />
+                      </Box>
+                      <Text fontWeight="bold">User profile</Text>
+                    </Flex>
+                    <AccordionIcon />
+                  </AccordionButton>
+                </h2>
+                <AccordionPanel pb={4}>
+                  <UserProfileView currentUser={currentUser} />
+                </AccordionPanel>
+              </AccordionItem>
+              {currentUser.isTutor && (
+                <TutorProfileView
+                  setSuccessAlert={setSuccessAlert}
+                  currentUser={currentUser}
+                  pertinentGlobalPosts={pertinentGlobalPosts}
+                />
+              )}
+            </Accordion>
+          </>
+        ) : (
+          <UserProfileView currentUser={currentUser} />
+        )}
+      </Box>
     </Layout>
   );
 };
@@ -80,6 +93,7 @@ import Review from '../../models/Review';
 import Session from '../../models/Session';
 import Post, { PostDocument, PostDocumentObject } from '../../models/Post';
 import Layout from '../../components/global/Layout';
+import { useState } from 'react';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
   await connectDB();
@@ -138,15 +152,18 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
         path: 'createdReviews',
         ...populateConfig,
         model: Review,
+        sort: { _id: -1 },
       }),
       user.populate({
         path: 'bookedSessions',
         ...populateConfig,
         model: Session,
+        sort: { _id: -1 },
       }),
       user.populate({
         path: 'createdPosts',
         model: Post,
+        options: { sort: { _id: -1 } },
         populate: [
           { path: 'answeredBy', model: User },
           { path: 'creator', model: User },
@@ -160,8 +177,14 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
           status: PostStatus.NOT_ANSWERED,
           subject: { $in: user.subjects },
         })
-          .populate({ path: 'creator', model: User })
-          .populate({ path: 'answeredBy', model: User })
+          .populate({
+            path: 'creator',
+            model: User,
+          })
+          .populate({
+            path: 'answeredBy',
+            model: User,
+          })
           .exec(),
         user.populate({
           path: 'reviews',
@@ -176,6 +199,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
         user.populate({
           path: 'posts',
           model: Post,
+          options: { sort: { _id: -1 } },
           populate: [
             { path: 'answeredBy', model: User },
             { path: 'creator', model: User },

@@ -22,7 +22,6 @@ export const authOptions: NextAuthOptions = {
         await User.create({
           fullname: user.name?.trim(),
           email: user.email?.trim(),
-          avatar: user.image,
           location: '',
           bio: '',
           subjects: [],

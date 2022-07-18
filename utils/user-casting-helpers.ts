@@ -11,7 +11,6 @@ export const getUserDocumentObject = (
     email: user.email,
     fullname: user.fullname,
     isTutor: user.isTutor,
-    avatar: user.avatar,
     bio: user.bio || '',
     receiveOpenPosts: user.receiveOpenPosts,
     location: user.location || '',
@@ -30,6 +29,7 @@ export const getUserDocumentObject = (
       type: 'Point',
       coordinates: [...user.geometry!.coordinates] as [number, number],
     };
+  if (user.avatar) userObject.avatar = user.avatar;
   return userObject;
 };
 

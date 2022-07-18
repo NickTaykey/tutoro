@@ -25,44 +25,82 @@ import {
   TabPanels,
   Tabs,
   Text,
+  useMediaQuery,
   VStack,
 } from '@chakra-ui/react';
 import {
+  FaArchive,
   FaCheckCircle,
   FaDollarSign,
   FaHourglassHalf,
   FaMapMarkerAlt,
   FaStar,
-  FaTimesCircle,
   FaUserTie,
 } from 'react-icons/fa';
 
 interface Props {
   pertinentGlobalPosts: PostDocumentObject[];
   currentUser: UserDocumentObject;
+  setSuccessAlert(alertContent: string): void;
 }
 
 const TutorProfileView: React.FC<Props> = (props: Props) => {
   const { requestedSessions } = props.currentUser;
   const getApprovedSessions = (sessions: SessionDocumentObject[]) => {
-    return sessions.filter(s => s.status === SessionStatus.APPROVED);
+    return sessions
+      .filter(s => s.status === SessionStatus.APPROVED)
+      .sort((a, b) =>
+        new Date(a.date).getTime() > new Date(b.date).getTime() ? -1 : 1
+      );
   };
   const getNotApprovedSessions = (sessions: SessionDocumentObject[]) => {
-    return sessions.filter(s => s.status === SessionStatus.NOT_APPROVED);
+    return sessions
+      .filter(s => s.status === SessionStatus.NOT_APPROVED)
+      .sort((a, b) =>
+        new Date(a.date).getTime() > new Date(b.date).getTime() ? -1 : 1
+      );
   };
   const getRejectedSessions = (sessions: SessionDocumentObject[]) => {
-    return sessions.filter(s => s.status === SessionStatus.REJECTED);
+    return sessions
+      .filter(s => s.status === SessionStatus.REJECTED)
+      .sort((a, b) =>
+        new Date(a.date).getTime() > new Date(b.date).getTime() ? -1 : 1
+      );
   };
   const { posts } = props.currentUser;
   const getAnsweredPosts = (posts: PostDocumentObject[]) => {
-    return posts.filter(p => p.status === PostStatus.ANSWERED);
+    return posts
+      .filter(p => p.status === PostStatus.ANSWERED)
+      .sort((a, b) =>
+        new Date(a.createdAt!).getTime() > new Date(b.createdAt!).getTime()
+          ? -1
+          : 1
+      );
   };
   const getClosedPosts = (posts: PostDocumentObject[]) => {
-    return posts.filter(p => p.status === PostStatus.CLOSED);
+    return posts
+      .filter(p => p.status === PostStatus.CLOSED)
+      .sort((a, b) =>
+        new Date(a.createdAt!).getTime() > new Date(b.createdAt!).getTime()
+          ? -1
+          : 1
+      );
   };
   const getNotAnsweredPosts = (posts: PostDocumentObject[]) => {
-    return posts.filter(p => p.status === PostStatus.NOT_ANSWERED);
+    return posts
+      .filter(p => p.status === PostStatus.NOT_ANSWERED)
+      .sort((a, b) =>
+        new Date(a.createdAt!).getTime() > new Date(b.createdAt!).getTime()
+          ? -1
+          : 1
+      );
   };
+
+  const [lowerThan690] = useMediaQuery('(max-height: 690px)');
+  const [higherThan840] = useMediaQuery('(min-height: 840px)');
+  const [isLandscapeWidth] = useMediaQuery('(max-width: 930px)');
+  const [isLandscapeHeight] = useMediaQuery('(max-height: 500px)');
+  const isXSLandscape = isLandscapeWidth && isLandscapeHeight;
 
   return (
     <>
@@ -87,6 +125,11 @@ const TutorProfileView: React.FC<Props> = (props: Props) => {
                   .fill(null)
                   .map((_, i) => (
                     <FaStar key={i} color="#ffbe0b" />
+                  ))}
+                {Array(5 - props.currentUser.avgRating)
+                  .fill(null)
+                  .map((_, i) => (
+                    <FaStar key={i} color="#e5e5e5" />
                   ))}
               </Flex>
             </Flex>
@@ -126,83 +169,120 @@ const TutorProfileView: React.FC<Props> = (props: Props) => {
               </Tab>
               <Tab fontSize="sm">Reviews</Tab>
             </TabList>
-            <TabPanels height={['55vh', null, null, '400px']}>
+            <TabPanels
+              height={higherThan840 ? '65vh' : lowerThan690 ? '55vh' : '400px'}
+            >
               <TabPanel height="100%">
-                <Tabs isFitted variant="soft-rounded" height="100%">
-                  <TabList mb="1em">
-                    <Tab
-                      color="gray"
-                      _selected={{ bg: 'gray.100', color: 'gray' }}
-                    >
-                      <FaHourglassHalf size="25" />
-                    </Tab>
-                    <Tab color="green" _selected={{ bg: 'green.100' }}>
-                      <FaCheckCircle size="25" />
-                    </Tab>
-                    <Tab color="red.500" _selected={{ bg: 'red.100' }}>
-                      <FaTimesCircle size="25" />
-                    </Tab>
-                  </TabList>
-                  <PostsContextProvider posts={posts}>
-                    <PostsContext.Consumer>
-                      {({ posts }) => (
-                        <TabPanels overflowY="auto" height="90%">
-                          <TabPanel>
-                            {getNotAnsweredPosts(posts).length ? (
-                              <VStack>
-                                {getNotAnsweredPosts(posts).map(
-                                  (p: PostDocumentObject) => (
-                                    <Post key={p._id} post={p} viewAsTutor />
-                                  )
-                                )}
-                              </VStack>
-                            ) : (
-                              <Flex justify="center" align="center">
-                                <Heading as="h2" size="md" textAlign="center">
-                                  No Posts waiting to be answered!
-                                </Heading>
-                              </Flex>
-                            )}
-                          </TabPanel>
-                          <TabPanel>
-                            {getAnsweredPosts(posts).length ? (
-                              <VStack>
-                                {getAnsweredPosts(posts).map(
-                                  (p: PostDocumentObject) => (
-                                    <Post key={p._id} post={p} viewAsTutor />
-                                  )
-                                )}
-                              </VStack>
-                            ) : (
-                              <Flex justify="center" align="center">
-                                <Heading as="h2" size="md" textAlign="center">
-                                  No answered posts!
-                                </Heading>
-                              </Flex>
-                            )}
-                          </TabPanel>
-                          <TabPanel>
-                            {getClosedPosts(posts).length ? (
-                              <VStack>
-                                {getClosedPosts(posts).map(
-                                  (p: PostDocumentObject) => (
-                                    <Post key={p._id} post={p} viewAsTutor />
-                                  )
-                                )}
-                              </VStack>
-                            ) : (
-                              <Flex justify="center" align="center">
-                                <Heading as="h2" size="md" textAlign="center">
-                                  No closed posts!
-                                </Heading>
-                              </Flex>
-                            )}
-                          </TabPanel>
-                        </TabPanels>
-                      )}
-                    </PostsContext.Consumer>
-                  </PostsContextProvider>
-                </Tabs>
+                {posts.length ? (
+                  <Tabs isFitted variant="soft-rounded" height="100%">
+                    <TabList mb="1em">
+                      <Tab
+                        color="gray"
+                        _selected={{ bg: 'gray.100', color: 'gray' }}
+                      >
+                        <FaHourglassHalf size="25" />
+                      </Tab>
+                      <Tab color="green" _selected={{ bg: 'green.100' }}>
+                        <FaCheckCircle size="25" />
+                      </Tab>
+                      <Tab color="red.500" _selected={{ bg: 'red.100' }}>
+                        <FaArchive size="25" />
+                      </Tab>
+                    </TabList>
+                    <PostsContextProvider posts={posts}>
+                      <PostsContext.Consumer>
+                        {({ posts }) => (
+                          <TabPanels overflowY="auto" height="90%">
+                            <TabPanel height="100%">
+                              {getNotAnsweredPosts(posts).length ? (
+                                <VStack>
+                                  {getNotAnsweredPosts(posts).map(
+                                    (p: PostDocumentObject) => (
+                                      <Post
+                                        key={p._id}
+                                        post={p}
+                                        viewAsTutor
+                                        setSuccessAlert={props.setSuccessAlert}
+                                      />
+                                    )
+                                  )}
+                                </VStack>
+                              ) : (
+                                <Flex
+                                  justify="center"
+                                  align="center"
+                                  height="100%"
+                                >
+                                  <Heading as="h2" size="md" textAlign="center">
+                                    No Posts waiting to be answered!
+                                  </Heading>
+                                </Flex>
+                              )}
+                            </TabPanel>
+                            <TabPanel height="100%">
+                              {getAnsweredPosts(posts).length ? (
+                                <VStack>
+                                  {getAnsweredPosts(posts).map(
+                                    (p: PostDocumentObject) => (
+                                      <Post
+                                        key={p._id}
+                                        post={p}
+                                        viewAsTutor
+                                        setSuccessAlert={props.setSuccessAlert}
+                                      />
+                                    )
+                                  )}
+                                </VStack>
+                              ) : (
+                                <Flex
+                                  justify="center"
+                                  align="center"
+                                  height="100%"
+                                >
+                                  <Heading as="h2" size="md" textAlign="center">
+                                    No answered posts!
+                                  </Heading>
+                                </Flex>
+                              )}
+                            </TabPanel>
+                            <TabPanel height="100%">
+                              {getClosedPosts(posts).length ? (
+                                <VStack>
+                                  {getClosedPosts(posts).map(
+                                    (p: PostDocumentObject) => (
+                                      <Post
+                                        key={p._id}
+                                        post={p}
+                                        viewAsTutor
+                                        setSuccessAlert={props.setSuccessAlert}
+                                      />
+                                    )
+                                  )}
+                                </VStack>
+                              ) : (
+                                <Flex
+                                  justify="center"
+                                  align="center"
+                                  height="100%"
+                                >
+                                  <Heading as="h2" size="md" textAlign="center">
+                                    No closed posts!
+                                  </Heading>
+                                </Flex>
+                              )}
+                            </TabPanel>
+                          </TabPanels>
+                        )}
+                      </PostsContext.Consumer>
+                    </PostsContextProvider>
+                  </Tabs>
+                ) : (
+                  <Flex justify="center" align="center" height="100%">
+                    <Heading as="h2" size="md" textAlign="center">
+                      For now nobody has posts for you!
+                    </Heading>
+                  </Flex>
+                )}
               </TabPanel>
               <TabPanel height="100%">
                 {requestedSessions.length ? (
@@ -218,14 +298,14 @@ const TutorProfileView: React.FC<Props> = (props: Props) => {
                         <FaCheckCircle size="25" />
                       </Tab>
                       <Tab color="red.500" _selected={{ bg: 'red.100' }}>
-                        <FaTimesCircle size="25" />
+                        <FaArchive size="25" />
                       </Tab>
                     </TabList>
                     <SessionsContextProvider sessions={requestedSessions}>
                       <SessionsContext.Consumer>
                         {({ sessions: requestedSessions }) => (
                           <TabPanels overflowY="auto" height="90%">
-                            <TabPanel>
+                            <TabPanel height="100%">
                               {getNotApprovedSessions(requestedSessions)
                                 .length ? (
                                 <VStack>
@@ -240,14 +320,18 @@ const TutorProfileView: React.FC<Props> = (props: Props) => {
                                   ))}
                                 </VStack>
                               ) : (
-                                <Flex justify="center" align="center">
+                                <Flex
+                                  justify="center"
+                                  align="center"
+                                  height="100%"
+                                >
                                   <Heading as="h2" size="md" textAlign="center">
                                     No sessions waiting to be approved!
                                   </Heading>
                                 </Flex>
                               )}
                             </TabPanel>
-                            <TabPanel>
+                            <TabPanel height="100%">
                               {getApprovedSessions(requestedSessions).length ? (
                                 <VStack>
                                   {getApprovedSessions(requestedSessions).map(
@@ -261,14 +345,18 @@ const TutorProfileView: React.FC<Props> = (props: Props) => {
                                   )}
                                 </VStack>
                               ) : (
-                                <Flex justify="center" align="center">
+                                <Flex
+                                  justify="center"
+                                  align="center"
+                                  height="100%"
+                                >
                                   <Heading as="h2" size="md" textAlign="center">
                                     No approved sessions!
                                   </Heading>
                                 </Flex>
                               )}
                             </TabPanel>
-                            <TabPanel>
+                            <TabPanel height="100%">
                               {getRejectedSessions(requestedSessions).length ? (
                                 <VStack>
                                   {getRejectedSessions(requestedSessions).map(
@@ -282,7 +370,11 @@ const TutorProfileView: React.FC<Props> = (props: Props) => {
                                   )}
                                 </VStack>
                               ) : (
-                                <Flex justify="center" align="center">
+                                <Flex
+                                  justify="center"
+                                  align="center"
+                                  height="100%"
+                                >
                                   <Heading as="h2" size="md" textAlign="center">
                                     No rejected sessions!
                                   </Heading>
@@ -295,7 +387,7 @@ const TutorProfileView: React.FC<Props> = (props: Props) => {
                     </SessionsContextProvider>
                   </Tabs>
                 ) : (
-                  <Flex justify="center" align="center">
+                  <Flex justify="center" align="center" height="100%">
                     <Heading as="h2" size="md" textAlign="center">
                       For now nobody booked a session with you!
                     </Heading>
@@ -303,7 +395,7 @@ const TutorProfileView: React.FC<Props> = (props: Props) => {
                 )}
               </TabPanel>
               <TabPanel height="100%" overflowY="auto">
-                {props.currentUser.createdReviews.length ? (
+                {props.currentUser.reviews.length ? (
                   <VStack>
                     {props.currentUser.reviews.map(
                       (r: ReviewDocumentObject) => (
@@ -316,7 +408,7 @@ const TutorProfileView: React.FC<Props> = (props: Props) => {
                     )}
                   </VStack>
                 ) : (
-                  <Flex justify="center" align="center">
+                  <Flex justify="center" align="center" height="100%">
                     <Heading as="h2" size="md" textAlign="center">
                       You haven't been reviewed yet!
                     </Heading>

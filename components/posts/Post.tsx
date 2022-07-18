@@ -1,7 +1,7 @@
 import { PostDocumentObject } from '../../models/Post';
 import { PostType, PostStatus } from '../../types';
-import { useContext, useState } from 'react';
-import PostsContext from '../../store/posts-context';
+import { useContext, useRef, useState } from 'react';
+import PostsContext, { APIError } from '../../store/posts-context';
 import { useSession } from 'next-auth/react';
 import { UserDocumentObject } from '../../models/User';
 import {
@@ -12,28 +12,48 @@ import {
   Heading,
   IconButton,
   Text,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
+  Show,
 } from '@chakra-ui/react';
-import { FaArrowUp, FaPencilAlt, FaTimesCircle } from 'react-icons/fa';
+import {
+  FaArchive,
+  FaArrowUp,
+  FaExpandArrowsAlt,
+  FaPencilAlt,
+} from 'react-icons/fa';
+import AnswerPostModal, { AnswerPostModalHandler } from './AnswerPostModal';
 
 interface Props {
   post: PostDocumentObject;
   viewAsTutor: boolean;
+  setSuccessAlert?: (alertContent: string) => void;
 }
 
-const Post: React.FC<Props> = ({ post, viewAsTutor }) => {
+const Post: React.FC<Props> = ({ post, viewAsTutor, setSuccessAlert }) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const ctx = useContext(PostsContext);
   const { status, data } = useSession();
-  const deletePostHandler = () => {
-    ctx.deletePost(
-      post._id,
-      post.answeredBy ? (post.answeredBy as UserDocumentObject)._id : 'global'
-    );
-  };
   const updatePostStatusHandler = () => {
     ctx.updatedPostStatus(
       post._id,
       post.answeredBy ? (post.answeredBy as UserDocumentObject)._id : 'global'
     );
+  };
+  const answerPostHandler = async (answer: string) => {
+    const res = await ctx.answerPost(post._id, answer, currentUser._id);
+    if ((res as APIError).errorMessage) {
+      imperativeHandlingRef.current?.setValidationError(
+        (res as APIError).errorMessage
+      );
+    }
+    if (setSuccessAlert) setSuccessAlert('Post successfully answered!');
+    imperativeHandlingRef.current?.onClose();
   };
 
   const currentUser = data?.user as unknown as UserDocumentObject;
@@ -41,52 +61,87 @@ const Post: React.FC<Props> = ({ post, viewAsTutor }) => {
   const answeredBy = post.answeredBy as UserDocumentObject;
   const [showFullPostDescription, setShowFullPostDescription] =
     useState<boolean>(false);
+  const imperativeHandlingRef = useRef<AnswerPostModalHandler>(null);
   return (
     <Box shadow="md" borderWidth="1px" p="6" width="100%" borderRadius="md">
-      <Flex direction={['column', 'row']} alignItems="center">
-        {post.type === PostType.SPECIFIC && !viewAsTutor ? (
-          <Avatar src={answeredBy.avatar} name={answeredBy.fullname} />
-        ) : viewAsTutor ? (
-          <Avatar src={creator.avatar} name={creator.fullname} />
-        ) : (
-          <Avatar />
+      {post.answer ? (
+        <Modal isOpen={isOpen} onClose={onClose} isCentered>
+          <ModalOverlay />
+          <ModalContent py="6" width="90%">
+            <ModalHeader>Your answer</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <Text maxHeight="40vh" pr="2" overflowY="auto">
+                {post.answer}
+              </Text>
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+      ) : (
+        <AnswerPostModal
+          ref={imperativeHandlingRef}
+          post={post}
+          setAnswer={answerPostHandler}
+        />
+      )}
+      <Flex
+        direction={['column', 'row']}
+        alignItems="center"
+        justifyContent="space-between"
+      >
+        <Flex alignItems="center" direction={['column', 'row']}>
+          <Flex alignItems="center">
+            {post.type === PostType.SPECIFIC && !viewAsTutor ? (
+              <Avatar src={answeredBy.avatar} name={answeredBy.fullname} />
+            ) : viewAsTutor ? (
+              <Avatar src={creator.avatar} name={creator.fullname} />
+            ) : (
+              <Avatar />
+            )}
+            <Heading as="h3" size="md" ml="3">
+              {status !== 'loading' && viewAsTutor
+                ? creator.fullname
+                : post.type === PostType.GLOBAL
+                ? 'Global'
+                : answeredBy?.fullname}
+            </Heading>
+          </Flex>
+          <Flex my="3">
+            <Badge fontSize="0.8em" bg="purple.600" color="white" ml="3">
+              {post.subject}
+            </Badge>
+            <Badge
+              fontSize="0.8em"
+              colorScheme={
+                post.status === PostStatus.ANSWERED
+                  ? 'green'
+                  : post.status === PostStatus.CLOSED
+                  ? 'red'
+                  : 'gray'
+              }
+              ml="3"
+            >
+              {post.status === PostStatus.ANSWERED
+                ? 'Answered!'
+                : post.status === PostStatus.CLOSED
+                ? 'Closed'
+                : 'Not answered!'}
+            </Badge>
+          </Flex>
+        </Flex>
+        {post.answer && (
+          <Show above="sm">
+            <IconButton
+              width={['100%', 'auto']}
+              ml={[0, 3]}
+              aria-label="view tutor page"
+              icon={<FaExpandArrowsAlt />}
+              onClick={onOpen}
+            />
+          </Show>
         )}
-        <Heading as="h3" size="md" ml="3" mt={[3, 0, 0, 0, 0]}>
-          {status !== 'loading' && viewAsTutor
-            ? creator.fullname
-            : post.type === PostType.GLOBAL
-            ? 'Global'
-            : answeredBy?.fullname}
-        </Heading>
-        <Badge
-          fontSize="0.8em"
-          bg="purple.600"
-          color="white"
-          ml="3"
-          mt={[3, 0, 0, 0, 0]}
-        >
-          {post.subject}
-        </Badge>
-        <Badge
-          fontSize="0.8em"
-          colorScheme={
-            post.status === PostStatus.ANSWERED
-              ? 'green'
-              : post.status === PostStatus.CLOSED
-              ? 'red'
-              : 'gray'
-          }
-          ml="3"
-          mt={[3, 0, 0, 0, 0]}
-        >
-          {post.status === PostStatus.ANSWERED
-            ? 'Approved!'
-            : post.status === PostStatus.CLOSED
-            ? 'Closed'
-            : 'Not answered!'}
-        </Badge>
       </Flex>
-      <Text my="3">
+      <Text mb="3" mt={[0, 3]}>
         {showFullPostDescription || post.description.length < 100 ? (
           post.description
         ) : (
@@ -104,6 +159,18 @@ const Post: React.FC<Props> = ({ post, viewAsTutor }) => {
           {post.createdAt!.toString()}
         </time>
       </Box>
+      {post.answer && (
+        <Show below="sm">
+          <IconButton
+            width="100%"
+            ml={[0, 3]}
+            mt="3"
+            aria-label="view tutor page"
+            icon={<FaExpandArrowsAlt />}
+            onClick={onOpen}
+          />
+        </Show>
+      )}
       {/* {status !== 'loading' && post.status === PostStatus.ANSWERED && (
         <>
           <div>Answer:</div>
@@ -118,35 +185,40 @@ const Post: React.FC<Props> = ({ post, viewAsTutor }) => {
               Closed by {post.type === PostType.GLOBAL ? 'a' : 'the'} Tutor.
             </div>
           )} */}
-      <Flex mt="3" direction={['column', 'row']}>
-        {viewAsTutor && post.status === PostStatus.CLOSED && (
-          <IconButton
-            onClick={updatePostStatusHandler}
-            aria-label="re-open post"
-            colorScheme="blue"
-            icon={<FaArrowUp />}
-          />
-        )}
-        {viewAsTutor && post.status !== PostStatus.CLOSED && (
-          <>
-            <IconButton
-              colorScheme="green"
-              aria-label="answer post"
-              icon={<FaPencilAlt />}
-              mr={[0, 1]}
-              mb={[1, 0]}
-            />
-            <IconButton
-              onClick={updatePostStatusHandler}
-              aria-label="close post"
-              colorScheme="red"
-              icon={<FaTimesCircle />}
-              mr={[0, 1]}
-              mb={[1, 0]}
-            />
-          </>
-        )}
-      </Flex>
+      {post.status !== PostStatus.ANSWERED && (
+        <>
+          <Flex mt="3" direction={['column', 'row']}>
+            {viewAsTutor && post.status === PostStatus.CLOSED && (
+              <IconButton
+                onClick={updatePostStatusHandler}
+                aria-label="re-open post"
+                colorScheme="blue"
+                icon={<FaArrowUp />}
+              />
+            )}
+            {viewAsTutor && post.status !== PostStatus.CLOSED && (
+              <>
+                <IconButton
+                  colorScheme="green"
+                  aria-label="answer post"
+                  icon={<FaPencilAlt />}
+                  mr={[0, 1]}
+                  mb={[1, 0]}
+                  onClick={() => imperativeHandlingRef.current?.onOpen()}
+                />
+                <IconButton
+                  onClick={updatePostStatusHandler}
+                  aria-label="close post"
+                  colorScheme="red"
+                  icon={<FaArchive />}
+                  mr={[0, 1]}
+                  mb={[1, 0]}
+                />
+              </>
+            )}
+          </Flex>
+        </>
+      )}
     </Box>
   );
 };

@@ -2,7 +2,9 @@ import React from 'react';
 import type { PostDocumentObject } from '../models/Post';
 
 export type APIError = { errorMessage: string };
-type ContextMethodReturnType = Promise<PostDocumentObject | APIError | {}>;
+export type ContextMethodReturnType = Promise<
+  PostDocumentObject | APIError | {}
+>;
 
 interface PostsContextObject {
   posts: PostDocumentObject[];

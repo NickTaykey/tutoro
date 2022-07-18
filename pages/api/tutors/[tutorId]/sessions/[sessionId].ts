@@ -120,7 +120,7 @@ export default async function handler(
                       ''
                     ),
                   };
-                  promises.push(sgMail.send(emailMessage));
+                  // promises.push(sgMail.send(emailMessage));
                 }
                 await Promise.all(promises);
                 return res.status(200).json(session.toObject());

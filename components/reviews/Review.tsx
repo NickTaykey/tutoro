@@ -75,7 +75,7 @@ const Review: React.FC<Props> = ({
         </>
       ) : (
         <>
-          <Modal isOpen={isOpen} onClose={onClose}>
+          <Modal isOpen={isOpen} onClose={onClose} isCentered>
             <ModalOverlay />
             <ModalContent width="90%">
               <ModalHeader>This action is irreversibile</ModalHeader>

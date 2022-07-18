@@ -8,7 +8,7 @@ import {
   IconButton,
 } from '@chakra-ui/react';
 import { useContext, useState } from 'react';
-import { FaArrowUp, FaCheck, FaRegTimesCircle } from 'react-icons/fa';
+import { FaArchive, FaArrowUp, FaCheck } from 'react-icons/fa';
 import type { SessionDocumentObject } from '../../models/Session';
 import type { UserDocumentObject } from '../../models/User';
 import SessionsContext from '../../store/sessions-context';
@@ -58,50 +58,47 @@ const Session: React.FC<Props> = ({ session, viewAsTutor }) => {
   return (
     <Box shadow="md" borderWidth="1px" p="6" width="100%">
       <Flex alignItems="center" direction={['column', 'row']}>
-        <Avatar
-          src={
-            viewAsTutor
-              ? (session.user as UserDocumentObject).avatar
-              : tutor.avatar
-          }
-          name={
-            viewAsTutor
-              ? (session.user as UserDocumentObject).avatar
-              : tutor.fullname
-          }
-        />
-        <Heading as="h3" size="md" ml="3" mt={[3, 0, 0, 0, 0]}>
-          {viewAsTutor ? user.fullname : tutor.fullname}
-        </Heading>
-        <Badge
-          fontSize="0.8em"
-          bg="purple.600"
-          color="white"
-          ml="3"
-          mt={[3, 0, 0, 0, 0]}
-        >
-          {session.subject}
-        </Badge>
-        <Badge
-          mt={[3, 0, 0, 0, 0]}
-          fontSize="0.8em"
-          colorScheme={
-            session.status === SessionStatus.APPROVED
-              ? 'green'
+        <Flex alignItems="center">
+          <Avatar
+            src={
+              viewAsTutor
+                ? (session.user as UserDocumentObject).avatar
+                : tutor.avatar
+            }
+            name={
+              viewAsTutor
+                ? (session.user as UserDocumentObject).fullname
+                : tutor.fullname
+            }
+          />
+          <Heading as="h3" size="md" ml="3" mt={[3, 0, 0, 0, 0]}>
+            {viewAsTutor ? user.fullname : tutor.fullname}
+          </Heading>{' '}
+        </Flex>
+        <Flex my="3">
+          <Badge fontSize="0.8em" bg="purple.600" color="white" ml="3">
+            {session.subject}
+          </Badge>
+          <Badge
+            fontSize="0.8em"
+            colorScheme={
+              session.status === SessionStatus.APPROVED
+                ? 'green'
+                : session.status === SessionStatus.REJECTED
+                ? 'red'
+                : 'gray'
+            }
+            ml="3"
+          >
+            {session.status === SessionStatus.APPROVED
+              ? 'Approved!'
               : session.status === SessionStatus.REJECTED
-              ? 'red'
-              : 'gray'
-          }
-          ml="3"
-        >
-          {session.status === SessionStatus.APPROVED
-            ? 'Approved!'
-            : session.status === SessionStatus.REJECTED
-            ? 'Rejected'
-            : 'Not approved!'}
-        </Badge>
+              ? 'Rejected'
+              : 'Not approved!'}
+          </Badge>
+        </Flex>
       </Flex>
-      <Text my="3">
+      <Text mb="3" mt={[0, 3]}>
         {showFullTopic || session.topic.length < 100 ? (
           session.topic
         ) : (
@@ -123,34 +120,36 @@ const Session: React.FC<Props> = ({ session, viewAsTutor }) => {
         <strong>Hours: </strong>
         {startHour} - {endHour}
       </Text>
-      {viewAsTutor && session.status === SessionStatus.REJECTED && (
-        <IconButton
-          onClick={resetSessionHandler}
-          aria-label="reset session status"
-          colorScheme="blue"
-          icon={<FaArrowUp />}
-        />
-      )}
-      {viewAsTutor && session.status !== SessionStatus.REJECTED && (
-        <IconButton
-          aria-label="reject session"
-          colorScheme="red"
-          onClick={rejectSessionHandler}
-          icon={<FaRegTimesCircle size={25} />}
-          mb={[1, 0]}
-          mr={[0, 1]}
-        />
-      )}
-      {viewAsTutor && session.status === SessionStatus.NOT_APPROVED && (
-        <IconButton
-          aria-label="approve session"
-          colorScheme="green"
-          onClick={approveSessionHandler}
-          icon={<FaCheck size={25} />}
-          mb={[1, 0]}
-          mr={[0, 1]}
-        />
-      )}
+      <Flex mt="3" direction={['column', 'row']}>
+        {viewAsTutor && session.status === SessionStatus.REJECTED && (
+          <IconButton
+            onClick={resetSessionHandler}
+            aria-label="reset session status"
+            colorScheme="blue"
+            icon={<FaArrowUp />}
+          />
+        )}
+        {viewAsTutor && session.status === SessionStatus.NOT_APPROVED && (
+          <IconButton
+            aria-label="approve session"
+            colorScheme="green"
+            onClick={approveSessionHandler}
+            icon={<FaCheck />}
+            mb={[1, 0]}
+            mr={[0, 1]}
+          />
+        )}
+        {viewAsTutor && session.status !== SessionStatus.REJECTED && (
+          <IconButton
+            aria-label="reject session"
+            colorScheme="red"
+            onClick={rejectSessionHandler}
+            icon={<FaArchive />}
+            mb={[1, 0]}
+            mr={[0, 1]}
+          />
+        )}
+      </Flex>
     </Box>
   );
 };

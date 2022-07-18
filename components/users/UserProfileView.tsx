@@ -23,6 +23,7 @@ import {
   Box,
   Button,
   VStack,
+  useMediaQuery,
 } from '@chakra-ui/react';
 import { FaHandsHelping } from 'react-icons/fa';
 
@@ -31,6 +32,11 @@ interface Props {
 }
 
 const UserProfileView: React.FC<Props> = (props: Props) => {
+  const [lowerThan690] = useMediaQuery('(max-height: 690px)');
+  const [higherThan840] = useMediaQuery('(min-height: 840px)');
+  const [isLandscapeWidth] = useMediaQuery('(max-width: 930px)');
+  const [isLandscapeHeight] = useMediaQuery('(max-height: 500px)');
+  const isXSLandscape = isLandscapeWidth && isLandscapeHeight;
   return (
     <Box width="100%" mx="auto">
       <Tabs isFitted variant="soft-rounded" colorScheme="blue">
@@ -41,7 +47,9 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
           </Tab>
           <Tab fontSize="sm">Reviews</Tab>
         </TabList>
-        <TabPanels height={['55vh', null, null, '400px']}>
+        <TabPanels
+          height={higherThan840 ? '65vh' : lowerThan690 ? '55vh' : '400px'}
+        >
           <TabPanel height="100%" overflowY="auto">
             {props.currentUser.createdPosts.length ? (
               <PostsContextProvider posts={props.currentUser.createdPosts}>
@@ -56,7 +64,7 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
                 </PostsContext.Consumer>
               </PostsContextProvider>
             ) : (
-              <Flex justify="center" align="center">
+              <Flex justify="center" align="center" height="100%">
                 <Heading as="h2" size="md" textAlign="center">
                   You dont't have any posts for now!
                 </Heading>
@@ -79,7 +87,7 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
                 </SessionsContext.Consumer>
               </SessionsContextProvider>
             ) : (
-              <Flex justify="center" align="center">
+              <Flex justify="center" align="center" height="100%">
                 <Heading as="h2" size="md" textAlign="center">
                   You dont't have any booked sessions for now!
                 </Heading>
@@ -102,7 +110,7 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
                 )}
               </VStack>
             ) : (
-              <Flex justify="center" align="center">
+              <Flex justify="center" align="center" height="100%">
                 <Heading as="h2" size="md" textAlign="center">
                   You have written no reviews yet!
                 </Heading>
@@ -111,13 +119,20 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
           </TabPanel>
         </TabPanels>
       </Tabs>
-      {!props.currentUser.isTutor && (
-        <Box my="5" display="flex" width="100%" position="fixed" bottom="0px">
+      {!props.currentUser.isTutor && !isXSLandscape && (
+        <Box
+          my="5"
+          display="flex"
+          width="100%"
+          position="fixed"
+          bottom="0px"
+          left="0px"
+        >
           <Button
             boxShadow="dark-lg"
             colorScheme="pink"
             bgGradient="linear(to-l, #7928CA, #FF0080)"
-            width="95%"
+            width={['calc(90% + 4px)', '95%', '80%']}
             mx="auto"
             leftIcon={<FaHandsHelping size={25} />}
             textTransform="uppercase"

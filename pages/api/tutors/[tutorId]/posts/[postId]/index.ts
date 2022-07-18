@@ -28,7 +28,7 @@ export default async function handler(
             return res.status(200).json(post.toObject());
           }
           if (req.method === 'PUT') {
-            post.answer = sanitize(req.body).text;
+            post.answer = sanitize(req.body).answer;
             post.status = PostStatus.ANSWERED;
             if (
               post.type === PostType.GLOBAL &&

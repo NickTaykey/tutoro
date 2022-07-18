@@ -8,13 +8,7 @@ import {
   FormControl,
   FormLabel,
   Button,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
   Textarea,
-  Box,
   Select,
   Input,
   Text,
@@ -105,7 +99,7 @@ const NewPostForm: React.FC<Props> = props => {
             </FormLabel>
             <Textarea
               id="post-description"
-              {...register('description', { minLength: 10, maxLength: 1000 })}
+              {...register('description', { minLength: 10 })}
             />
           </FormControl>
           <Button colorScheme="blue" type="submit" w="100%" mt="3">

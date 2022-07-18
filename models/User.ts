@@ -32,7 +32,7 @@ interface UserCoreObject {
   subjects: string[];
   bio: string;
   location: string;
-  avatar: string;
+  avatar?: string;
   avgRating: number;
   geometry?: {
     type: 'Point';
