@@ -11,6 +11,28 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import ApiHelper from '../../utils/api-helper';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+import {
+  Alert,
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  Heading,
+  IconButton,
+  Input,
+  Flex,
+  ListItem,
+  Slider,
+  SliderFilledTrack,
+  SliderThumb,
+  SliderTrack,
+  Textarea,
+  UnorderedList,
+  InputGroup,
+  InputRightAddon,
+} from '@chakra-ui/react';
+import { FaPlus, FaTrashAlt } from 'react-icons/fa';
+import Layout from '../../components/global/Layout';
 
 type FormValues = {
   location: string;
@@ -25,6 +47,7 @@ const BecomeTutorPage: NextPage = () => {
     control,
     handleSubmit,
     formState: { errors },
+    setValue,
     watch,
   } = useForm<FormValues>({
     defaultValues: {
@@ -57,64 +80,111 @@ const BecomeTutorPage: NextPage = () => {
   };
 
   return (
-    <>
-      <h1>So you would like to become a Tutoro Tutor?</h1>
-      {!!apiError && <div>{apiError}</div>}
-      <form onSubmit={handleSubmit(onSubmit)}>
-        {!!Object.keys(errors).length && (
-          <div>Provide your {Object.keys(errors)[0]}</div>
-        )}
-        <fieldset>
-          <label htmlFor="bio">Some words about you</label>
-          <textarea id="bio" {...register('bio', { required: true })} />
-        </fieldset>
-        <fieldset>
-          <label htmlFor="location">Where will you host your sessions?</label>
-          <input
-            id="location"
-            type="text"
-            {...register('location', { required: true, maxLength: 50 })}
-          />
-        </fieldset>
-        <fieldset>
-          <h3>${watch('price')}</h3>
-          <label htmlFor="price">How much will you charge per hour?</label>
-          <input
-            id="price"
-            type="range"
-            min={5}
-            max={250}
-            {...register('price', { required: true, min: 5, max: 250 })}
-          />
-        </fieldset>
-        <fieldset>
-          <ul>
-            {subjects.map((subject, index, subjects) => (
-              <li key={subject.id}>
-                <label htmlFor={`subjects.${index}.subject`}>
-                  Your subject n. {index + 1}
-                </label>
-                <input
-                  {...register(`subjects.${index}.subject`, {
-                    required: true,
-                  })}
-                />
-                <button
-                  type="button"
-                  onClick={() => subjects.length > 1 && remove(index)}
-                >
-                  remove
-                </button>
-              </li>
-            ))}
-          </ul>
-          <button type="button" onClick={() => append({ subject: '' })}>
-            append
-          </button>
-        </fieldset>
-        <button>Become a Tutor!</button>
-      </form>
-    </>
+    <Layout>
+      <Box width={['90%', null, null, '80%', '40%']} mx="auto" my={[4, 4, 2]}>
+        <Heading
+          as="h1"
+          mb={!!Object.keys(errors).length ? 0 : 4}
+          textAlign="center"
+        >
+          Would you like to become a Tutor?
+        </Heading>
+        {!!apiError && <Alert status="error">{apiError}</Alert>}
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {!!Object.keys(errors).length && (
+            <Alert status="error" my={3}>
+              {Object.keys(errors)[0] === 'bio'
+                ? 'Provide some words sbout you'
+                : Object.keys(errors)[0] === 'location'
+                ? 'Specify a place where you will host sessions'
+                : `Provide your ${Object.keys(errors)[0]}`}
+            </Alert>
+          )}
+          <FormControl mb="3">
+            <FormLabel htmlFor="bio">Some words about you</FormLabel>
+            <Textarea id="bio" {...register('bio', { required: true })} />
+          </FormControl>
+          <FormControl mb="3">
+            <FormLabel htmlFor="location">
+              Where will you host your sessions?
+            </FormLabel>
+            <Input
+              id="location"
+              type="text"
+              {...register('location', { required: true, maxLength: 50 })}
+            />
+          </FormControl>
+          <FormControl mb="3">
+            <FormLabel htmlFor="price" id="price-label">
+              How much are you charging per hour?
+            </FormLabel>
+            <Heading as="h3" size="md">
+              ${watch('price')}
+            </Heading>
+            <Slider
+              aria-labelledby="price-label"
+              aria-label="tutor price"
+              defaultValue={watch('price')}
+              min={0}
+              max={250}
+              onChange={(value: number) => setValue('price', value)}
+            >
+              <SliderTrack>
+                <SliderFilledTrack />
+              </SliderTrack>
+              <SliderThumb />
+            </Slider>
+          </FormControl>
+          <FormControl mb="3">
+            <FormLabel id="subjects-label">What are you subjects?</FormLabel>
+            <UnorderedList styleType="none" mx="0">
+              {subjects.map((subject, index, subjects) => (
+                <ListItem key={subject.id} mb="2">
+                  <Flex>
+                    <InputGroup>
+                      <Input
+                        aria-labelledby="subjects-label"
+                        {...register(`subjects.${index}.subject`, {
+                          required: true,
+                        })}
+                      />
+                      {index && (
+                        <InputRightAddon
+                          bg="red.500"
+                          color="white"
+                          _hover={{ bg: 'red.600', cursor: 'pointer' }}
+                          onClick={() => subjects.length > 1 && remove(index)}
+                          children={<FaTrashAlt />}
+                        />
+                      )}
+                    </InputGroup>
+                  </Flex>
+                </ListItem>
+              ))}
+            </UnorderedList>
+            <Button
+              width={['100%', null, 'auto']}
+              bg="green.500"
+              color="white"
+              _hover={{ bg: 'green.600' }}
+              type="button"
+              onClick={() => append({ subject: '' })}
+              leftIcon={<FaPlus />}
+              aria-label="Add another subject"
+            >
+              Add a subject
+            </Button>
+          </FormControl>
+          <Button
+            type="submit"
+            colorScheme="blue"
+            width={['100%', null, 'auto']}
+          >
+            Become a Tutor!
+          </Button>
+        </form>
+      </Box>
+    </Layout>
   );
 };
 
@@ -146,11 +216,11 @@ export const getServerSideProps: GetServerSideProps = async context => {
 
   const user = await User.findOne(query);
   if (user) {
-    if (user.isTutor)
+    /* if (user.isTutor)
       return {
         props: {},
         redirect: { permanent: false, destination: '/users' },
-      };
+      }; */
     return {
       props: {},
     };

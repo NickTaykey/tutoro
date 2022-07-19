@@ -1,17 +1,15 @@
 import type { TutorFilters, TutorFiltersFormFields } from '../../types';
-import { FormEvent, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 interface Props {
   filterTutorsHandler(filters: TutorFilters | null): void;
-  setGeoLocatedUser(coordinates: [number, number] | null): void;
+  allSubjects: string[];
 }
 
 import {
   Heading,
   FormControl,
   FormLabel,
-  FormHelperText,
   Input,
   RangeSlider,
   RangeSliderTrack,
@@ -25,87 +23,59 @@ import {
   NumberInputStepper,
   NumberIncrementStepper,
   NumberDecrementStepper,
-  Spinner,
+  RangeSliderMark,
+  Select,
 } from '@chakra-ui/react';
+import { FaBroom, FaFilter } from 'react-icons/fa';
 
 const FiltersForm: React.FC<Props> = props => {
-  const { register, handleSubmit, resetField, reset, setValue, watch } =
+  const { register, handleSubmit, reset, setValue, watch } =
     useForm<TutorFiltersFormFields>({
       defaultValues: {
         distance: 100,
         location: '',
         name: '',
-        priceMin: 75,
-        priceMax: 125,
-        starsMin: 3,
-        starsMax: 4,
+        priceMin: 5,
+        priceMax: 250,
+        starsMin: 0,
+        starsMax: 5,
         subject: '',
       },
     });
-  const [geolocationFeedback, setGeolocationFeedback] = useState<string | null>(
-    null
-  );
-  const [geoLocation, setGeoLocation] = useState<GeolocationPosition | null>(
-    null
-  );
 
   const formResetHandler = () => {
     reset();
-    setGeolocationFeedback(null);
-    setGeoLocation(null);
-    props.setGeoLocatedUser(null);
     props.filterTutorsHandler(null);
   };
 
   const formSubmitHandler = (data: TutorFiltersFormFields) => {
-    props.filterTutorsHandler({
-      ...data,
-      location: data.location
-        ? data.location
-        : geoLocation
-        ? [geoLocation!.coords.longitude, geoLocation!.coords.latitude]
-        : '',
-    });
+    props.filterTutorsHandler({ ...data });
   };
 
-  const geoLocalizationHandler = (e: FormEvent) => {
-    e.preventDefault();
-    if (navigator.geolocation) {
-      setGeolocationFeedback('loading');
-      navigator.geolocation.getCurrentPosition(
-        p => {
-          props.setGeoLocatedUser([p.coords.longitude, p.coords.latitude]);
-          resetField('location');
-          setGeolocationFeedback('Location successfully retreived!');
-          setGeoLocation(p);
-        },
-        () => {
-          setGeolocationFeedback('Your browser does not support geolocation!');
-        }
-      );
-    }
-  };
   return (
-    <Flex direction="column" justify="center" height={{ lg: '100%' }}>
+    <Flex
+      direction="column"
+      justify="center"
+      height={{ lg: '100%' }}
+      width={['90%', '95%']}
+      mx="auto"
+    >
       <form onSubmit={handleSubmit(formSubmitHandler)}>
         <Heading as="h2" size="xl">
           Filters
         </Heading>
         <FormControl my="4">
-          <FormLabel htmlFor="tutor-name">Tutor name</FormLabel>
+          <FormLabel htmlFor="tutor-name">Tutor's name</FormLabel>
           <Input
             id="tutor-name"
             type="text"
             {...register('name', { maxLength: 50 })}
           />
-          <FormHelperText>Search Tutor by name.</FormHelperText>
         </FormControl>
         <FormControl my="4">
-          <Text>Price</Text>
-          <Text>
-            Min Price {watch('priceMin')} Max Price {watch('priceMax')}
-          </Text>
+          <Text fontWeight="medium">Price range</Text>
           <RangeSlider
+            mt={10}
             aria-label={['tutor-price-min', 'tutor-price-max']}
             defaultValue={[watch('priceMin'), watch('priceMax')]}
             min={5}
@@ -118,17 +88,38 @@ const FiltersForm: React.FC<Props> = props => {
             <RangeSliderTrack>
               <RangeSliderFilledTrack />
             </RangeSliderTrack>
-            <RangeSliderThumb index={0} />
-            <RangeSliderThumb index={1} />
+            <RangeSliderThumb index={0} borderColor="blackAlpha.500" />
+            <RangeSliderThumb index={1} borderColor="blackAlpha.500" />
+            <RangeSliderMark
+              borderRadius="md"
+              value={watch('priceMin')}
+              textAlign="center"
+              bg="blue.500"
+              color="white"
+              mt="-10"
+              ml="-5"
+              w="12"
+            >
+              ${watch('priceMin')}
+            </RangeSliderMark>
+            <RangeSliderMark
+              borderRadius="md"
+              value={watch('priceMax')}
+              textAlign="center"
+              bg="blue.500"
+              color="white"
+              mt="-10"
+              ml="-5"
+              w="12"
+            >
+              ${watch('priceMax')}
+            </RangeSliderMark>
           </RangeSlider>
-          <FormHelperText>Select your price range.</FormHelperText>
         </FormControl>
         <FormControl my="4">
-          <Text>Stars</Text>
-          <Text>
-            Min Rating {watch('starsMin')} Max Rating {watch('starsMax')}
-          </Text>
+          <Text fontWeight="medium">Stars range</Text>
           <RangeSlider
+            mt={10}
             aria-label={['tutor-stars-min', 'tutor-stars-max']}
             min={0}
             max={5}
@@ -141,44 +132,56 @@ const FiltersForm: React.FC<Props> = props => {
             <RangeSliderTrack>
               <RangeSliderFilledTrack />
             </RangeSliderTrack>
-            <RangeSliderThumb index={0} />
-            <RangeSliderThumb index={1} />
+            <RangeSliderThumb index={0} borderColor="blackAlpha.500" />
+            <RangeSliderThumb index={1} borderColor="blackAlpha.500" />
+            <RangeSliderMark
+              borderRadius="md"
+              value={watch('starsMin')}
+              textAlign="center"
+              bg="blue.500"
+              color="white"
+              mt="-10"
+              ml="-5"
+              w="12"
+            >
+              {watch('starsMin')}
+            </RangeSliderMark>
+            <RangeSliderMark
+              borderRadius="md"
+              value={watch('starsMax')}
+              textAlign="center"
+              bg="blue.500"
+              color="white"
+              mt="-10"
+              ml="-5"
+              w="12"
+            >
+              {watch('starsMax')}
+            </RangeSliderMark>
           </RangeSlider>
-          <FormHelperText>Select your star rating range.</FormHelperText>
         </FormControl>
         <FormControl my="4">
-          <FormLabel htmlFor="tutor-subject">Tutor subject</FormLabel>
-          <Input
-            id="tutor-subject"
-            type="text"
-            {...register('subject', { maxLength: 50 })}
-          />
-          <FormHelperText>Search Tutor by subject.</FormHelperText>
+          <FormLabel htmlFor="select-subject">Tutor's subject</FormLabel>
+          <Select
+            placeholder="Select a subject"
+            id="select-subject"
+            {...register('subject')}
+          >
+            {props.allSubjects.map((s, i) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </Select>
         </FormControl>
         <FormControl my="4">
-          <FormLabel htmlFor="tutor-location">Tutor location</FormLabel>
-          {geolocationFeedback && (
-            <>
-              {geolocationFeedback === 'loading' ? (
-                <Flex my="3">
-                  <Spinner />
-                  <Text ml="3">Geolocation in progress..</Text>
-                </Flex>
-              ) : (
-                geolocationFeedback
-              )}
-            </>
-          )}
-          <Flex direction={'column'}>
-            <Input id="tutor-location" type="text" {...register('location')} />
-            <Button colorScheme="green" mt="2" onClick={geoLocalizationHandler}>
-              Geolocalize me
-            </Button>
-          </Flex>
-          <FormHelperText>Where are you looking for a Tutor?</FormHelperText>
+          <FormLabel htmlFor="tutor-location">Location</FormLabel>
+          <Input id="tutor-location" type="text" {...register('location')} />
         </FormControl>
         <FormControl my="4">
-          <FormLabel htmlFor="tutor-distance">Tutor distance</FormLabel>
+          <FormLabel htmlFor="tutor-distance">
+            Distance<strong>(km)</strong>
+          </FormLabel>
           <NumberInput defaultValue={0}>
             <NumberInputField {...register('distance', { min: 0 })} />
             <NumberInputStepper>
@@ -186,9 +189,22 @@ const FiltersForm: React.FC<Props> = props => {
               <NumberDecrementStepper />
             </NumberInputStepper>
           </NumberInput>
-          <FormHelperText>How far are you looking for (km)?</FormHelperText>
         </FormControl>
-        <Button colorScheme="blue" type="submit" width="100%" mb="2">
+        <Text fontWeight="light" color="gray.500" mt="0" mb="4">
+          Find tutors by distance from a location
+        </Text>
+        <Button
+          colorScheme="blue"
+          type="submit"
+          width="100%"
+          mb="2"
+          textTransform="uppercase"
+          bgGradient="linear-gradient(to right, #1fa2ff, #12d8fa, #a6ffcb);"
+          _hover={{
+            bgGradient: 'linear-gradient(to right, #1a2980, #26d0ce);',
+          }}
+          leftIcon={<FaFilter />}
+        >
           Filter
         </Button>
         <Button
@@ -196,6 +212,7 @@ const FiltersForm: React.FC<Props> = props => {
           type="reset"
           width="100%"
           onClick={formResetHandler}
+          leftIcon={<FaBroom />}
         >
           Reset
         </Button>

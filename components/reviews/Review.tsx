@@ -108,14 +108,15 @@ const Review: React.FC<Props> = ({
           )}
           <Flex justify="space-between" align="center">
             <Flex justify="start" my="3">
-              {Array(review.stars ? review.stars : 5)
+              {Array(review.stars)
                 .fill(null)
                 .map((_, i) => (
-                  <FaStar
-                    key={i}
-                    size={25}
-                    color={review.stars ? '#ffbe0b' : '#e5e5e5'}
-                  />
+                  <FaStar key={i} color="#ffbe0b" />
+                ))}
+              {Array(5 - review.stars)
+                .fill(null)
+                .map((_, i) => (
+                  <FaStar key={i} color="#e5e5e5" />
                 ))}
             </Flex>
             <Flex alignItems="center">

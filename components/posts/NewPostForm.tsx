@@ -17,6 +17,7 @@ import {
   Alert,
 } from '@chakra-ui/react';
 import Layout from '../global/Layout';
+import { FaArrowRight, FaBroom } from 'react-icons/fa';
 
 interface Props {
   subjects: string[] | null;
@@ -54,17 +55,20 @@ const NewPostForm: React.FC<Props> = props => {
     <Layout>
       <Flex
         height={[null, null, null, '75vh']}
-        width={['90%', null, null, '40%']}
+        width={['90%', null, null, '60%', '40%']}
         mx="auto"
         align="center"
         display="flex"
         direction="column"
-        my="10"
+        mb={5}
       >
         <Heading as="h1" size="lg" textAlign="center">
-          Do you have a question or a problem on a homework?
+          Create a Post
         </Heading>
-        <Text my="5">Solve it by asking our tutors with a post</Text>
+        <Text my="3" fontWeight="light" textAlign="center">
+          You can find answer to specific questions or have your homework
+          reviewd.
+        </Text>
         <form
           onSubmit={handleSubmit(formSubmitHandler)}
           style={{ width: '100%' }}
@@ -93,7 +97,7 @@ const NewPostForm: React.FC<Props> = props => {
               />
             )}
           </FormControl>
-          <FormControl mb="4">
+          <FormControl mb="3">
             <FormLabel htmlFor="post-description" fontWeight="bold">
               Description
             </FormLabel>
@@ -102,15 +106,23 @@ const NewPostForm: React.FC<Props> = props => {
               {...register('description', { minLength: 10 })}
             />
           </FormControl>
-          <Button colorScheme="blue" type="submit" w="100%" mt="3">
-            Submit
+          <Button
+            colorScheme="blue"
+            type="submit"
+            width={['100%', null, 'auto']}
+            mr={[0, 2]}
+            rightIcon={<FaArrowRight />}
+          >
+            Create Post
           </Button>
           <Button
             colorScheme="red"
             type="reset"
             onClick={formResetHandler}
-            w="100%"
-            mt="3"
+            rightIcon={<FaBroom />}
+            width={['100%', null, 'auto']}
+            mt={[3, 3, 0]}
+            mr={[0, 2]}
           >
             Reset
           </Button>

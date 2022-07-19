@@ -27,7 +27,12 @@ const TutorPopup: React.FC<Props> = ({ popupInfo, authenticatedTutor }) => {
         {Array(popupInfo.properties.avgRating)
           .fill(null)
           .map((_, i) => (
-            <FaStar key={i} />
+            <FaStar key={i} color="#ffbe0b" />
+          ))}
+        {Array(5 - popupInfo.properties.avgRating)
+          .fill(null)
+          .map((_, i) => (
+            <FaStar key={i} color="#e5e5e5" />
           ))}
       </Flex>
       <Text mb="3">{popupInfo.properties.reviews.length} Reviews</Text>
@@ -61,7 +66,7 @@ const TutorPopup: React.FC<Props> = ({ popupInfo, authenticatedTutor }) => {
             </Button>
             <Button colorScheme="blue" size="xs" width="100%">
               <Link href={`/tutors/${popupInfo.properties._id}/posts/new`}>
-                Ask a question
+                Create a Post
               </Link>
             </Button>
           </>

@@ -47,6 +47,8 @@
 .react-datepicker-popper[data-placement^='bottom'] .react-datepicker__triangle {
   top: 0;
   margin-top: -8px;
+  /* ADDED TO FIX TRIANGLE POSITION */
+  transform: translate3d(200px, 0px, 0px) !important;
 }
 .react-datepicker-popper[data-placement^='bottom']
   .react-datepicker__triangle::before,
@@ -68,6 +70,8 @@
 .react-datepicker-popper[data-placement^='top'] .react-datepicker__triangle {
   bottom: 0;
   margin-bottom: -8px;
+  /* ADDED TO FIX TRIANGLE POSITION */
+  transform: translate3d(200px, 0px, 0px) !important;
 }
 .react-datepicker-popper[data-placement^='top']
   .react-datepicker__triangle::before,

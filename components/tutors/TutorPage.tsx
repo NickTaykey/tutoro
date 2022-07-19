@@ -3,7 +3,6 @@ import ReviewsContextProvider from '../../store/ReviewsProvider';
 import ReviewContext from '../../store/reviews-context';
 import { useSession } from 'next-auth/react';
 import Review from '../reviews/Review';
-import Link from 'next/link';
 import Map, { Marker } from 'react-map-gl';
 import Layout from '../global/Layout';
 
@@ -129,13 +128,6 @@ const TutorPage: React.FC<Props> = ({
                               addUserCreateReviewId={addUserCreateReviewId}
                             />
                           )}
-                        {status === 'unauthenticated' && (
-                          <Link
-                            href={`http://${host}/api/auth/signin?callbackUrl=/tutors/${tutor._id}`}
-                          >
-                            Sign In
-                          </Link>
-                        )}
                         {reviewsCtx.reviews.map((r: ReviewDocumentObject) => (
                           <Review
                             key={r._id}

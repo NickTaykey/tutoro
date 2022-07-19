@@ -113,7 +113,7 @@ const ReviewForm: React.FC<
           onChange={e => setText(e.target.value)}
         />
       </FormControl>
-      <Button type="submit" colorScheme="blue" my="3">
+      <Button type="submit" colorScheme="blue" my="3" width={['100%', 'auto']}>
         {isEdit ? 'Update' : 'Post'} review
       </Button>
     </form>

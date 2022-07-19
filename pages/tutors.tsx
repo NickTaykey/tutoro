@@ -35,20 +35,17 @@ type PointsCollection = FeatureCollection<Geometry, GeoJsonProperties>;
 interface Props {
   points: PointsCollection | null;
   currentUser: UserDocumentObject | null;
+  allSubjects: string[];
 }
 
-const Home: NextPage<Props> = ({ currentUser, points }) => {
+const Home: NextPage<Props> = ({ currentUser, points, allSubjects }) => {
   const [filteredPoints, setFilteredPoints] = useState<PointsCollection | null>(
-    null
-  );
-  const [geoLocatedUser, setGeoLocatedUser] = useState<[number, number] | null>(
     null
   );
 
   const filterTutorsHandler = (filters: TutorFilters | null) => {
     if (filters) {
       ApiHelper('/api/tutors/filter', filters, 'GET').then(res => {
-        setGeoLocatedUser(res.geoLocatedUser);
         setFilteredPoints(
           getPoints(
             res.tutors.map((t: UserDocument) => getUserDocumentObject(t))
@@ -93,7 +90,6 @@ const Home: NextPage<Props> = ({ currentUser, points }) => {
                       } as TutorObjectGeoJSON)
                     : null
                 }
-                geoLocatedUser={geoLocatedUser}
                 tutors={filteredPoints ? filteredPoints : points}
               />
             </Flex>
@@ -101,7 +97,7 @@ const Home: NextPage<Props> = ({ currentUser, points }) => {
           <GridItem colSpan={[12, null, null, 4, 3]} rowSpan={[7, null, 12]}>
             <FiltersForm
               filterTutorsHandler={filterTutorsHandler}
-              setGeoLocatedUser={setGeoLocatedUser}
+              allSubjects={allSubjects}
             />
           </GridItem>
         </Grid>
@@ -182,7 +178,11 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
     ) as ReviewDocumentObject[];
     return userObject;
   });
-
+  const allSubjects = Array.from(
+    new Set(
+      populatedTutorObjects.flatMap((t: UserDocumentObject) => t.subjects)
+    )
+  );
   if (session && session?.user?.email) {
     const currentUser = await User.findOne({
       email: session.user.email,
@@ -199,6 +199,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
 
     return {
       props: {
+        allSubjects,
         currentUser: currentUserObject,
         points: getPoints(populatedTutorObjects),
       },
@@ -206,8 +207,9 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
   }
   return {
     props: {
-      points: getPoints(populatedTutorObjects),
+      allSubjects,
       currentUser: null,
+      points: getPoints(populatedTutorObjects),
     },
   };
 };

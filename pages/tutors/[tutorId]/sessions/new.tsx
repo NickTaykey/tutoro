@@ -141,10 +141,9 @@ const Page: NextPage<Props> = ({ tutor }) => {
     markup = (
       <Layout>
         <Flex
-          height={[null, null, null, '85vh']}
-          width={['90%', null, null, '40%']}
+          width={['90%', null, null, '60%', '50%']}
           mx="auto"
-          my="5"
+          mb={3}
           align="center"
           justify="center"
           display="flex"
@@ -153,7 +152,7 @@ const Page: NextPage<Props> = ({ tutor }) => {
           <Heading as="h1" size="lg" textAlign="center">
             Book a session with {tutor.fullname}
           </Heading>
-          <Heading as="h3" size="md" my="5">
+          <Heading as="h3" size="md" my={3}>
             Price: ${tutor.pricePerHour * formFields.hours}
           </Heading>
           <form onSubmit={formSubmitHandler} style={{ width: '100%' }}>
@@ -230,17 +229,26 @@ const Page: NextPage<Props> = ({ tutor }) => {
                 value={`${currentHour}:${currentMinutes}`}
               />
             </FormControl>
-            <Button colorScheme="blue" type="submit" w="100%" mt="3">
+            <Button
+              colorScheme="blue"
+              rightIcon={<FaArrowRight />}
+              type="submit"
+              width={['100%', null, 'auto']}
+              mt={3}
+              mr={[0, 2]}
+            >
               Submit request
             </Button>
             <Button
-              mt="3"
+              width={['100%', null, 'auto']}
               colorScheme="red"
               type="reset"
               onClick={resetFormHandler}
-              w="100%"
+              rightIcon={<FaBroom />}
+              mt={3}
+              mr={[0, 2]}
             >
-              Reset
+              Clear form
             </Button>
           </form>
         </Flex>
@@ -255,6 +263,7 @@ import connectDB from '../../../../middleware/mongo-connect';
 import { authOptions } from '../../../api/auth/[...nextauth]';
 import { useRouter } from 'next/router';
 import Layout from '../../../../components/global/Layout';
+import { FaArrowRight, FaBroom } from 'react-icons/fa';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
   const [, session] = await Promise.all([

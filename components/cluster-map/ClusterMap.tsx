@@ -24,14 +24,9 @@ import type { TutorObjectGeoJSON } from '../../types';
 interface Props {
   tutors: FeatureCollection<Geometry, GeoJsonProperties>;
   authenticatedTutor: TutorObjectGeoJSON | null;
-  geoLocatedUser: [number, number] | null;
 }
 
-const ClusterMap: React.FC<Props> = ({
-  tutors,
-  authenticatedTutor,
-  geoLocatedUser,
-}) => {
+const ClusterMap: React.FC<Props> = ({ tutors, authenticatedTutor }) => {
   const [popupInfo, setPopupInfo] = useState<TutorObjectGeoJSON | null>(null);
   const mapRef = useRef<MapRef | null>(null);
 
@@ -79,7 +74,7 @@ const ClusterMap: React.FC<Props> = ({
       onClick={onMapClick}
       onLoad={onMapLoad}
       ref={mapRef}
-      style={{ width: '90vw', minHeight: '300px', margin: '0 auto' }}
+      style={{ minHeight: '300px' }}
       mapStyle="mapbox://styles/mapbox/streets-v10"
       mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
       testMode={true}
@@ -101,24 +96,24 @@ const ClusterMap: React.FC<Props> = ({
           longitude={authenticatedTutor.geometry.coordinates[0]}
           latitude={authenticatedTutor.geometry.coordinates[1]}
           anchor="top"
-          color="orange"
-          onClick={() => {
-            setPopupInfo(authenticatedTutor);
-          }}
-        />
-      )}
-      {geoLocatedUser && (
-        <Marker
-          longitude={geoLocatedUser[0]}
-          latitude={geoLocatedUser[1]}
-          anchor="top"
-          color="red"
+          color="var(--chakra-colors-red-500)"
         />
       )}
       {popupInfo && (
         <Popup
           closeOnClick={false}
-          anchor="top"
+          style={
+            authenticatedTutor?.properties._id === popupInfo.properties._id
+              ? {
+                  marginLeft: '15px',
+                }
+              : {}
+          }
+          anchor={
+            authenticatedTutor?.properties._id === popupInfo.properties._id
+              ? 'left'
+              : 'top'
+          }
           longitude={+popupInfo.geometry.coordinates[0]}
           latitude={+popupInfo.geometry.coordinates[1]}
           onClose={() => setPopupInfo(null)}

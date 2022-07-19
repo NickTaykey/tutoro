@@ -3,7 +3,6 @@ import {
   Heading,
   Text,
   Avatar,
-  Button,
   Drawer,
   DrawerOverlay,
   DrawerContent,
@@ -13,19 +12,26 @@ import {
   IconButton,
   Box,
   useDisclosure,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  Button,
 } from '@chakra-ui/react';
 import { signIn, signOut } from 'next-auth/react';
+import { UserDocumentObject } from '../../models/User';
+import { FaArrowRight, FaBars } from 'react-icons/fa';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Logo from './Logo';
-import { UserDocumentObject } from '../../models/User';
-import { FaArrowRight, FaUserCircle } from 'react-icons/fa';
-import { GiHamburgerMenu } from 'react-icons/gi';
-import React, { useEffect, useState } from 'react';
 import { getProviders, useSession } from 'next-auth/react';
 
 import type { ClientSafeProvider, LiteralUnion } from 'next-auth/react';
 
 import { FcGoogle } from 'react-icons/fc';
+import { GoThreeBars } from 'react-icons/go';
 import { BuiltInProviderType } from 'next-auth/providers';
 
 type ProvidersList = Record<
@@ -44,8 +50,18 @@ const Navbar: React.FC = () => {
   }, [getProviders]);
 
   const currentUser = data?.user as UserDocumentObject;
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isDrawerOpen,
+    onOpen: onDrawerOpen,
+    onClose: onDrawerClose,
+  } = useDisclosure();
+  const {
+    isOpen: isModalOpen,
+    onOpen: onModalOpen,
+    onClose: onModalClose,
+  } = useDisclosure();
   const btnRef = React.useRef(null);
+
   return (
     <Box
       boxShadow="lg"
@@ -57,27 +73,38 @@ const Navbar: React.FC = () => {
       zIndex="200"
       width="100%"
     >
-      <Flex justify="space-between" alignItems="center" width="90%" mx="auto">
-        <Flex alignItems="center">
-          <Logo width="80" height="80" />
-          <Heading size="xl" fontFamily="itim" ml="1">
-            <Link href="/tutors">TUTORO</Link>
+      <Flex justify="space-between" alignItems="center">
+        <Link href="/tutors">
+          <Heading
+            size="xl"
+            fontFamily="itim"
+            ml="1"
+            _hover={{ cursor: 'pointer' }}
+          >
+            <Flex alignItems="center">
+              <Logo width={60} height={60} />
+              <Text textTransform="uppercase" ml={2}>
+                tutoro
+              </Text>
+            </Flex>
           </Heading>
-        </Flex>
+        </Link>
         <Show breakpoint="(max-width: 767px)">
           <IconButton
             ref={btnRef}
-            onClick={onOpen}
+            onClick={onDrawerOpen}
             size="lg"
             backgroundColor="white"
             fontSize="48"
+            mr={3}
+            color="gray.500"
             aria-label="navbar-hamburger"
-            icon={<GiHamburgerMenu />}
+            icon={<GoThreeBars />}
           />
           <Drawer
-            isOpen={isOpen}
+            isOpen={isDrawerOpen}
             placement="right"
-            onClose={onClose}
+            onClose={onDrawerClose}
             size="xs"
             finalFocusRef={btnRef}
           >
@@ -87,8 +114,8 @@ const Navbar: React.FC = () => {
               <DrawerBody>
                 {status === 'unauthenticated' && providersList && (
                   <Flex height="100%" direction="column" justify="center">
-                    <Heading as="h1" size="xl" textAlign="center" my="4">
-                      Join Tutoro
+                    <Heading as="h1" size="md" textAlign="center" my="4">
+                      Sign In
                     </Heading>
                     {Object.values(providersList).map(
                       (provider: ClientSafeProvider) => {
@@ -107,7 +134,6 @@ const Navbar: React.FC = () => {
                     )}
                   </Flex>
                 )}
-
                 {status === 'authenticated' && (
                   <Flex
                     alignItems="center"
@@ -135,7 +161,7 @@ const Navbar: React.FC = () => {
                       colorScheme="gray"
                       onClick={() => signOut()}
                     >
-                      Logout
+                      Sign Out
                     </Button>
                   </Flex>
                 )}
@@ -144,26 +170,50 @@ const Navbar: React.FC = () => {
           </Drawer>
         </Show>
         <Show breakpoint="(min-width: 768px)">
-          {status === 'unauthenticated' && providersList && (
-            <Flex alignItems="center">
-              <Heading size="md">Join Tutoro</Heading>
-              {Object.values(providersList).map(
-                (provider: ClientSafeProvider) => {
-                  return (
-                    <IconButton
-                      ml="3"
-                      key={provider.name}
-                      icon={<FcGoogle size="30" />}
-                      aria-label="Google OAuth Icon"
-                      onClick={() => signIn(provider.id)}
-                    />
-                  );
-                }
+          {providersList && (
+            <>
+              <Modal isOpen={isModalOpen} onClose={onModalClose} isCentered>
+                <ModalOverlay />
+                <ModalContent>
+                  <ModalCloseButton />
+                  <ModalHeader textAlign="center">
+                    Sign In to Tutoro
+                  </ModalHeader>
+                  <ModalBody mb="5">
+                    {Object.values(providersList).map(
+                      (provider: ClientSafeProvider) => {
+                        return (
+                          <Button
+                            width="100%"
+                            key={provider.name}
+                            leftIcon={<FcGoogle size="30" />}
+                            aria-label="Google OAuth Icon"
+                            onClick={() => signIn(provider.id)}
+                          >
+                            Google
+                          </Button>
+                        );
+                      }
+                    )}
+                  </ModalBody>
+                </ModalContent>
+              </Modal>
+              {status === 'unauthenticated' && (
+                <Flex alignItems="center" mr="4">
+                  <Button
+                    variant="link"
+                    size="lg"
+                    onClick={onModalOpen}
+                    _hover={{ textDecoration: 'none', color: 'blackAlpha.800' }}
+                  >
+                    Sign In
+                  </Button>
+                </Flex>
               )}
-            </Flex>
+            </>
           )}
           {status === 'authenticated' && (
-            <Flex alignItems="center">
+            <Flex alignItems="center" mr={4}>
               <Avatar name={currentUser.fullname} src={currentUser.avatar} />
               <Link href="/users">
                 <Text
