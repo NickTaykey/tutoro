@@ -17,6 +17,10 @@ export const getUserDocumentObject = (
     subjects: user.subjects && user.subjects.length ? [...user.subjects] : [],
     pricePerHour: user.pricePerHour,
     avgRating: user.avgRating,
+    avatar: {
+      public_id: user.avatar!.public_id ? user.avatar!.public_id : '',
+      url: user.avatar!.url ? user.avatar!.url : '',
+    },
     reviews: [],
     posts: [],
     createdPosts: [],
@@ -29,7 +33,6 @@ export const getUserDocumentObject = (
       type: 'Point',
       coordinates: [...user.geometry!.coordinates] as [number, number],
     };
-  if (user.avatar) userObject.avatar = user.avatar;
   return userObject;
 };
 

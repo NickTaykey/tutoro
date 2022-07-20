@@ -32,7 +32,7 @@ interface UserCoreObject {
   subjects: string[];
   bio: string;
   location: string;
-  avatar?: string;
+  avatar?: { url: string; public_id: string };
   avgRating: number;
   geometry?: {
     type: 'Point';
@@ -96,7 +96,10 @@ const userSchema = new Schema<UserDocument, UserModel, {}, InstanceMethods>({
   subjects: [],
   bio: String,
   location: String,
-  avatar: String,
+  avatar: {
+    url: { type: String, default: '' },
+    public_id: { type: String, default: '' },
+  },
   geometry: {
     type: { type: String, enum: ['Point'], default: 'Point' },
     coordinates: [Number],

@@ -19,10 +19,15 @@ import {
   ModalHeader,
   ModalOverlay,
   Button,
+  ModalFooter,
 } from '@chakra-ui/react';
 import { signIn, signOut } from 'next-auth/react';
 import { UserDocumentObject } from '../../models/User';
-import { FaArrowRight, FaBars } from 'react-icons/fa';
+import {
+  FaRegTimesCircle,
+  FaRegUserCircle,
+  FaSignOutAlt,
+} from 'react-icons/fa';
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Logo from './Logo';
@@ -33,6 +38,7 @@ import type { ClientSafeProvider, LiteralUnion } from 'next-auth/react';
 import { FcGoogle } from 'react-icons/fc';
 import { GoThreeBars } from 'react-icons/go';
 import { BuiltInProviderType } from 'next-auth/providers';
+import UpdateAvatarForm from '../users/UpdateAvatarForm';
 
 type ProvidersList = Record<
   LiteralUnion<BuiltInProviderType, string>,
@@ -44,6 +50,8 @@ const Navbar: React.FC = () => {
   const [providersList, setProvidersList] = useState<ProvidersList | null>(
     null
   );
+  const [newAvatarUrl, setNewAvatarUrl] = useState<string | null>(null);
+  const [showDefaultAvatar, setShowDefaultAvatar] = useState<boolean>(false);
 
   useEffect(() => {
     getProviders().then((list: ProvidersList | null) => setProvidersList(list));
@@ -56,11 +64,29 @@ const Navbar: React.FC = () => {
     onClose: onDrawerClose,
   } = useDisclosure();
   const {
-    isOpen: isModalOpen,
-    onOpen: onModalOpen,
-    onClose: onModalClose,
+    isOpen: isAuthModalOpen,
+    onOpen: onAuthModalOpen,
+    onClose: onAuthModalClose,
   } = useDisclosure();
+  const {
+    isOpen: isUpdateProfileModalOpen,
+    onOpen: onUpdateProfileModalOpen,
+    onClose: onUpdateProfileModalClose,
+  } = useDisclosure();
+  const {
+    isOpen: viewUpdateAvatarForm,
+    onOpen: showUpdateAvatarForm,
+    onClose: hideUpdateAvatarForm,
+  } = useDisclosure({ defaultIsOpen: false });
   const btnRef = React.useRef(null);
+
+  const currentUserObject = currentUser as UserDocumentObject;
+  const public_id = currentUserObject?.avatar?.public_id;
+  const showResetAvatarBtn =
+    !showDefaultAvatar &&
+    ((!!newAvatarUrl && !public_id) ||
+      (!newAvatarUrl && !!public_id) ||
+      (!!newAvatarUrl && !!public_id));
 
   return (
     <Box
@@ -105,7 +131,7 @@ const Navbar: React.FC = () => {
             isOpen={isDrawerOpen}
             placement="right"
             onClose={onDrawerClose}
-            size="xs"
+            size="full"
             finalFocusRef={btnRef}
           >
             <DrawerOverlay />
@@ -143,7 +169,13 @@ const Navbar: React.FC = () => {
                   >
                     <Avatar
                       name={currentUser.fullname}
-                      src={currentUser.avatar}
+                      src={
+                        showDefaultAvatar
+                          ? ''
+                          : newAvatarUrl
+                          ? newAvatarUrl
+                          : currentUser.avatar?.url
+                      }
                     />
                     <Link href="/users">
                       <Text
@@ -156,13 +188,50 @@ const Navbar: React.FC = () => {
                         Hi, {currentUser?.fullname?.split(' ')[0]}
                       </Text>
                     </Link>
-                    <Button
-                      rightIcon={<FaArrowRight />}
-                      colorScheme="gray"
-                      onClick={() => signOut()}
-                    >
-                      Sign Out
-                    </Button>
+                    {viewUpdateAvatarForm ? (
+                      <Flex
+                        direction="column"
+                        shadow="md"
+                        borderWidth="1px"
+                        borderRadius="md"
+                        p="6"
+                        width="100%"
+                      >
+                        <FaRegTimesCircle
+                          size="25"
+                          onClick={hideUpdateAvatarForm}
+                          style={{ alignSelf: 'end' }}
+                        />
+                        <Box my="3">
+                          <UpdateAvatarForm
+                            showResetAvatarBtn={showResetAvatarBtn}
+                            setShowDefaultAvatar={setShowDefaultAvatar}
+                            setNewAvatarUrl={setNewAvatarUrl}
+                            closeUpdateAvatarModal={onUpdateProfileModalClose}
+                          />
+                        </Box>
+                      </Flex>
+                    ) : (
+                      <>
+                        <IconButton
+                          width="100%"
+                          icon={<FaRegUserCircle size="25" />}
+                          colorScheme="cyan"
+                          color="white"
+                          onClick={showUpdateAvatarForm}
+                          aria-label="Update avatar"
+                          mt="2"
+                        />
+                        <IconButton
+                          width="100%"
+                          icon={<FaSignOutAlt size="25" />}
+                          colorScheme="gray"
+                          onClick={() => signOut()}
+                          aria-label="Sign out button"
+                          mt="2"
+                        />
+                      </>
+                    )}
                   </Flex>
                 )}
               </DrawerBody>
@@ -172,7 +241,11 @@ const Navbar: React.FC = () => {
         <Show breakpoint="(min-width: 768px)">
           {providersList && (
             <>
-              <Modal isOpen={isModalOpen} onClose={onModalClose} isCentered>
+              <Modal
+                isOpen={isAuthModalOpen}
+                onClose={onAuthModalClose}
+                isCentered
+              >
                 <ModalOverlay />
                 <ModalContent>
                   <ModalCloseButton />
@@ -203,7 +276,7 @@ const Navbar: React.FC = () => {
                   <Button
                     variant="link"
                     size="lg"
-                    onClick={onModalOpen}
+                    onClick={onAuthModalOpen}
                     _hover={{ textDecoration: 'none', color: 'blackAlpha.800' }}
                   >
                     Sign In
@@ -213,26 +286,64 @@ const Navbar: React.FC = () => {
             </>
           )}
           {status === 'authenticated' && (
-            <Flex alignItems="center" mr={4}>
-              <Avatar name={currentUser.fullname} src={currentUser.avatar} />
-              <Link href="/users">
-                <Text
-                  fontWeight="bold"
-                  fontSize="lg"
-                  mx="2"
-                  _hover={{ cursor: 'pointer' }}
-                >
-                  Hi, {currentUser?.fullname?.split(' ')[0]}
-                </Text>
-              </Link>
-              <Button
-                rightIcon={<FaArrowRight />}
-                colorScheme="gray"
-                onClick={() => signOut()}
+            <>
+              <Modal
+                blockScrollOnMount={false}
+                isOpen={isUpdateProfileModalOpen}
+                onClose={onUpdateProfileModalClose}
               >
-                Logout
-              </Button>
-            </Flex>
+                <ModalOverlay />
+                <ModalContent>
+                  <ModalHeader>Choose another avatar!</ModalHeader>
+                  <ModalCloseButton />
+                  <ModalBody>
+                    <UpdateAvatarForm
+                      showResetAvatarBtn={showResetAvatarBtn}
+                      setShowDefaultAvatar={setShowDefaultAvatar}
+                      setNewAvatarUrl={setNewAvatarUrl}
+                      closeUpdateAvatarModal={onUpdateProfileModalClose}
+                    />
+                  </ModalBody>
+                </ModalContent>
+              </Modal>
+              <Flex alignItems="center">
+                <Avatar
+                  name={currentUser.fullname}
+                  src={
+                    showDefaultAvatar
+                      ? ''
+                      : newAvatarUrl
+                      ? newAvatarUrl
+                      : currentUser.avatar?.url
+                  }
+                />
+                <Link href="/users">
+                  <Text
+                    fontWeight="bold"
+                    fontSize="lg"
+                    mx="2"
+                    _hover={{ cursor: 'pointer' }}
+                  >
+                    Hi, {currentUser?.fullname?.split(' ')[0]}
+                  </Text>
+                </Link>
+                <IconButton
+                  icon={<FaRegUserCircle size="25" />}
+                  colorScheme="cyan"
+                  color="white"
+                  onClick={onUpdateProfileModalOpen}
+                  aria-label="Update avatar"
+                  mr={2}
+                />
+                <IconButton
+                  icon={<FaSignOutAlt size="25" />}
+                  colorScheme="gray"
+                  onClick={() => signOut()}
+                  aria-label="Sign out button"
+                  mr={4}
+                />
+              </Flex>
+            </>
           )}
         </Show>
       </Flex>

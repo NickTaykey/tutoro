@@ -49,7 +49,7 @@ const seeder = async () => {
     const user = new User({
       fullname: faker.name.findName(),
       email: faker.internet.email(),
-      avatar: faker.internet.avatar(),
+      avatar: { url: faker.internet.avatar(), public_id: '' },
       isTutor: false,
     });
     users.push(user as UserDocument);
@@ -65,11 +65,11 @@ const seeder = async () => {
     const tutor = new User({
       fullname: faker.name.findName(),
       email: faker.internet.email(),
-      avatar: faker.internet.avatar(),
       pricePerHour: Math.trunc(Math.random() * 250) + 6,
       subjects: getRandomSubjects(),
       bio: faker.lorem.lines(1),
       location: faker.lorem.words(2),
+      avatar: { url: faker.internet.avatar(), public_id: '' },
       isTutor: true,
       geometry: {
         type: 'Point',

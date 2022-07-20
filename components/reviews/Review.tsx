@@ -100,7 +100,7 @@ const Review: React.FC<Props> = ({
               justify={staticView ? 'space-between' : 'start'}
               alignItems="center"
             >
-              <Avatar name={userFullname} src={avatar} />
+              <Avatar name={userFullname} src={avatar?.url} />
               <Heading as="h3" size="sm" mx="3">
                 {userFullname}
               </Heading>

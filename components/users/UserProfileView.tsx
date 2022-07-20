@@ -128,17 +128,19 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
           bottom="0px"
           left="0px"
         >
-          <Button
-            boxShadow="dark-lg"
-            colorScheme="pink"
-            bgGradient="linear(to-l, #7928CA, #FF0080)"
-            width={['calc(90% + 4px)', '95%', '80%']}
-            mx="auto"
-            leftIcon={<FaHandsHelping size={25} />}
-            textTransform="uppercase"
-          >
-            <Link href="/users/become-tutor">Become a tutor</Link>
-          </Button>
+          <Link href="/users/become-tutor">
+            <Button
+              boxShadow="dark-lg"
+              colorScheme="pink"
+              bgGradient="linear(to-l, #7928CA, #FF0080)"
+              width={['calc(90% + 4px)', '95%', '80%']}
+              mx="auto"
+              leftIcon={<FaHandsHelping size={25} />}
+              textTransform="uppercase"
+            >
+              Become a tutor
+            </Button>
+          </Link>
         </Box>
       )}
     </Box>

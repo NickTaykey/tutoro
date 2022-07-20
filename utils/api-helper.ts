@@ -1,7 +1,8 @@
 function ApiHelper(
   url: string,
   data: any = {},
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET'
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET',
+  headers?: Record<string, string>
 ) {
   const body =
     method === 'PUT' || method === 'POST' ? JSON.stringify(data) : null;
