@@ -19,11 +19,11 @@ import {
   ModalHeader,
   ModalOverlay,
   Button,
-  ModalFooter,
 } from '@chakra-ui/react';
 import { signIn, signOut } from 'next-auth/react';
 import { UserDocumentObject } from '../../models/User';
 import {
+  FaListUl,
   FaRegTimesCircle,
   FaRegUserCircle,
   FaSignOutAlt,
@@ -39,6 +39,7 @@ import { FcGoogle } from 'react-icons/fc';
 import { GoThreeBars } from 'react-icons/go';
 import { BuiltInProviderType } from 'next-auth/providers';
 import UpdateAvatarForm from '../users/UpdateAvatarForm';
+import UpdateTutorForm from '../tutors/UpdateTutorForm';
 
 type ProvidersList = Record<
   LiteralUnion<BuiltInProviderType, string>,
@@ -167,26 +168,19 @@ const Navbar: React.FC = () => {
                     direction="column"
                     height="100%"
                   >
-                    <Avatar
-                      name={currentUser.fullname}
-                      src={
-                        showDefaultAvatar
-                          ? ''
-                          : newAvatarUrl
-                          ? newAvatarUrl
-                          : currentUser.avatar?.url
-                      }
-                    />
                     <Link href="/users">
-                      <Text
-                        fontWeight="bold"
-                        fontSize="lg"
-                        mx="2"
+                      <Avatar
+                        name={currentUser.fullname}
+                        src={
+                          showDefaultAvatar
+                            ? ''
+                            : newAvatarUrl
+                            ? newAvatarUrl
+                            : currentUser.avatar?.url
+                        }
                         _hover={{ cursor: 'pointer' }}
-                        my="4"
-                      >
-                        Hi, {currentUser?.fullname?.split(' ')[0]}
-                      </Text>
+                        mb="2"
+                      />
                     </Link>
                     {viewUpdateAvatarForm ? (
                       <Flex
@@ -196,6 +190,7 @@ const Navbar: React.FC = () => {
                         borderRadius="md"
                         p="6"
                         width="100%"
+                        mt={[2, 0]}
                       >
                         <FaRegTimesCircle
                           size="25"
@@ -222,6 +217,16 @@ const Navbar: React.FC = () => {
                           aria-label="Update avatar"
                           mt="2"
                         />
+                        {currentUser.isTutor && (
+                          <IconButton
+                            width="100%"
+                            icon={<FaListUl size="25" />}
+                            colorScheme="orange"
+                            onClick={showUpdateAvatarForm}
+                            aria-label="Update avatar"
+                            mt="2"
+                          />
+                        )}
                         <IconButton
                           width="100%"
                           icon={<FaSignOutAlt size="25" />}
@@ -289,8 +294,8 @@ const Navbar: React.FC = () => {
             <>
               <Modal
                 blockScrollOnMount={false}
-                isOpen={isUpdateProfileModalOpen}
-                onClose={onUpdateProfileModalClose}
+                isOpen={viewUpdateAvatarForm}
+                onClose={hideUpdateAvatarForm}
               >
                 <ModalOverlay />
                 <ModalContent>
@@ -301,40 +306,60 @@ const Navbar: React.FC = () => {
                       showResetAvatarBtn={showResetAvatarBtn}
                       setShowDefaultAvatar={setShowDefaultAvatar}
                       setNewAvatarUrl={setNewAvatarUrl}
-                      closeUpdateAvatarModal={onUpdateProfileModalClose}
+                      closeUpdateAvatarModal={hideUpdateAvatarForm}
                     />
                   </ModalBody>
                 </ModalContent>
               </Modal>
+              {currentUser.isTutor && (
+                <Modal
+                  blockScrollOnMount={false}
+                  isOpen={isUpdateProfileModalOpen}
+                  onClose={onUpdateProfileModalClose}
+                >
+                  <ModalOverlay />
+                  <ModalContent>
+                    <ModalHeader>Update your tutor profile</ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody>
+                      <UpdateTutorForm />
+                    </ModalBody>
+                  </ModalContent>
+                </Modal>
+              )}
               <Flex alignItems="center">
-                <Avatar
-                  name={currentUser.fullname}
-                  src={
-                    showDefaultAvatar
-                      ? ''
-                      : newAvatarUrl
-                      ? newAvatarUrl
-                      : currentUser.avatar?.url
-                  }
-                />
                 <Link href="/users">
-                  <Text
-                    fontWeight="bold"
-                    fontSize="lg"
-                    mx="2"
+                  <Avatar
+                    mr="2"
+                    name={currentUser.fullname}
+                    src={
+                      showDefaultAvatar
+                        ? ''
+                        : newAvatarUrl
+                        ? newAvatarUrl
+                        : currentUser.avatar?.url
+                    }
                     _hover={{ cursor: 'pointer' }}
-                  >
-                    Hi, {currentUser?.fullname?.split(' ')[0]}
-                  </Text>
+                  />
                 </Link>
                 <IconButton
                   icon={<FaRegUserCircle size="25" />}
                   colorScheme="cyan"
                   color="white"
-                  onClick={onUpdateProfileModalOpen}
+                  onClick={showUpdateAvatarForm}
                   aria-label="Update avatar"
                   mr={2}
                 />
+                {currentUser.isTutor && (
+                  <IconButton
+                    width="100%"
+                    icon={<FaListUl size="25" />}
+                    colorScheme="orange"
+                    onClick={onUpdateProfileModalOpen}
+                    aria-label="Update avatar"
+                    mr={2}
+                  />
+                )}
                 <IconButton
                   icon={<FaSignOutAlt size="25" />}
                   colorScheme="gray"

@@ -2,7 +2,7 @@ import type { NextPage, GetServerSideProps } from 'next';
 import type { UserDocument, UserDocumentObject } from '../../../../models/User';
 
 import { FormEvent, useState } from 'react';
-import { getUserDocumentObject } from '../../../../utils/user-casting-helpers';
+import { getUserDocumentObject } from '../../../../utils/casting-helpers';
 import ApiHelper from '../../../../utils/api-helper';
 import User from '../../../../models/User';
 import Review from '../../../../models/Review';

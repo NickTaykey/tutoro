@@ -43,7 +43,10 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           avatar: user.avatar,
           isTutor: user.isTutor,
-          coordinates: user.coordinates,
+          bio: user.bio,
+          subjects: user.subjects,
+          pricePerHour: user.pricePerHour,
+          location: user.location,
         },
       };
     },

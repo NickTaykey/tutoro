@@ -2,13 +2,13 @@ import type { ObjectId, Model, Document } from 'mongoose';
 import type { UserDocument, UserDocumentObject } from './User';
 import { Schema, model, models } from 'mongoose';
 import User from './User';
-import { PostType, PostStatus } from '../types';
+import { PostType, PostStatus, ImageObject } from '../types';
 
 interface Post {
   subject: string;
   description: string;
-  postImages: Array<{ url: string; public_id: string }>;
-  answerImages: Array<{ url: string; public_id: string }>;
+  postImages: Array<ImageObject>;
+  answerImages: Array<ImageObject>;
   status: PostStatus;
   answer: string;
   type: PostType;

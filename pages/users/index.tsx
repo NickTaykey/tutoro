@@ -14,7 +14,7 @@ import {
   getReviewDocumentObject,
   getSessionDocumentObject,
   getPostDocumentObject,
-} from '../../utils/user-casting-helpers';
+} from '../../utils/casting-helpers';
 
 import {
   Text,

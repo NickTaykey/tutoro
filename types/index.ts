@@ -1,9 +1,14 @@
 import type { UserDocumentObject } from '../models/User';
 import type { ObjectId } from 'mongoose';
+import type { FeatureCollection, GeoJsonProperties, Geometry } from 'geojson';
 
 export type TutorObjectGeoJSONProperties = UserDocumentObject & {
+  subjects?: string[] | string;
+  avatar?: ImageObject | string;
   cluster: false;
 };
+
+export type ImageObject = { public_id: string; url: string };
 
 export type TutorObjectGeoJSON = {
   type: 'Feature';
@@ -66,3 +71,5 @@ export enum PostType {
   GLOBAL = 'global',
   SPECIFIC = 'specific',
 }
+
+export type PointsCollection = FeatureCollection<Geometry, GeoJsonProperties>;

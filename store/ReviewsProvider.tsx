@@ -2,7 +2,7 @@ import React, { useReducer } from 'react';
 import ReviewContext, { APIError } from './reviews-context';
 import ApiHelper from '../utils/api-helper';
 import type { ReviewDocument, ReviewDocumentObject } from '../models/Review';
-import { getReviewDocumentObject } from '../utils/user-casting-helpers';
+import { getReviewDocumentObject } from '../utils/casting-helpers';
 
 type ReviewFieldsArg = { stars: number; text?: string };
 

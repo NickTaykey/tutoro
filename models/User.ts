@@ -4,6 +4,7 @@ import type { Model, ObjectId, Document } from 'mongoose';
 import type { ReviewDocument, ReviewDocumentObject } from './Review';
 import type { SessionDocument, SessionDocumentObject } from './Session';
 import type { PostDocument, PostDocumentObject } from './Post';
+import type { ImageObject } from '../types';
 
 type ReviewsArray =
   | ObjectId[]
@@ -32,7 +33,7 @@ interface UserCoreObject {
   subjects: string[];
   bio: string;
   location: string;
-  avatar?: { url: string; public_id: string };
+  avatar?: ImageObject;
   avgRating: number;
   geometry?: {
     type: 'Point';

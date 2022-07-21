@@ -10,6 +10,8 @@ import {
   ListItem,
   Button,
   VStack,
+  Avatar,
+  Center,
 } from '@chakra-ui/react';
 
 interface Props {
@@ -18,9 +20,21 @@ interface Props {
 }
 
 const TutorPopup: React.FC<Props> = ({ popupInfo, authenticatedTutor }) => {
+  const subjects = authenticatedTutor
+    ? popupInfo.properties.subjects
+    : JSON.parse(popupInfo.properties.subjects as string);
+  const avatar = authenticatedTutor
+    ? popupInfo.properties.avatar?.url
+    : JSON.parse(popupInfo.properties.avatar as string).url;
   return (
     <Box data-testid="popup-container" p="1">
-      <Heading as="h3" size="md" mt="5">
+      <Center>
+        <Avatar
+          src={avatar ? avatar : ''}
+          name={popupInfo.properties.fullname}
+        />
+      </Center>
+      <Heading as="h3" size="md" mt="3">
         {popupInfo.properties.fullname}
       </Heading>
       <Flex justify="start" my="3">
@@ -41,11 +55,9 @@ const TutorPopup: React.FC<Props> = ({ popupInfo, authenticatedTutor }) => {
           Subjects
         </Text>
         <UnorderedList>
-          {JSON.parse(popupInfo.properties.subjects.toString()).map(
-            (s: string) => (
-              <ListItem key={s}>{s}</ListItem>
-            )
-          )}
+          {subjects.map((s: string) => (
+            <ListItem key={s}>{s}</ListItem>
+          ))}
         </UnorderedList>
       </Box>
       <VStack>

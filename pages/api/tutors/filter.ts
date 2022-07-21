@@ -72,9 +72,7 @@ export default function handler(
           });
         }
         const filteredTutors = await User.find({ $and: query });
-        res
-          .status(200)
-          .json({ tutors: filteredTutors, geoLocatedUser: coordinates });
+        res.status(200).json({ tutors: filteredTutors });
       });
     });
   });

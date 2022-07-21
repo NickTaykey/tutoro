@@ -1,7 +1,7 @@
 import type { GetServerSideProps, NextPage } from 'next';
 import type { UserDocument, UserDocumentObject } from '../../../models/User';
 
-import { getReviewDocumentObject } from '../../../utils/user-casting-helpers';
+import { getReviewDocumentObject } from '../../../utils/casting-helpers';
 import TutorPage from '../../../components/tutors/TutorPage';
 import User from '../../../models/User';
 import Review, { ReviewDocumentObject } from '../../../models/Review';
@@ -26,7 +26,7 @@ const Page: NextPage<Props> = ({ tutor, userCreatedReviews, host }) => {
   return markup;
 };
 
-import { getUserDocumentObject } from '../../../utils/user-casting-helpers';
+import { getUserDocumentObject } from '../../../utils/casting-helpers';
 import { authOptions } from '../../api/auth/[...nextauth]';
 import connectDB from '../../../middleware/mongo-connect';
 import { getServerSession } from 'next-auth';

@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, MouseEvent } from 'react';
+import { useState, ChangeEvent, MouseEvent, useContext } from 'react';
 import { useSession } from 'next-auth/react';
 import { UserDocumentObject } from '../../models/User';
 import {
@@ -12,8 +12,11 @@ import {
   FormLabel,
   IconButton,
   Input,
+  Spinner,
 } from '@chakra-ui/react';
 import { FaBroom, FaFileUpload, FaTrash } from 'react-icons/fa';
+import ClusterMapContext from '../../store/cluster-map-context';
+import type { ImageObject } from '../../types';
 
 interface Props {
   setNewAvatarUrl(newAvatar: string): void;
@@ -26,7 +29,10 @@ const UpdateAvatarForm: React.FC<Props> = props => {
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [errorAlert, setErrorAlert] = useState<string | null>(null);
-  const { data: currentUser } = useSession();
+  const [isUploading, setIsUploading] = useState<boolean>(false);
+  const { data } = useSession();
+  const currentUser = data?.user as UserDocumentObject;
+  const clusterMapCtx = useContext(ClusterMapContext);
 
   const onFileUploadChange = (e: ChangeEvent<HTMLInputElement>) => {
     const fileInput = e.target;
@@ -74,28 +80,30 @@ const UpdateAvatarForm: React.FC<Props> = props => {
     try {
       const formData = new FormData();
       formData.append('avatar', file);
-      const res = await fetch(
-        `/api/${(currentUser?.user as UserDocumentObject)._id}`,
-        {
-          method: 'PUT',
-          body: formData,
-        }
-      );
+      setIsUploading(true);
+      const res = await fetch(`/api/${currentUser._id}`, {
+        method: 'PUT',
+        body: formData,
+      });
       const {
         error,
-        newAvatarUrl,
+        newAvatar,
       }: {
         error: string | null;
-        newAvatarUrl: string | null;
+        newAvatar: ImageObject | null;
       } = await res.json();
-      if (error || (!error && !newAvatarUrl)) {
+      if (error || (!error && !newAvatar)) {
         return setErrorAlert(
           error || 'Unexpected server side error... try again later.'
         );
       }
       props.closeUpdateAvatarModal();
-      props.setNewAvatarUrl(newAvatarUrl!);
+      props.setNewAvatarUrl(newAvatar!.url);
       props.setShowDefaultAvatar(false);
+      if (currentUser.isTutor) {
+        clusterMapCtx.updateAuthenticatedTutorAvatar(newAvatar!);
+      }
+      setIsUploading(false);
     } catch (error) {
       setErrorAlert('Unexpected server side error... try again later.');
     }
@@ -103,12 +111,9 @@ const UpdateAvatarForm: React.FC<Props> = props => {
 
   const resetDefaultAvatar = async () => {
     try {
-      const res = await fetch(
-        `/api/${(currentUser?.user as UserDocumentObject)._id}`,
-        {
-          method: 'PUT',
-        }
-      );
+      const res = await fetch(`/api/${currentUser._id}`, {
+        method: 'PUT',
+      });
       const {
         error,
       }: {
@@ -121,6 +126,12 @@ const UpdateAvatarForm: React.FC<Props> = props => {
       }
       props.closeUpdateAvatarModal();
       props.setShowDefaultAvatar(true);
+      if (currentUser.isTutor) {
+        clusterMapCtx.updateAuthenticatedTutorAvatar({
+          url: '',
+          public_id: '',
+        });
+      }
     } catch (error) {
       setErrorAlert('Unexpected server side error... try again later.');
     }
@@ -130,11 +141,7 @@ const UpdateAvatarForm: React.FC<Props> = props => {
     <form onSubmit={e => e.preventDefault()}>
       {previewUrl ? (
         <Center>
-          <Avatar
-            name={currentUser!.user!.name as string}
-            src={previewUrl}
-            size="xl"
-          />
+          <Avatar name={currentUser.fullname} src={previewUrl} size="xl" />
         </Center>
       ) : (
         <FormControl mb="2">
@@ -153,25 +160,40 @@ const UpdateAvatarForm: React.FC<Props> = props => {
       )}
       {file && (
         <Box mt="2">
-          <IconButton
-            width="100%"
-            mb="2"
-            aria-label="Clear avatar input"
-            colorScheme="red"
-            icon={<FaBroom />}
-            onClick={onCancelFile}
-          />
-          <IconButton
-            aria-label="Upload image"
-            width="100%"
-            mb="2"
-            colorScheme="blue"
-            onClick={onUploadFile}
-            icon={<FaFileUpload />}
-          />
+          {isUploading ? (
+            <Center>
+              <Spinner
+                my="3"
+                thickness="4px"
+                speed="0.65s"
+                emptyColor="gray.200"
+                color="blue.500"
+                size="xl"
+              />
+            </Center>
+          ) : (
+            <>
+              <IconButton
+                width="100%"
+                mb="2"
+                aria-label="Clear avatar input"
+                colorScheme="red"
+                icon={<FaBroom />}
+                onClick={onCancelFile}
+              />
+              <IconButton
+                aria-label="Upload image"
+                width="100%"
+                mb="2"
+                colorScheme="blue"
+                onClick={onUploadFile}
+                icon={<FaFileUpload />}
+              />
+            </>
+          )}
         </Box>
       )}
-      {props.showResetAvatarBtn && (
+      {props.showResetAvatarBtn && !isUploading && (
         <Button
           mt="2"
           leftIcon={<FaTrash />}

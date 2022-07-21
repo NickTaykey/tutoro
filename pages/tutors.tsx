@@ -1,152 +1,90 @@
-import type { TutorObjectGeoJSON, TutorFilters } from '../types';
+import type { PointsCollection } from '../types';
 import type { UserDocument, UserDocumentObject } from '../models/User';
-import type { FeatureCollection, GeoJsonProperties, Geometry } from 'geojson';
 import type { GetServerSideProps, NextPage } from 'next';
-import ClusterMap from '../components/cluster-map/ClusterMap';
+
 import {
   getReviewDocumentObject,
   getUserDocumentObject,
-} from '../utils/user-casting-helpers';
-import { Grid, GridItem, Alert, AlertIcon, Box, Flex } from '@chakra-ui/react';
+  getTutorGeoJSON,
+  getUsersPointsCollection,
+} from '../utils/casting-helpers';
+import ClusterMap from '../components/cluster-map/ClusterMap';
+import { Grid, GridItem, Box, Flex, Alert, AlertIcon } from '@chakra-ui/react';
 import React from 'react';
 import Layout from '../components/global/Layout';
 
-const getPoints = (
-  tutors: UserDocumentObject[]
-): FeatureCollection<Geometry, GeoJsonProperties> => ({
-  type: 'FeatureCollection',
-  features: tutors.map(
-    (tutor): TutorObjectGeoJSON => ({
-      type: 'Feature',
-      properties: {
-        cluster: false,
-        ...tutor,
-      },
-      geometry: {
-        type: 'Point',
-        coordinates: tutor.geometry!.coordinates,
-      },
-    })
-  ),
-});
-
-type PointsCollection = FeatureCollection<Geometry, GeoJsonProperties>;
-
 interface Props {
-  points: PointsCollection | null;
+  points: PointsCollection;
   currentUser: UserDocumentObject | null;
   allSubjects: string[];
 }
 
-const Home: NextPage<Props> = ({ currentUser, points, allSubjects }) => {
-  const [filteredPoints, setFilteredPoints] = useState<PointsCollection | null>(
-    null
-  );
-
-  const filterTutorsHandler = (filters: TutorFilters | null) => {
-    if (filters) {
-      ApiHelper('/api/tutors/filter', filters, 'GET').then(res => {
-        setFilteredPoints(
-          getPoints(
-            res.tutors.map((t: UserDocument) => getUserDocumentObject(t))
-          )
-        );
-      });
-    } else setFilteredPoints(null);
-  };
-
-  return points ? (
-    <Layout>
-      <Box width="90%" mx="auto">
-        {filteredPoints && (
-          <Alert status="success" mt="4">
-            <AlertIcon />
-            Found {filteredPoints.features.length} tutors matching
-          </Alert>
-        )}
-        <Grid
-          templateColumns="repeat(12, 1fr)"
-          templateRows="repeat(12, 1fr)"
-          gap={[4, null, null, 6]}
-          my={4}
-        >
-          <GridItem colSpan={[12, null, null, 8, 9]} rowSpan={[5, null, 12]}>
-            <Flex
-              alignItems={[null, null, null, 'center']}
-              justifyContent={[null, null, null, 'center']}
-              width="100%"
-              height="100%"
-            >
-              <ClusterMap
-                authenticatedTutor={
-                  currentUser?.isTutor
-                    ? ({
-                        type: 'Feature',
-                        properties: currentUser,
-                        geometry: {
-                          type: 'Point',
-                          coordinates: currentUser.geometry!.coordinates,
-                        },
-                      } as TutorObjectGeoJSON)
-                    : null
+const Home: NextPage<Props> = ({ currentUser, points, allSubjects }) => (
+  <ClusterMapContextProvider
+    points={points}
+    authenticatedTutor={
+      currentUser?.isTutor ? getTutorGeoJSON(currentUser) : null
+    }
+  >
+    <ClusterMapContext.Consumer>
+      {clusterMapCtx => (
+        <Layout>
+          <Box width="90%" mx="auto">
+            {clusterMapCtx.filteredPoints && (
+              <Alert
+                status={
+                  clusterMapCtx.filteredPoints.features.length
+                    ? 'success'
+                    : 'error'
                 }
-                tutors={filteredPoints ? filteredPoints : points}
-              />
-            </Flex>
-          </GridItem>
-          <GridItem colSpan={[12, null, null, 4, 3]} rowSpan={[7, null, 12]}>
-            <FiltersForm
-              filterTutorsHandler={filterTutorsHandler}
-              allSubjects={allSubjects}
-            />
-          </GridItem>
-        </Grid>
-
-        {/* <Link href="/tutors/global/posts/new">
-        How just a question, a doubt, a homework? Post your question.
-      </Link>
-      <ul>
-        {points.features.map(f => (
-          <li key={f.properties?._id}>
-            <div>{f.properties?.email}</div>
-            <div>{f.properties?._id}</div>
-            <div>
-              <Link href={`/tutors/${f.properties!._id}`}>Learn more</Link>
-              <br />
-              <Link href={`/tutors/${f.properties!._id}/sessions/new`}>
-                Book session
-              </Link>
-              <br />
-              <Link href={`/tutors/${f.properties!._id}/posts/new`}>
-                Ask a question
-              </Link>
-            </div>
-          </li>
-        ))}
-      </ul> */}
-
-        {/* <div>
-      {/* TEMPORARY LINKS ONLY FOR DEVELOPMENT PORPOSE */}
-        {/* <Link href={`/users/?q=USER-TESTING`}>User profile page</Link>
-      <br />
-      <Link href={`/users/?q=TUTOR-TESTING`}>Tutor profile page</Link>
-      </div> */}
-      </Box>
-    </Layout>
-  ) : (
-    <h1>Loading map</h1>
-  );
-};
+                mt="4"
+              >
+                <AlertIcon />
+                Found {clusterMapCtx.filteredPoints.features.length} tutors
+              </Alert>
+            )}
+            <Grid
+              templateColumns="repeat(12, 1fr)"
+              templateRows="repeat(12, 1fr)"
+              gap={[4, null, null, 6]}
+              my={4}
+            >
+              <GridItem
+                colSpan={[12, null, null, 8, 9]}
+                rowSpan={[5, null, 12]}
+              >
+                <Flex
+                  alignItems={[null, null, null, 'center']}
+                  justifyContent={[null, null, null, 'center']}
+                  width="100%"
+                  height="100%"
+                >
+                  <ClusterMap />
+                </Flex>
+              </GridItem>
+              <GridItem
+                colSpan={[12, null, null, 4, 3]}
+                rowSpan={[7, null, 12]}
+              >
+                <FiltersForm allSubjects={allSubjects} />
+              </GridItem>
+            </Grid>
+          </Box>
+        </Layout>
+      )}
+    </ClusterMapContext.Consumer>
+  </ClusterMapContextProvider>
+);
 
 import { authOptions } from './api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth';
 import connectDB from '../middleware/mongo-connect';
-import Review, { ReviewDocumentObject } from '../models/Review';
+import Review from '../models/Review';
 import User from '../models/User';
 import FiltersForm from '../components/cluster-map/FiltersForm';
-import { useState } from 'react';
-import ApiHelper from '../utils/api-helper';
-import type { ReviewDocument } from '../models/Review';
+import ClusterMapContextProvider from '../store/ClusterMapProvider';
+import ClusterMapContext from '../store/cluster-map-context';
+import type { ReviewDocument, ReviewDocumentObject } from '../models/Review';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
   const populateReviewConfig = {
@@ -166,7 +104,10 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
     connectDB(),
   ]);
 
-  const tutors = await User.find({ isTutor: true })
+  const tutors = await User.find({
+    isTutor: true,
+    email: { $ne: session?.user?.email },
+  })
     .populate(populateReviewConfig)
     .exec();
 
@@ -201,7 +142,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
       props: {
         allSubjects,
         currentUser: currentUserObject,
-        points: getPoints(populatedTutorObjects),
+        points: getUsersPointsCollection(populatedTutorObjects),
       },
     };
   }
@@ -209,7 +150,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
     props: {
       allSubjects,
       currentUser: null,
-      points: getPoints(populatedTutorObjects),
+      points: getUsersPointsCollection(populatedTutorObjects),
     },
   };
 };

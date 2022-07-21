@@ -9,7 +9,7 @@ import Post from '../../../../../models/Post';
 import User, { UserDocumentObject } from '../../../../../models/User';
 import { authOptions } from '../../../../api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth';
-import { getPostDocumentObject } from '../../../../../utils/user-casting-helpers';
+import { getPostDocumentObject } from '../../../../../utils/casting-helpers';
 
 import { useForm } from 'react-hook-form';
 import ApiHelper from '../../../../../utils/api-helper';

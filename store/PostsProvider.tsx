@@ -11,6 +11,21 @@ enum PostActionTypes {
   ANSWER,
 }
 
+/* 
+
+if (filters) {
+      ApiHelper('/api/tutors/filter', filters, 'GET').then(res => {
+        setFilteredPoints(
+          getPoints(
+            res.tutors.map((t: UserDocument) => getUserDocumentObject(t))
+          )
+        );
+      });
+    } else setFilteredPoints(null);
+
+
+*/
+
 interface PostAction {
   type: PostActionTypes;
   payload: {

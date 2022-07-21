@@ -18,7 +18,6 @@ import {
   FormControl,
   FormLabel,
   Heading,
-  IconButton,
   Input,
   Flex,
   ListItem,
@@ -66,16 +65,16 @@ const BecomeTutorPage: NextPage = () => {
     name: 'subjects',
   });
 
-  const [apiError, setApiError] = useState<string | null>();
+  const [errorAlert, setErrorAlert] = useState<string | null>();
   const router = useRouter();
 
   const onSubmit: SubmitHandler<FormValues> = async data => {
     const res = await ApiHelper(
-      '/api/tutors/become-tutor',
+      '/api/tutors',
       { ...data, subjects: data.subjects.map(s => s.subject) },
       'PUT'
     );
-    if (res.errorMessage) return setApiError(res.errorMessage);
+    if (res.errorMessage) return setErrorAlert(res.errorMessage);
     return router.replace('/users');
   };
 
@@ -89,17 +88,21 @@ const BecomeTutorPage: NextPage = () => {
         >
           Would you like to become a Tutor?
         </Heading>
-        {!!apiError && <Alert status="error">{apiError}</Alert>}
+        {!!errorAlert && (
+          <Alert status="error" my={3}>
+            {errorAlert}
+          </Alert>
+        )}
+        {!!Object.keys(errors).length && (
+          <Alert status="error" my={3}>
+            {Object.keys(errors)[0] === 'bio'
+              ? 'Provide some words sbout you'
+              : Object.keys(errors)[0] === 'location'
+              ? 'Specify a place where you will host sessions'
+              : `Provide your ${Object.keys(errors)[0]}`}
+          </Alert>
+        )}
         <form onSubmit={handleSubmit(onSubmit)}>
-          {!!Object.keys(errors).length && (
-            <Alert status="error" my={3}>
-              {Object.keys(errors)[0] === 'bio'
-                ? 'Provide some words sbout you'
-                : Object.keys(errors)[0] === 'location'
-                ? 'Specify a place where you will host sessions'
-                : `Provide your ${Object.keys(errors)[0]}`}
-            </Alert>
-          )}
           <FormControl mb="3">
             <FormLabel htmlFor="bio">Some words about you</FormLabel>
             <Textarea id="bio" {...register('bio', { required: true })} />

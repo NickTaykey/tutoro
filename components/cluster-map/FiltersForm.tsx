@@ -2,7 +2,6 @@ import type { TutorFilters, TutorFiltersFormFields } from '../../types';
 import { useForm } from 'react-hook-form';
 
 interface Props {
-  filterTutorsHandler(filters: TutorFilters | null): void;
   allSubjects: string[];
 }
 
@@ -25,8 +24,11 @@ import {
   NumberDecrementStepper,
   RangeSliderMark,
   Select,
+  useColorMode,
 } from '@chakra-ui/react';
 import { FaBroom, FaFilter } from 'react-icons/fa';
+import { useContext } from 'react';
+import ClusterMapContext from '../../store/cluster-map-context';
 
 const FiltersForm: React.FC<Props> = props => {
   const { register, handleSubmit, reset, setValue, watch } =
@@ -43,13 +45,13 @@ const FiltersForm: React.FC<Props> = props => {
       },
     });
 
+  const ctx = useContext(ClusterMapContext);
   const formResetHandler = () => {
-    reset();
-    props.filterTutorsHandler(null);
+    ctx.setFilteredPoints(null);
   };
 
   const formSubmitHandler = (data: TutorFiltersFormFields) => {
-    props.filterTutorsHandler({ ...data });
+    ctx.setFilteredPoints({ ...data });
   };
 
   return (
@@ -205,17 +207,19 @@ const FiltersForm: React.FC<Props> = props => {
           }}
           leftIcon={<FaFilter />}
         >
-          Filter
+          Apply filters
         </Button>
-        <Button
-          colorScheme="red"
-          type="reset"
-          width="100%"
-          onClick={formResetHandler}
-          leftIcon={<FaBroom />}
-        >
-          Reset
-        </Button>
+        {ctx.filteredPoints?.features && (
+          <Button
+            colorScheme="red"
+            type="reset"
+            width="100%"
+            onClick={formResetHandler}
+            leftIcon={<FaBroom />}
+          >
+            Remove filters
+          </Button>
+        )}
       </form>
     </Flex>
   );

@@ -4,6 +4,7 @@ import { v2 as cloudinary } from 'cloudinary';
 import requireAuth from '../../middleware/require-auth';
 import ensureHttpMethod from '../../middleware/ensure-http-method';
 import fs, { PathLike } from 'fs';
+import type { ImageObject } from '../../types';
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -14,7 +15,7 @@ cloudinary.config({
 const handler = async (
   req: NextApiRequest,
   res: NextApiResponse<{
-    newAvatarUrl: string | null;
+    newAvatar: ImageObject | null;
     error: string | null;
   }>
 ) => {
@@ -48,7 +49,7 @@ const handler = async (
             fs.unlink(url as PathLike, () => {});
             return res.status(200).json({
               error: null,
-              newAvatarUrl: cloudinaryResponse.secure_url,
+              newAvatar: sessionUser.avatar,
             });
           } else if (
             !!sessionUser.avatar?.public_id &&
@@ -63,17 +64,17 @@ const handler = async (
           }
           return res.status(200).json({
             error: null,
-            newAvatarUrl: null,
+            newAvatar: sessionUser.avatar,
           });
         } catch (e) {
           if (e instanceof FormidableError) {
             res
               .status(e.httpCode || 400)
-              .json({ error: e.message, newAvatarUrl: null });
+              .json({ error: e.message, newAvatar: null });
           } else {
             res
               .status(500)
-              .json({ error: 'Internal Server Error', newAvatarUrl: null });
+              .json({ error: 'Internal Server Error', newAvatar: null });
           }
         }
       }

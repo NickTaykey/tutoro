@@ -2,6 +2,8 @@ import type { UserDocument, UserDocumentObject } from '../models/User';
 import type { SessionDocument } from '../models/Session';
 import type { ReviewDocument } from '../models/Review';
 import type { PostDocument } from '../models/Post';
+import { TutorObjectGeoJSON } from '../types';
+import { FeatureCollection, Geometry, GeoJsonProperties } from 'geojson';
 
 export const getUserDocumentObject = (
   user: UserDocument
@@ -85,3 +87,24 @@ export const getPostDocumentObject = (p: PostDocument) => {
       : null,
   };
 };
+
+export const getTutorGeoJSON = (
+  tutor: UserDocumentObject
+): TutorObjectGeoJSON => ({
+  type: 'Feature',
+  properties: {
+    cluster: false,
+    ...tutor,
+  },
+  geometry: {
+    type: 'Point',
+    coordinates: tutor.geometry!.coordinates,
+  },
+});
+
+export const getUsersPointsCollection = (
+  tutors: UserDocumentObject[]
+): FeatureCollection<Geometry, GeoJsonProperties> => ({
+  type: 'FeatureCollection',
+  features: tutors.map(getTutorGeoJSON),
+});

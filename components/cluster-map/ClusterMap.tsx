@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useContext } from 'react';
 import Map, {
   GeolocateControl,
   FullscreenControl,
@@ -15,18 +15,13 @@ import {
   clusterLayer,
 } from './layers';
 import TutorPopup from './TutorPopup';
+import ClusterMapContext from '../../store/cluster-map-context';
 
 import type { MapRef, GeoJSONSource } from 'react-map-gl';
 import type { MapLayerMouseEvent } from 'mapbox-gl';
-import type { FeatureCollection, GeoJsonProperties, Geometry } from 'geojson';
 import type { TutorObjectGeoJSON } from '../../types';
 
-interface Props {
-  tutors: FeatureCollection<Geometry, GeoJsonProperties>;
-  authenticatedTutor: TutorObjectGeoJSON | null;
-}
-
-const ClusterMap: React.FC<Props> = ({ tutors, authenticatedTutor }) => {
+const ClusterMap: React.FC = () => {
   const [popupInfo, setPopupInfo] = useState<TutorObjectGeoJSON | null>(null);
   const mapRef = useRef<MapRef | null>(null);
 
@@ -61,6 +56,9 @@ const ClusterMap: React.FC<Props> = ({ tutors, authenticatedTutor }) => {
     });
   };
 
+  const { points, filteredPoints, authenticatedTutor } =
+    useContext(ClusterMapContext);
+
   return (
     <Map
       initialViewState={{
@@ -82,7 +80,7 @@ const ClusterMap: React.FC<Props> = ({ tutors, authenticatedTutor }) => {
       <Source
         id="tutors"
         type="geojson"
-        data={tutors}
+        data={filteredPoints ? filteredPoints : points}
         cluster={true}
         clusterMaxZoom={14}
         clusterRadius={50}
@@ -97,6 +95,7 @@ const ClusterMap: React.FC<Props> = ({ tutors, authenticatedTutor }) => {
           latitude={authenticatedTutor.geometry.coordinates[1]}
           anchor="top"
           color="var(--chakra-colors-red-500)"
+          onClick={() => setPopupInfo(authenticatedTutor)}
         />
       )}
       {popupInfo && (
