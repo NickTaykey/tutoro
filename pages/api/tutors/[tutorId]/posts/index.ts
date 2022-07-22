@@ -77,6 +77,7 @@ export default async function handler(
             cloudinaryPromises.push(
               cloudinary.uploader.upload(file.filepath, {
                 folder: 'tutoro/attachments/',
+                use_filename: true,
                 resource_type: file.mimetype?.includes('image')
                   ? 'image'
                   : 'raw',

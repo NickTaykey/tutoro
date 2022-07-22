@@ -49,8 +49,8 @@ const ProfilePage: NextPage<Props> = ({
         {currentUser.isTutor ? (
           <>
             {successAlert && (
-              <Alert mb="5" status="success" width={'90%'} mx="auto">
-                <Center>{successAlert}</Center>
+              <Alert mb="5" status="success" mx="auto" fontWeight="bold">
+                {successAlert}
               </Alert>
             )}
             <Accordion allowMultiple>

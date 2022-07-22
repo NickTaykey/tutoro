@@ -25,11 +25,12 @@ import {
   FaArchive,
   FaArrowUp,
   FaExpandArrowsAlt,
-  FaFile,
+  FaPaperclip,
   FaGlobe,
   FaPencilAlt,
 } from 'react-icons/fa';
-import AnswerPostModal, { AnswerPostModalHandler } from './AnswerPostModal';
+import AnswerPostModal from './AnswerPostModal';
+import type { AnswerPostModalHandler } from './AnswerPostModal';
 
 interface Props {
   post: PostDocumentObject;
@@ -47,8 +48,8 @@ const Post: React.FC<Props> = ({ post, viewAsTutor, setSuccessAlert }) => {
       post.answeredBy ? (post.answeredBy as UserDocumentObject)._id : 'global'
     );
   };
-  const answerPostHandler = async (answer: string) => {
-    const res = await ctx.answerPost(post._id, answer, currentUser._id);
+  const answerPostHandler = async (formData: FormData) => {
+    const res = await ctx.answerPost(post._id, formData, currentUser._id);
     if ((res as APIError).errorMessage) {
       imperativeHandlingRef.current?.setValidationError(
         (res as APIError).errorMessage
@@ -151,7 +152,7 @@ const Post: React.FC<Props> = ({ post, viewAsTutor, setSuccessAlert }) => {
           </Show>
         )}
       </Flex>
-      <Text mb="3" mt={[0, 3]}>
+      <Text mb="3" mt={[0, 3]} textAlign="justify">
         {showFullPostDescription || post.description.length < 100 ? (
           post.description
         ) : (
@@ -163,18 +164,28 @@ const Post: React.FC<Props> = ({ post, viewAsTutor, setSuccessAlert }) => {
           </>
         )}
       </Text>
-      <Flex alignItems="center" justifyContent="space-between">
+      <Flex justifyContent="space-between" direction={['column', 'row']}>
         <Box>
           <strong>Date: </strong>
           <time dateTime={post.createdAt!.toString()}>
             {post.createdAt!.toString()}
           </time>
         </Box>
-        <Flex>
-          <FaFile size={25} />
-          <Text ml="2" fontWeight="bold">
-            {post.attachments.length}
-          </Text>
+        <Flex direction="column" mt={[4, 0]}>
+          <Flex mb="1">
+            <FaPaperclip size={25} />
+            <Text ml="2" fontWeight="bold">
+              {post.attachments.length} Post attachments
+            </Text>
+          </Flex>
+          {post.status === PostStatus.ANSWERED && (
+            <Flex mb="1">
+              <FaPaperclip size={25} />
+              <Text ml="2" fontWeight="bold">
+                {post.attachments.length} Answer attachments
+              </Text>
+            </Flex>
+          )}
         </Flex>
       </Flex>
       {post.answer && (

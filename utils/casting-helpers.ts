@@ -80,6 +80,10 @@ export const getPostDocumentObject = (p: PostDocument) => {
       url: a.url,
       public_id: a.public_id,
     })),
+    answerAttachments: p.answerAttachments.map(a => ({
+      url: a.url,
+      public_id: a.public_id,
+    })),
     type: p.type,
     createdAt: createdAt ? createdAt.toLocaleDateString() : null,
     updatedAt: updatedAt ? updatedAt.toLocaleDateString() : null,

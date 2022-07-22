@@ -159,7 +159,7 @@ const NewPostForm: React.FC<Props> = props => {
                 onChange={onFileUploadChange}
               />
               <Text fontWeight="bold" my="2">
-                Only images, PDFs and office format files are allowed
+                Only images, PDFs and office format files
               </Text>
             </FormControl>
             {isUploading ? (

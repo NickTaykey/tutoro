@@ -12,7 +12,7 @@ interface PostsContextObject {
   updatedPostStatus(postId: string, tutorId: string): ContextMethodReturnType;
   answerPost(
     postId: string,
-    answer: string,
+    formData: FormData,
     tutorId: string
   ): ContextMethodReturnType;
 }
@@ -25,7 +25,7 @@ const PostsContext = React.createContext<PostsContextObject>({
   updatedPostStatus(postId: string, tutorId: string = 'global') {
     return Promise.resolve({});
   },
-  answerPost(postId: string, answer: string, tutorId: string = 'global') {
+  answerPost(postId: string, formData: FormData, tutorId: string = 'global') {
     return Promise.resolve({});
   },
 });

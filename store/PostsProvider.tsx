@@ -95,20 +95,22 @@ const PostsContextProvider: React.FC<{
         },
         async answerPost(
           postId: string,
-          answer: string,
+          formData: FormData,
           tutorId: string = 'global'
         ): Promise<PostDocumentObject | APIError> {
           const apiResponse = await ApiHelper(
             `/api/tutors/${tutorId}/posts/${postId}`,
-            { answer },
-            'PUT'
+            formData,
+            'PUT',
+            false
           );
-          if (!apiResponse.errorMessage) {
+          debugger;
+          /* if (!apiResponse.errorMessage) {
             dispatchPostsAction({
               type: PostActionTypes.ANSWER,
               payload: { postId, answer, answeredBy: apiResponse.answeredBy },
             });
-          }
+          } */
           return apiResponse;
         },
       }}

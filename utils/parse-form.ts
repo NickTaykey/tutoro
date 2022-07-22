@@ -43,10 +43,11 @@ export const parseForm = async (
       uploadDir,
       filename: (_name, _ext, part) => {
         const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-        filename = `${part.name || 'unknown'}-${uniqueSuffix}.${
+        filename = `${part.name || 'unknown'}-${
+          _name ? _name : ''
+        }-${uniqueSuffix}.${
           mime.getExtension(part.mimetype || '') || 'unknown'
         }`;
-        console.log(filename);
         return filename;
       },
       filter: formidableConfig.filter,

@@ -15,6 +15,7 @@ interface Post {
   createdAt?: Date | string | null;
   updatedAt?: Date | string | null;
   attachments: Array<CloudFile>;
+  answerAttachments: Array<CloudFile>;
 }
 
 export type PostDocument = Post & Document;
@@ -38,6 +39,10 @@ const PostSchema = new Schema<PostDocument, PostModel>(
     creator: { type: Schema.Types.ObjectId, ref: 'User' },
     type: { type: String, enum: [PostType.GLOBAL, PostType.SPECIFIC] },
     attachments: { type: [{ url: String, public_id: String }], default: [] },
+    answerAttachments: {
+      type: [{ url: String, public_id: String }],
+      default: [],
+    },
   },
   { timestamps: { createdAt: 'createdAt' } }
 );
