@@ -12,10 +12,17 @@ const NewPostPage: NextPage<Props> = props => {
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
   if (context.query.tutorId !== 'global') {
-    const tutor = await User.findById(context.query.tutorId as string);
-    return { props: { subjects: tutor ? tutor.subjects : null } };
+    try {
+      const tutor = await User.findById(context.query.tutorId as string);
+      return { props: { subjects: tutor.subjects } };
+    } catch {
+      return { props: { subjects: null } };
+    }
   }
-  return { props: { subjects: null } };
+  const allSubjects: string[] = (await User.find({ tutors: true })).flatMap(
+    t => t.subjects
+  );
+  return { props: { subjects: Array.from(new Set(allSubjects)) } };
 };
 
 export default NewPostPage;

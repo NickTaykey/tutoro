@@ -1,7 +1,7 @@
 import React, { useReducer } from 'react';
 import ClusterMapContext from './cluster-map-context';
 import type { PointsCollection } from './cluster-map-context';
-import type { ImageObject, TutorFilters, TutorObjectGeoJSON } from '../types';
+import type { CloudFile, TutorFilters, TutorObjectGeoJSON } from '../types';
 import ApiHelper from '../utils/api-helper';
 import { getUsersPointsCollection } from '../utils/casting-helpers';
 
@@ -35,7 +35,7 @@ interface UpdateAuthenticatedTutorLocationAction {
 
 interface UpdateAuthenticatedTutorAvatarAction {
   type: ClusterMapActionTypes.UPDATE_AUTHENTICATED_TUTOR_AVATAR;
-  payload: { newAvatar: ImageObject };
+  payload: { newAvatar: CloudFile };
 }
 
 type ClusterMapAction =
@@ -126,7 +126,7 @@ const ClusterMapContextProvider: React.FC<{
             payload: { newLocation, newCoordinates },
           });
         },
-        updateAuthenticatedTutorAvatar(newAvatar: ImageObject) {
+        updateAuthenticatedTutorAvatar(newAvatar: CloudFile) {
           dispatchclusterMapStateAction({
             type: ClusterMapActionTypes.UPDATE_AUTHENTICATED_TUTOR_AVATAR,
             payload: { newAvatar },

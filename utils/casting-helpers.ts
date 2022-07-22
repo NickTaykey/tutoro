@@ -76,9 +76,11 @@ export const getPostDocumentObject = (p: PostDocument) => {
     description: p.description,
     status: p.status,
     answer: p.answer,
+    attachments: p.attachments.map(a => ({
+      url: a.url,
+      public_id: a.public_id,
+    })),
     type: p.type,
-    postImages: [],
-    answerImages: [],
     createdAt: createdAt ? createdAt.toLocaleDateString() : null,
     updatedAt: updatedAt ? updatedAt.toLocaleDateString() : null,
     creator: getUserDocumentObject(p.creator as UserDocument),

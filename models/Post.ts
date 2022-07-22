@@ -2,13 +2,11 @@ import type { ObjectId, Model, Document } from 'mongoose';
 import type { UserDocument, UserDocumentObject } from './User';
 import { Schema, model, models } from 'mongoose';
 import User from './User';
-import { PostType, PostStatus, ImageObject } from '../types';
+import { PostType, PostStatus, CloudFile } from '../types';
 
 interface Post {
   subject: string;
   description: string;
-  postImages: Array<ImageObject>;
-  answerImages: Array<ImageObject>;
   status: PostStatus;
   answer: string;
   type: PostType;
@@ -16,6 +14,7 @@ interface Post {
   answeredBy: ObjectId | UserDocument | UserDocumentObject | string | null;
   createdAt?: Date | string | null;
   updatedAt?: Date | string | null;
+  attachments: Array<CloudFile>;
 }
 
 export type PostDocument = Post & Document;
@@ -29,8 +28,6 @@ const PostSchema = new Schema<PostDocument, PostModel>(
   {
     subject: { type: String, required: true },
     description: { type: String, required: true },
-    postImages: { type: [{ url: String, public_id: String }], default: [] },
-    answerImages: { type: [{ url: String, public_id: String }], default: [] },
     status: {
       type: String,
       default: PostStatus.NOT_ANSWERED,
@@ -40,6 +37,7 @@ const PostSchema = new Schema<PostDocument, PostModel>(
     answeredBy: { type: Schema.Types.ObjectId, ref: 'User', default: null },
     creator: { type: Schema.Types.ObjectId, ref: 'User' },
     type: { type: String, enum: [PostType.GLOBAL, PostType.SPECIFIC] },
+    attachments: { type: [{ url: String, public_id: String }], default: [] },
   },
   { timestamps: { createdAt: 'createdAt' } }
 );

@@ -1,6 +1,6 @@
 import React from 'react';
 import type { FeatureCollection, GeoJsonProperties, Geometry } from 'geojson';
-import type { ImageObject, TutorFilters, TutorObjectGeoJSON } from '../types';
+import type { CloudFile, TutorFilters, TutorObjectGeoJSON } from '../types';
 
 export type PointsCollection = FeatureCollection<Geometry, GeoJsonProperties>;
 
@@ -12,7 +12,7 @@ interface ClusterMapContextObject {
     newLocation: string,
     newCoordinates: [number, number]
   ): void;
-  updateAuthenticatedTutorAvatar(newAvatar: ImageObject): void;
+  updateAuthenticatedTutorAvatar(newAvatar: CloudFile): void;
   setFilteredPoints(filters: TutorFilters | null): Promise<void>;
   setPoints(newPoints: PointsCollection | null): void;
 }
@@ -25,7 +25,7 @@ const ClusterMapContext = React.createContext<ClusterMapContextObject>({
     newLocation: string,
     newCoordinates: [number, number]
   ) {},
-  updateAuthenticatedTutorAvatar(newAvatar: ImageObject) {},
+  updateAuthenticatedTutorAvatar(newAvatar: CloudFile) {},
   setFilteredPoints(filters: TutorFilters | null) {
     return Promise.resolve();
   },

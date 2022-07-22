@@ -25,6 +25,8 @@ import {
   FaArchive,
   FaArrowUp,
   FaExpandArrowsAlt,
+  FaFile,
+  FaGlobe,
   FaPencilAlt,
 } from 'react-icons/fa';
 import AnswerPostModal, { AnswerPostModalHandler } from './AnswerPostModal';
@@ -91,19 +93,27 @@ const Post: React.FC<Props> = ({ post, viewAsTutor, setSuccessAlert }) => {
       >
         <Flex alignItems="center" direction={['column', 'row']}>
           <Flex alignItems="center">
-            {post.type === PostType.SPECIFIC && !viewAsTutor ? (
-              <Avatar src={answeredBy.avatar} name={answeredBy.fullname} />
-            ) : viewAsTutor ? (
-              <Avatar src={creator.avatar} name={creator.fullname} />
-            ) : (
-              <Avatar />
+            {post.type === PostType.SPECIFIC && !viewAsTutor && (
+              <Avatar src={answeredBy.avatar?.url} name={answeredBy.fullname} />
             )}
-            <Heading as="h3" size="md" ml="3">
-              {status !== 'loading' && viewAsTutor
-                ? creator.fullname
-                : post.type === PostType.GLOBAL
-                ? 'Global'
-                : answeredBy?.fullname}
+            {post.type === PostType.SPECIFIC && viewAsTutor && (
+              <Avatar src={creator.avatar?.url} name={creator.fullname} />
+            )}
+            <Heading
+              as="h3"
+              size="md"
+              ml={post.type === PostType.GLOBAL ? 0 : 3}
+            >
+              {status !== 'loading' && viewAsTutor ? (
+                creator.fullname
+              ) : post.type === PostType.GLOBAL ? (
+                <Flex alignItems="center">
+                  <FaGlobe size="50" />
+                  <Text ml="3">Global</Text>
+                </Flex>
+              ) : (
+                answeredBy?.fullname
+              )}
             </Heading>
           </Flex>
           <Flex my="3">
@@ -153,12 +163,20 @@ const Post: React.FC<Props> = ({ post, viewAsTutor, setSuccessAlert }) => {
           </>
         )}
       </Text>
-      <Box>
-        <strong>Date: </strong>
-        <time dateTime={post.createdAt!.toString()}>
-          {post.createdAt!.toString()}
-        </time>
-      </Box>
+      <Flex alignItems="center" justifyContent="space-between">
+        <Box>
+          <strong>Date: </strong>
+          <time dateTime={post.createdAt!.toString()}>
+            {post.createdAt!.toString()}
+          </time>
+        </Box>
+        <Flex>
+          <FaFile size={25} />
+          <Text ml="2" fontWeight="bold">
+            {post.attachments.length}
+          </Text>
+        </Flex>
+      </Flex>
       {post.answer && (
         <Show below="sm">
           <IconButton

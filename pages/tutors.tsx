@@ -9,7 +9,17 @@ import {
   getUsersPointsCollection,
 } from '../utils/casting-helpers';
 import ClusterMap from '../components/cluster-map/ClusterMap';
-import { Grid, GridItem, Box, Flex, Alert, AlertIcon } from '@chakra-ui/react';
+import {
+  Grid,
+  GridItem,
+  Box,
+  Flex,
+  Alert,
+  AlertIcon,
+  Heading,
+  Button,
+  Tooltip,
+} from '@chakra-ui/react';
 import React from 'react';
 import Layout from '../components/global/Layout';
 
@@ -19,62 +29,85 @@ interface Props {
   allSubjects: string[];
 }
 
-const Home: NextPage<Props> = ({ currentUser, points, allSubjects }) => (
-  <ClusterMapContextProvider
-    points={points}
-    authenticatedTutor={
-      currentUser?.isTutor ? getTutorGeoJSON(currentUser) : null
-    }
-  >
-    <ClusterMapContext.Consumer>
-      {clusterMapCtx => (
-        <Layout>
-          <Box width="90%" mx="auto">
-            {clusterMapCtx.filteredPoints && (
-              <Alert
-                status={
-                  clusterMapCtx.filteredPoints.features.length
-                    ? 'success'
-                    : 'error'
-                }
-                mt="4"
-              >
-                <AlertIcon />
-                Found {clusterMapCtx.filteredPoints.features.length} tutors
-              </Alert>
-            )}
-            <Grid
-              templateColumns="repeat(12, 1fr)"
-              templateRows="repeat(12, 1fr)"
-              gap={[4, null, null, 6]}
-              my={4}
-            >
-              <GridItem
-                colSpan={[12, null, null, 8, 9]}
-                rowSpan={[5, null, 12]}
-              >
-                <Flex
-                  alignItems={[null, null, null, 'center']}
-                  justifyContent={[null, null, null, 'center']}
-                  width="100%"
-                  height="100%"
+const Home: NextPage<Props> = ({ currentUser, points, allSubjects }) => {
+  const { push } = useRouter();
+  return (
+    <ClusterMapContextProvider
+      points={points}
+      authenticatedTutor={
+        currentUser?.isTutor ? getTutorGeoJSON(currentUser) : null
+      }
+    >
+      <ClusterMapContext.Consumer>
+        {clusterMapCtx => (
+          <Layout>
+            <Box width="90%" mx="auto">
+              {clusterMapCtx.filteredPoints && (
+                <Alert
+                  status={
+                    clusterMapCtx.filteredPoints.features.length
+                      ? 'success'
+                      : 'error'
+                  }
+                  mt="4"
                 >
-                  <ClusterMap />
-                </Flex>
-              </GridItem>
-              <GridItem
-                colSpan={[12, null, null, 4, 3]}
-                rowSpan={[7, null, 12]}
+                  <AlertIcon />
+                  Found {clusterMapCtx.filteredPoints.features.length} tutors
+                </Alert>
+              )}
+              <Grid
+                templateColumns="repeat(12, 1fr)"
+                templateRows="repeat(12, 1fr)"
+                gap={[4, null, null, 6]}
+                my={4}
               >
-                <FiltersForm allSubjects={allSubjects} />
-              </GridItem>
-            </Grid>
-          </Box>
-        </Layout>
-      )}
-    </ClusterMapContext.Consumer>
-  </ClusterMapContextProvider>
-);
+                <GridItem
+                  colSpan={[12, null, null, 8, 9]}
+                  rowSpan={[5, null, 12]}
+                >
+                  <Flex
+                    alignItems={[null, null, null, 'center']}
+                    justifyContent={[null, null, null, 'center']}
+                    width="100%"
+                    height="100%"
+                  >
+                    <ClusterMap />
+                  </Flex>
+                </GridItem>
+                <GridItem
+                  colSpan={[12, null, null, 4, 3]}
+                  rowSpan={[7, null, 12]}
+                >
+                  <FiltersForm allSubjects={allSubjects} />
+                </GridItem>
+              </Grid>
+              <Box>
+                <Heading as="h2" size="lg">
+                  Not sure who to ask?
+                </Heading>
+                <Tooltip
+                  hasArrow
+                  label="Our first Tutor available will answer your Post"
+                  bg="gray.300"
+                  color="black"
+                  placement="right"
+                >
+                  <Button
+                    my="3"
+                    onClick={() => push('/tutors/global/posts/new')}
+                    leftIcon={<FaGlobe />}
+                  >
+                    Create a global post
+                  </Button>
+                </Tooltip>
+              </Box>
+            </Box>
+          </Layout>
+        )}
+      </ClusterMapContext.Consumer>
+    </ClusterMapContextProvider>
+  );
+};
 
 import { authOptions } from './api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth';
@@ -85,6 +118,8 @@ import FiltersForm from '../components/cluster-map/FiltersForm';
 import ClusterMapContextProvider from '../store/ClusterMapProvider';
 import ClusterMapContext from '../store/cluster-map-context';
 import type { ReviewDocument, ReviewDocumentObject } from '../models/Review';
+import { useRouter } from 'next/router';
+import { FaGlobe } from 'react-icons/fa';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
   const populateReviewConfig = {

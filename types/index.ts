@@ -4,11 +4,11 @@ import type { FeatureCollection, GeoJsonProperties, Geometry } from 'geojson';
 
 export type TutorObjectGeoJSONProperties = UserDocumentObject & {
   subjects?: string[] | string;
-  avatar?: ImageObject | string;
+  avatar?: CloudFile | string;
   cluster: false;
 };
 
-export type ImageObject = { public_id: string; url: string };
+export type CloudFile = { public_id: string; url: string };
 
 export type TutorObjectGeoJSON = {
   type: 'Feature';

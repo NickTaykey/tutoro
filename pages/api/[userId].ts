@@ -4,7 +4,9 @@ import { v2 as cloudinary } from 'cloudinary';
 import requireAuth from '../../middleware/require-auth';
 import ensureHttpMethod from '../../middleware/ensure-http-method';
 import fs, { PathLike } from 'fs';
-import type { ImageObject } from '../../types';
+import type { CloudFile } from '../../types';
+import type { File, Part } from 'formidable';
+import type { UploadApiResponse } from 'cloudinary';
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -12,10 +14,17 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+const avatarUploadConfig = {
+  maxFiles: 1,
+  dir: '/avatars',
+  filter: (part: Part) => part.name === 'avatar' || false,
+  multiple: false,
+};
+
 const handler = async (
   req: NextApiRequest,
   res: NextApiResponse<{
-    newAvatar: ImageObject | null;
+    newAvatar: CloudFile | null;
     error: string | null;
   }>
 ) => {
@@ -26,27 +35,22 @@ const handler = async (
       'change your avatar',
       async (sessionUser, req, res) => {
         try {
-          const { files } = await parseForm(req);
-          const file = files.avatar;
+          const { files } = await parseForm(req, avatarUploadConfig);
+          const file = files.avatar as File;
           if (file) {
-            let url = Array.isArray(file)
-              ? file.map(f => f.filepath)
-              : file.filepath;
             if (!!sessionUser.avatar?.public_id && !!sessionUser.avatar?.url) {
               cloudinary.uploader.destroy(sessionUser.avatar.public_id);
             }
-            const cloudinaryResponse = await cloudinary.uploader.upload(
-              url as string,
-              {
-                folder: 'tutoro-images/',
-              }
-            );
+            const cloudinaryResponse: UploadApiResponse =
+              await cloudinary.uploader.upload(file.filepath, {
+                folder: 'tutoro/avatars/',
+              });
             sessionUser.avatar = {
               public_id: cloudinaryResponse.public_id,
               url: cloudinaryResponse.secure_url,
             };
             sessionUser.save();
-            fs.unlink(url as PathLike, () => {});
+            fs.unlink(file.filepath, () => {});
             return res.status(200).json({
               error: null,
               newAvatar: sessionUser.avatar,

@@ -1,17 +1,28 @@
 import type { NextApiRequest } from 'next';
 import mime from 'mime';
 import { join } from 'path';
-import * as dateFn from 'date-fns';
 import formidable from 'formidable';
 import { mkdir, stat } from 'fs/promises';
+import sanitize from '../middleware/mongo-sanitize';
 
 export const FormidableError = formidable.errors.FormidableError;
 
+interface FormidableConfig {
+  maxFiles: number;
+  dir: string;
+  multiple: boolean;
+  filter: (part: formidable.Part) => boolean;
+}
+
 export const parseForm = async (
-  req: NextApiRequest
+  req: NextApiRequest,
+  formidableConfig: FormidableConfig
 ): Promise<{ fields: formidable.Fields; files: formidable.Files }> => {
   return await new Promise(async (resolve, reject) => {
-    const uploadDir = join(process.env.ROOT_DIR || process.cwd(), `/uploads`);
+    const uploadDir = join(
+      process.env.ROOT_DIR || process.cwd(),
+      `/uploads/${formidableConfig.dir}`
+    );
 
     try {
       await stat(uploadDir);
@@ -24,32 +35,26 @@ export const parseForm = async (
       }
     }
 
-    let filename = ''; //  To avoid duplicate upload
+    let filename = '';
     const form = formidable({
-      maxFiles: 2,
-      maxFileSize: 1024 * 1024, // 1mb
+      maxFiles: formidableConfig.maxFiles,
+      multiples: formidableConfig.multiple,
+      maxFileSize: 1024 * 1024 * 10, // 10mb
       uploadDir,
       filename: (_name, _ext, part) => {
-        if (filename !== '') {
-          return filename;
-        }
-
         const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
         filename = `${part.name || 'unknown'}-${uniqueSuffix}.${
           mime.getExtension(part.mimetype || '') || 'unknown'
         }`;
+        console.log(filename);
         return filename;
       },
-      filter: part => {
-        return (
-          part.name === 'avatar' && (part.mimetype?.includes('image') || false)
-        );
-      },
+      filter: formidableConfig.filter,
     });
 
     form.parse(req, function (err, fields, files) {
       if (err) reject(err);
-      else resolve({ fields, files });
+      else resolve({ fields: sanitize(fields), files });
     });
   });
 };

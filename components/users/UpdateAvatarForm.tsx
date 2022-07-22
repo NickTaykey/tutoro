@@ -16,7 +16,8 @@ import {
 } from '@chakra-ui/react';
 import { FaBroom, FaFileUpload, FaTrash } from 'react-icons/fa';
 import ClusterMapContext from '../../store/cluster-map-context';
-import type { ImageObject } from '../../types';
+import type { CloudFile } from '../../types';
+import ApiHelper from '../../utils/api-helper';
 
 interface Props {
   setNewAvatarUrl(newAvatar: string): void;
@@ -81,17 +82,15 @@ const UpdateAvatarForm: React.FC<Props> = props => {
       const formData = new FormData();
       formData.append('avatar', file);
       setIsUploading(true);
-      const res = await fetch(`/api/${currentUser._id}`, {
-        method: 'PUT',
-        body: formData,
-      });
+
       const {
         error,
         newAvatar,
       }: {
         error: string | null;
-        newAvatar: ImageObject | null;
-      } = await res.json();
+        newAvatar: CloudFile | null;
+      } = await ApiHelper(`/api/${currentUser._id}`, formData, 'PUT', false);
+
       if (error || (!error && !newAvatar)) {
         return setErrorAlert(
           error || 'Unexpected server side error... try again later.'
@@ -100,6 +99,7 @@ const UpdateAvatarForm: React.FC<Props> = props => {
       props.closeUpdateAvatarModal();
       props.setNewAvatarUrl(newAvatar!.url);
       props.setShowDefaultAvatar(false);
+
       if (currentUser.isTutor) {
         clusterMapCtx.updateAuthenticatedTutorAvatar(newAvatar!);
       }

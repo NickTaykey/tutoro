@@ -1,19 +1,25 @@
 function ApiHelper(
   url: string,
-  data: any = {},
+  data: FormData | unknown,
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET',
-  headers?: Record<string, string>
+  stringifyBody: boolean = true
 ) {
-  const body =
-    method === 'PUT' || method === 'POST' ? JSON.stringify(data) : null;
+  let body: FormData | string | null = null;
+  if (method === 'PUT' || method === 'POST') {
+    body = stringifyBody ? JSON.stringify(data) : (data as FormData);
+  }
   return fetch(
-    `${url}/${method === 'GET' ? '?' + new URLSearchParams(data) : ''}`,
+    `${url}/${
+      method === 'GET' ? '?' + new URLSearchParams(JSON.stringify(data)) : ''
+    }`,
     {
       method,
       body,
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: stringifyBody
+        ? {
+            'Content-Type': 'application/json',
+          }
+        : {},
     }
   )
     .then(res => res.json())
