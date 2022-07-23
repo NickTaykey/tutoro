@@ -77,15 +77,15 @@ const NewPostForm: React.FC<Props> = props => {
         formData.append(`attachment-${i}`, fileListArray[i]);
       }
     }
-    if (filesList) setIsUploading(true);
+    setIsUploading(true);
     const res = await ApiHelper(
       `/api/${query.tutorId ? `/tutors/${query.tutorId}/posts` : '/posts'}`,
       formData,
       'POST',
       false
     );
+    setIsUploading(false);
     if (res.errorMessage) return setValidationError(res.errorMessage);
-    if (filesList) setIsUploading(false);
     replace('/users');
   };
 

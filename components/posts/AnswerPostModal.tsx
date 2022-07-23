@@ -46,7 +46,7 @@ export type AnswerPostModalHandler = {
 const AnswerPostModal = React.forwardRef<
   AnswerPostModalHandler,
   {
-    setAnswer: (formData: FormData) => void;
+    setAnswer: (formData: FormData) => Promise<void>;
     post: PostDocumentObject;
   }
 >((props, ref) => {
@@ -81,7 +81,7 @@ const AnswerPostModal = React.forwardRef<
     setFilesList(fileInput.files);
   };
 
-  const formSubmitHandler = (data: AnswerFormFields) => {
+  const formSubmitHandler = async (data: AnswerFormFields) => {
     const formData = new FormData();
 
     if (filesList) {
@@ -98,8 +98,9 @@ const AnswerPostModal = React.forwardRef<
     }
 
     formData.append('text', data.text);
-
-    props.setAnswer(formData);
+    setIsUploading(true);
+    await props.setAnswer(formData);
+    setIsUploading(false);
   };
 
   useImperativeHandle(ref, () => ({

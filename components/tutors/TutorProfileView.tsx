@@ -7,7 +7,7 @@ import type { UserDocumentObject } from '../../models/User';
 import type { SessionDocumentObject } from '../../models/Session';
 import type { ReviewDocumentObject } from '../../models/Review';
 import type { PostDocumentObject } from '../../models/Post';
-import { PostStatus, SessionStatus } from '../../types';
+import { PostStatus, PostType, SessionStatus } from '../../types';
 import PostsContextProvider from '../../store/PostsProvider';
 import PostsContext from '../../store/posts-context';
 import {
@@ -67,7 +67,9 @@ const TutorProfileView: React.FC<Props> = (props: Props) => {
         new Date(a.date).getTime() > new Date(b.date).getTime() ? -1 : 1
       );
   };
+
   const { posts } = props.currentUser;
+
   const getAnsweredPosts = (posts: PostDocumentObject[]) => {
     return posts
       .filter(p => p.status === PostStatus.ANSWERED)
@@ -96,11 +98,29 @@ const TutorProfileView: React.FC<Props> = (props: Props) => {
       );
   };
 
+  const getGlobalPosts = (posts: PostDocumentObject[]) => {
+    return posts.filter(
+      p => p.type === PostType.GLOBAL && p.status !== PostStatus.ANSWERED
+    );
+  };
+  const getSpecificPosts = (posts: PostDocumentObject[]) => {
+    return posts.filter(p => p.type === PostType.SPECIFIC);
+  };
+  const getAnsweredByMePosts = (posts: PostDocumentObject[]) => {
+    return posts.filter(p => {
+      if (p.answeredBy) {
+        return (
+          (typeof p.answer === 'string' &&
+            p.answeredBy === props.currentUser._id) ||
+          (p.answeredBy as UserDocumentObject)._id === props.currentUser._id
+        );
+      }
+      return false;
+    });
+  };
+
   const [lowerThan690] = useMediaQuery('(max-height: 690px)');
   const [higherThan840] = useMediaQuery('(min-height: 840px)');
-  const [isLandscapeWidth] = useMediaQuery('(max-width: 930px)');
-  const [isLandscapeHeight] = useMediaQuery('(max-height: 500px)');
-  const isXSLandscape = isLandscapeWidth && isLandscapeHeight;
 
   return (
     <>
@@ -164,48 +184,54 @@ const TutorProfileView: React.FC<Props> = (props: Props) => {
           <Tabs isFitted variant="soft-rounded" colorScheme="blue">
             <TabList my="1" width="95%" mx="auto">
               <Tab fontSize="sm">Posts</Tab>
+              <Tab fontSize="sm">Global Posts</Tab>
               <Tab mx="1" fontSize="sm">
                 Sessions
               </Tab>
               <Tab fontSize="sm">Reviews</Tab>
             </TabList>
-            <TabPanels
-              height={higherThan840 ? '65vh' : lowerThan690 ? '55vh' : '400px'}
+            <PostsContextProvider
+              posts={[...props.pertinentGlobalPosts, ...posts]}
             >
-              <TabPanel height="100%">
-                {posts.length ? (
-                  <Tabs isFitted variant="soft-rounded" height="100%">
-                    <TabList mb="1em">
-                      <Tab
-                        color="gray"
-                        _selected={{ bg: 'gray.100', color: 'gray' }}
-                      >
-                        <FaHourglassHalf size="25" />
-                      </Tab>
-                      <Tab color="green" _selected={{ bg: 'green.100' }}>
-                        <FaCheckCircle size="25" />
-                      </Tab>
-                      <Tab color="red.500" _selected={{ bg: 'red.100' }}>
-                        <FaArchive size="25" />
-                      </Tab>
-                    </TabList>
-                    <PostsContextProvider posts={posts}>
-                      <PostsContext.Consumer>
-                        {({ posts }) => (
+              <PostsContext.Consumer>
+                {({ posts }) => (
+                  <TabPanels
+                    height={
+                      higherThan840 ? '65vh' : lowerThan690 ? '55vh' : '400px'
+                    }
+                  >
+                    <TabPanel height="100%">
+                      {getSpecificPosts(posts).length ? (
+                        <Tabs isFitted variant="soft-rounded" height="100%">
+                          <TabList mb="1em">
+                            <Tab
+                              color="gray"
+                              _selected={{ bg: 'gray.100', color: 'gray' }}
+                            >
+                              <FaHourglassHalf size="25" />
+                            </Tab>
+                            <Tab color="green" _selected={{ bg: 'green.100' }}>
+                              <FaCheckCircle size="25" />
+                            </Tab>
+                            <Tab color="red.500" _selected={{ bg: 'red.100' }}>
+                              <FaArchive size="25" />
+                            </Tab>
+                          </TabList>
                           <TabPanels overflowY="auto" height="90%">
                             <TabPanel height="100%">
-                              {getNotAnsweredPosts(posts).length ? (
+                              {getNotAnsweredPosts(getSpecificPosts(posts))
+                                .length ? (
                                 <VStack>
-                                  {getNotAnsweredPosts(posts).map(
-                                    (p: PostDocumentObject) => (
-                                      <Post
-                                        key={p._id}
-                                        post={p}
-                                        viewAsTutor
-                                        setSuccessAlert={props.setSuccessAlert}
-                                      />
-                                    )
-                                  )}
+                                  {getNotAnsweredPosts(
+                                    getSpecificPosts(posts)
+                                  ).map((p: PostDocumentObject) => (
+                                    <Post
+                                      key={p._id}
+                                      post={p}
+                                      viewAsTutor
+                                      setSuccessAlert={props.setSuccessAlert}
+                                    />
+                                  ))}
                                 </VStack>
                               ) : (
                                 <Flex
@@ -220,18 +246,18 @@ const TutorProfileView: React.FC<Props> = (props: Props) => {
                               )}
                             </TabPanel>
                             <TabPanel height="100%">
-                              {getAnsweredPosts(posts).length ? (
+                              {getAnsweredByMePosts(posts).length ? (
                                 <VStack>
-                                  {getAnsweredPosts(posts).map(
-                                    (p: PostDocumentObject) => (
-                                      <Post
-                                        key={p._id}
-                                        post={p}
-                                        viewAsTutor
-                                        setSuccessAlert={props.setSuccessAlert}
-                                      />
-                                    )
-                                  )}
+                                  {getAnsweredPosts(
+                                    getAnsweredByMePosts(posts)
+                                  ).map((p: PostDocumentObject) => (
+                                    <Post
+                                      key={p._id}
+                                      post={p}
+                                      viewAsTutor
+                                      setSuccessAlert={props.setSuccessAlert}
+                                    />
+                                  ))}
                                 </VStack>
                               ) : (
                                 <Flex
@@ -246,9 +272,10 @@ const TutorProfileView: React.FC<Props> = (props: Props) => {
                               )}
                             </TabPanel>
                             <TabPanel height="100%">
-                              {getClosedPosts(posts).length ? (
+                              {getClosedPosts(getSpecificPosts(posts))
+                                .length ? (
                                 <VStack>
-                                  {getClosedPosts(posts).map(
+                                  {getClosedPosts(getSpecificPosts(posts)).map(
                                     (p: PostDocumentObject) => (
                                       <Post
                                         key={p._id}
@@ -272,50 +299,42 @@ const TutorProfileView: React.FC<Props> = (props: Props) => {
                               )}
                             </TabPanel>
                           </TabPanels>
-                        )}
-                      </PostsContext.Consumer>
-                    </PostsContextProvider>
-                  </Tabs>
-                ) : (
-                  <Flex justify="center" align="center" height="100%">
-                    <Heading as="h2" size="md" textAlign="center">
-                      For now nobody has posts for you!
-                    </Heading>
-                  </Flex>
-                )}
-              </TabPanel>
-              <TabPanel height="100%">
-                {requestedSessions.length ? (
-                  <Tabs isFitted variant="soft-rounded" height="100%">
-                    <TabList mb="1em">
-                      <Tab
-                        color="gray"
-                        _selected={{ bg: 'gray.100', color: 'gray' }}
-                      >
-                        <FaHourglassHalf size="25" />
-                      </Tab>
-                      <Tab color="green" _selected={{ bg: 'green.100' }}>
-                        <FaCheckCircle size="25" />
-                      </Tab>
-                      <Tab color="red.500" _selected={{ bg: 'red.100' }}>
-                        <FaArchive size="25" />
-                      </Tab>
-                    </TabList>
-                    <SessionsContextProvider sessions={requestedSessions}>
-                      <SessionsContext.Consumer>
-                        {({ sessions: requestedSessions }) => (
+                        </Tabs>
+                      ) : (
+                        <Flex justify="center" align="center" height="100%">
+                          <Heading as="h2" size="md" textAlign="center">
+                            For now nobody has posts for you!
+                          </Heading>
+                        </Flex>
+                      )}
+                    </TabPanel>
+                    <TabPanel height="100%">
+                      {getGlobalPosts(posts).length ? (
+                        <Tabs isFitted variant="soft-rounded" height="100%">
+                          <TabList mb="1em">
+                            <Tab
+                              color="gray"
+                              _selected={{ bg: 'gray.100', color: 'gray' }}
+                            >
+                              <FaHourglassHalf size="25" />
+                            </Tab>
+                            <Tab color="red.500" _selected={{ bg: 'red.100' }}>
+                              <FaArchive size="25" />
+                            </Tab>
+                          </TabList>
                           <TabPanels overflowY="auto" height="90%">
                             <TabPanel height="100%">
-                              {getNotApprovedSessions(requestedSessions)
+                              {getNotAnsweredPosts(getGlobalPosts(posts))
                                 .length ? (
                                 <VStack>
-                                  {getNotApprovedSessions(
-                                    requestedSessions
-                                  ).map((s: SessionDocumentObject) => (
-                                    <Session
-                                      key={s._id}
-                                      session={s}
+                                  {getNotAnsweredPosts(
+                                    getGlobalPosts(posts)
+                                  ).map((p: PostDocumentObject) => (
+                                    <Post
+                                      key={p._id}
+                                      post={p}
                                       viewAsTutor
+                                      setSuccessAlert={props.setSuccessAlert}
                                     />
                                   ))}
                                 </VStack>
@@ -326,20 +345,21 @@ const TutorProfileView: React.FC<Props> = (props: Props) => {
                                   height="100%"
                                 >
                                   <Heading as="h2" size="md" textAlign="center">
-                                    No sessions waiting to be approved!
+                                    No Posts waiting to be answered!
                                   </Heading>
                                 </Flex>
                               )}
                             </TabPanel>
                             <TabPanel height="100%">
-                              {getApprovedSessions(requestedSessions).length ? (
+                              {getClosedPosts(getGlobalPosts(posts)).length ? (
                                 <VStack>
-                                  {getApprovedSessions(requestedSessions).map(
-                                    (s: SessionDocumentObject) => (
-                                      <Session
-                                        key={s._id}
-                                        session={s}
+                                  {getClosedPosts(getGlobalPosts(posts)).map(
+                                    (p: PostDocumentObject) => (
+                                      <Post
+                                        key={p._id}
+                                        post={p}
                                         viewAsTutor
+                                        setSuccessAlert={props.setSuccessAlert}
                                       />
                                     )
                                   )}
@@ -351,71 +371,170 @@ const TutorProfileView: React.FC<Props> = (props: Props) => {
                                   height="100%"
                                 >
                                   <Heading as="h2" size="md" textAlign="center">
-                                    No approved sessions!
-                                  </Heading>
-                                </Flex>
-                              )}
-                            </TabPanel>
-                            <TabPanel height="100%">
-                              {getRejectedSessions(requestedSessions).length ? (
-                                <VStack>
-                                  {getRejectedSessions(requestedSessions).map(
-                                    (s: SessionDocumentObject) => (
-                                      <Session
-                                        key={s._id}
-                                        session={s}
-                                        viewAsTutor
-                                      />
-                                    )
-                                  )}
-                                </VStack>
-                              ) : (
-                                <Flex
-                                  justify="center"
-                                  align="center"
-                                  height="100%"
-                                >
-                                  <Heading as="h2" size="md" textAlign="center">
-                                    No rejected sessions!
+                                    No closed posts!
                                   </Heading>
                                 </Flex>
                               )}
                             </TabPanel>
                           </TabPanels>
-                        )}
-                      </SessionsContext.Consumer>
-                    </SessionsContextProvider>
-                  </Tabs>
-                ) : (
-                  <Flex justify="center" align="center" height="100%">
-                    <Heading as="h2" size="md" textAlign="center">
-                      For now nobody booked a session with you!
-                    </Heading>
-                  </Flex>
+                        </Tabs>
+                      ) : (
+                        <Flex justify="center" align="center" height="100%">
+                          <Heading as="h2" size="md" textAlign="center">
+                            No global posts for now!
+                          </Heading>
+                        </Flex>
+                      )}
+                    </TabPanel>
+                    <TabPanel height="100%">
+                      {requestedSessions.length ? (
+                        <Tabs isFitted variant="soft-rounded" height="100%">
+                          <TabList mb="1em">
+                            <Tab
+                              color="gray"
+                              _selected={{ bg: 'gray.100', color: 'gray' }}
+                            >
+                              <FaHourglassHalf size="25" />
+                            </Tab>
+                            <Tab color="green" _selected={{ bg: 'green.100' }}>
+                              <FaCheckCircle size="25" />
+                            </Tab>
+                            <Tab color="red.500" _selected={{ bg: 'red.100' }}>
+                              <FaArchive size="25" />
+                            </Tab>
+                          </TabList>
+                          <SessionsContextProvider sessions={requestedSessions}>
+                            <SessionsContext.Consumer>
+                              {({ sessions: requestedSessions }) => (
+                                <TabPanels overflowY="auto" height="90%">
+                                  <TabPanel height="100%">
+                                    {getNotApprovedSessions(requestedSessions)
+                                      .length ? (
+                                      <VStack>
+                                        {getNotApprovedSessions(
+                                          requestedSessions
+                                        ).map((s: SessionDocumentObject) => (
+                                          <Session
+                                            key={s._id}
+                                            session={s}
+                                            viewAsTutor
+                                          />
+                                        ))}
+                                      </VStack>
+                                    ) : (
+                                      <Flex
+                                        justify="center"
+                                        align="center"
+                                        height="100%"
+                                      >
+                                        <Heading
+                                          as="h2"
+                                          size="md"
+                                          textAlign="center"
+                                        >
+                                          No sessions waiting to be approved!
+                                        </Heading>
+                                      </Flex>
+                                    )}
+                                  </TabPanel>
+                                  <TabPanel height="100%">
+                                    {getApprovedSessions(requestedSessions)
+                                      .length ? (
+                                      <VStack>
+                                        {getApprovedSessions(
+                                          requestedSessions
+                                        ).map((s: SessionDocumentObject) => (
+                                          <Session
+                                            key={s._id}
+                                            session={s}
+                                            viewAsTutor
+                                          />
+                                        ))}
+                                      </VStack>
+                                    ) : (
+                                      <Flex
+                                        justify="center"
+                                        align="center"
+                                        height="100%"
+                                      >
+                                        <Heading
+                                          as="h2"
+                                          size="md"
+                                          textAlign="center"
+                                        >
+                                          No approved sessions!
+                                        </Heading>
+                                      </Flex>
+                                    )}
+                                  </TabPanel>
+                                  <TabPanel height="100%">
+                                    {getRejectedSessions(requestedSessions)
+                                      .length ? (
+                                      <VStack>
+                                        {getRejectedSessions(
+                                          requestedSessions
+                                        ).map((s: SessionDocumentObject) => (
+                                          <Session
+                                            key={s._id}
+                                            session={s}
+                                            viewAsTutor
+                                          />
+                                        ))}
+                                      </VStack>
+                                    ) : (
+                                      <Flex
+                                        justify="center"
+                                        align="center"
+                                        height="100%"
+                                      >
+                                        <Heading
+                                          as="h2"
+                                          size="md"
+                                          textAlign="center"
+                                        >
+                                          No rejected sessions!
+                                        </Heading>
+                                      </Flex>
+                                    )}
+                                  </TabPanel>
+                                </TabPanels>
+                              )}
+                            </SessionsContext.Consumer>
+                          </SessionsContextProvider>
+                        </Tabs>
+                      ) : (
+                        <Flex justify="center" align="center" height="100%">
+                          <Heading as="h2" size="md" textAlign="center">
+                            For now nobody booked a session with you!
+                          </Heading>
+                        </Flex>
+                      )}
+                    </TabPanel>
+                    <TabPanel height="100%" overflowY="auto">
+                      {props.currentUser.reviews.length ? (
+                        <VStack>
+                          {props.currentUser.reviews.map(
+                            (r: ReviewDocumentObject) => (
+                              <Review
+                                key={r._id}
+                                review={r}
+                                deleteUserCreateReviewId={null}
+                              />
+                            )
+                          )}
+                        </VStack>
+                      ) : (
+                        <Flex justify="center" align="center" height="100%">
+                          <Heading as="h2" size="md" textAlign="center">
+                            You haven't been reviewed yet!
+                          </Heading>
+                        </Flex>
+                      )}
+                    </TabPanel>
+                  </TabPanels>
                 )}
-              </TabPanel>
-              <TabPanel height="100%" overflowY="auto">
-                {props.currentUser.reviews.length ? (
-                  <VStack>
-                    {props.currentUser.reviews.map(
-                      (r: ReviewDocumentObject) => (
-                        <Review
-                          key={r._id}
-                          review={r}
-                          deleteUserCreateReviewId={null}
-                        />
-                      )
-                    )}
-                  </VStack>
-                ) : (
-                  <Flex justify="center" align="center" height="100%">
-                    <Heading as="h2" size="md" textAlign="center">
-                      You haven't been reviewed yet!
-                    </Heading>
-                  </Flex>
-                )}
-              </TabPanel>
-            </TabPanels>
+              </PostsContext.Consumer>
+            </PostsContextProvider>
           </Tabs>
         </AccordionPanel>
       </AccordionItem>

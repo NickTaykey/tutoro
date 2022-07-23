@@ -104,13 +104,16 @@ const PostsContextProvider: React.FC<{
             'PUT',
             false
           );
-          debugger;
-          /* if (!apiResponse.errorMessage) {
+          if (!apiResponse.errorMessage) {
             dispatchPostsAction({
               type: PostActionTypes.ANSWER,
-              payload: { postId, answer, answeredBy: apiResponse.answeredBy },
+              payload: {
+                postId,
+                answer: apiResponse.answer,
+                answeredBy: apiResponse.answeredBy,
+              },
             });
-          } */
+          }
           return apiResponse;
         },
       }}

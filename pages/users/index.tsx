@@ -27,7 +27,6 @@ import {
   AccordionIcon,
   Flex,
   Alert,
-  Center,
 } from '@chakra-ui/react';
 
 interface Props {
@@ -43,13 +42,19 @@ const ProfilePage: NextPage<Props> = ({
   return (
     <Layout>
       <Box width={['100%', null, '80%']} mx="auto">
-        <Heading as="h1" size="xl" textAlign="center" my={[5, 10]}>
+        <Heading as="h1" size="xl" textAlign="center" my={[5, 10]} mx="auto">
           Hello, {currentUser.fullname}!
         </Heading>
         {currentUser.isTutor ? (
           <>
             {successAlert && (
-              <Alert mb="5" status="success" mx="auto" fontWeight="bold">
+              <Alert
+                mb="5"
+                status="success"
+                mx="auto"
+                fontWeight="bold"
+                width={['90%', null, '100%']}
+              >
                 {successAlert}
               </Alert>
             )}
@@ -174,7 +179,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
       promises = [
         Post.find({
           type: PostType.GLOBAL,
-          status: PostStatus.NOT_ANSWERED,
+          status: { $ne: PostStatus.ANSWERED },
           subject: { $in: user.subjects },
         })
           .populate({

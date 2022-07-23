@@ -1,5 +1,5 @@
 import { PostDocumentObject } from '../../models/Post';
-import { PostType, PostStatus } from '../../types';
+import { PostType, PostStatus, CloudFile } from '../../types';
 import { useContext, useRef, useState } from 'react';
 import PostsContext, { APIError } from '../../store/posts-context';
 import { useSession } from 'next-auth/react';
@@ -20,6 +20,7 @@ import {
   ModalCloseButton,
   useDisclosure,
   Show,
+  Button,
 } from '@chakra-ui/react';
 import {
   FaArchive,
@@ -28,9 +29,12 @@ import {
   FaPaperclip,
   FaGlobe,
   FaPencilAlt,
+  FaFile,
+  FaImage,
 } from 'react-icons/fa';
 import AnswerPostModal from './AnswerPostModal';
 import type { AnswerPostModalHandler } from './AnswerPostModal';
+import Link from 'next/link';
 
 interface Props {
   post: PostDocumentObject;
@@ -71,12 +75,48 @@ const Post: React.FC<Props> = ({ post, viewAsTutor, setSuccessAlert }) => {
         <Modal isOpen={isOpen} onClose={onClose} isCentered>
           <ModalOverlay />
           <ModalContent py="6" width="90%">
-            <ModalHeader>Your answer</ModalHeader>
+            <ModalHeader>
+              <Heading as="h1">Answer</Heading>
+            </ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              <Text maxHeight="40vh" pr="2" overflowY="auto">
-                {post.answer}
-              </Text>
+              <Box mb="3">
+                <Heading as="h2" size="md" mb="2">
+                  Description
+                </Heading>
+                <Text maxHeight="40vh" pr="2" overflowY="auto">
+                  {post.answer}
+                </Text>
+              </Box>
+              {post.answerAttachments.length > 0 && (
+                <Box mb="3">
+                  <Heading as="h2" size="md" mb="2">
+                    <Flex>
+                      <FaPaperclip size={25} />
+                      <Text ml="1">Attachments</Text>
+                    </Flex>
+                  </Heading>
+                  <Flex direction="column">
+                    {post.attachments.map((f: CloudFile, i: number) => (
+                      <Link href={f.url} key={f.public_id} passHref>
+                        <Button
+                          mb="3"
+                          as="a"
+                          leftIcon={
+                            f.url.includes('raw') ? (
+                              <FaFile size={18} />
+                            ) : (
+                              <FaImage size={18} />
+                            )
+                          }
+                        >
+                          <>Attachment {i + 1}</>
+                        </Button>
+                      </Link>
+                    ))}
+                  </Flex>
+                </Box>
+              )}
             </ModalBody>
           </ModalContent>
         </Modal>
@@ -94,30 +134,50 @@ const Post: React.FC<Props> = ({ post, viewAsTutor, setSuccessAlert }) => {
       >
         <Flex alignItems="center" direction={['column', 'row']}>
           <Flex alignItems="center">
-            {post.type === PostType.SPECIFIC && !viewAsTutor && (
-              <Avatar src={answeredBy.avatar?.url} name={answeredBy.fullname} />
+            {!viewAsTutor && post.type === PostType.SPECIFIC && (
+              <Avatar
+                src={answeredBy.avatar?.url}
+                name={answeredBy.fullname}
+                mr="2"
+              />
             )}
-            {post.type === PostType.SPECIFIC && viewAsTutor && (
-              <Avatar src={creator.avatar?.url} name={creator.fullname} />
+            {viewAsTutor && (
+              <Avatar
+                mr="2"
+                src={creator.avatar?.url}
+                name={creator.fullname}
+              />
             )}
-            <Heading
-              as="h3"
-              size="md"
-              ml={post.type === PostType.GLOBAL ? 0 : 3}
-            >
-              {status !== 'loading' && viewAsTutor ? (
+            {!viewAsTutor &&
+              post.type === PostType.GLOBAL &&
+              post.status === PostStatus.ANSWERED && (
+                <Avatar
+                  src={(post.answeredBy as UserDocumentObject).avatar?.url}
+                  name={(post.answeredBy as UserDocumentObject).fullname}
+                  mr="2"
+                />
+              )}
+            <Heading as="h3" size="md">
+              {viewAsTutor ? (
                 creator.fullname
-              ) : post.type === PostType.GLOBAL ? (
+              ) : post.type === PostType.GLOBAL &&
+                post.status !== PostStatus.ANSWERED ? (
                 <Flex alignItems="center">
                   <FaGlobe size="50" />
-                  <Text ml="3">Global</Text>
+                  <Text ml="2">Global</Text>
                 </Flex>
               ) : (
                 answeredBy?.fullname
               )}
             </Heading>
           </Flex>
-          <Flex my="3">
+          <Flex my="3" alignItems="center">
+            {post.type === PostType.GLOBAL &&
+              post.status === PostStatus.ANSWERED && (
+                <Box ml={[0, 3]}>
+                  <FaGlobe size={25} />
+                </Box>
+              )}
             <Badge fontSize="0.8em" bg="purple.600" color="white" ml="3">
               {post.subject}
             </Badge>

@@ -59,7 +59,7 @@ export default async function handler(
                 errorMessage: 'You can provide at the most 4 attachments',
               });
             }
-            post.answer = fields.answer;
+            post.answer = fields.text;
             post.status = PostStatus.ANSWERED;
             const cloudinaryPromises: Promise<UploadApiResponse>[] = [];
 
