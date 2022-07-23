@@ -14,7 +14,6 @@ export const getUserDocumentObject = (
     fullname: user.fullname,
     isTutor: user.isTutor,
     bio: user.bio || '',
-    receiveOpenPosts: user.receiveOpenPosts,
     location: user.location || '',
     subjects: user.subjects && user.subjects.length ? [...user.subjects] : [],
     pricePerHour: user.pricePerHour,
@@ -29,6 +28,7 @@ export const getUserDocumentObject = (
     createdReviews: [],
     bookedSessions: [],
     requestedSessions: [],
+    globalPostsEnabled: user.globalPostsEnabled,
   };
   if (user.isTutor)
     userObject.geometry = {

@@ -40,15 +40,24 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
   return (
     <Box width="100%" mx="auto">
       <Tabs isFitted variant="soft-rounded" colorScheme="blue">
-        <TabList my="1em" width="95%" mx="auto">
-          <Tab fontSize="sm">Posts</Tab>
-          <Tab mx="1" fontSize="sm">
-            Sessions
+        <TabList
+          my="1em"
+          width={['95%', null, '100%']}
+          mx="auto"
+          flexDirection={['column', 'row']}
+        >
+          <Tab fontSize="sm">
+            ({props.currentUser.createdPosts.length}) Posts
           </Tab>
-          <Tab fontSize="sm">Reviews</Tab>
+          <Tab mx="1" fontSize="sm">
+            ({props.currentUser.bookedSessions.length}) Sessions
+          </Tab>
+          <Tab fontSize="sm">
+            ({props.currentUser.createdReviews.length}) Reviews
+          </Tab>
         </TabList>
         <TabPanels
-          height={higherThan840 ? '65vh' : lowerThan690 ? '55vh' : '400px'}
+          height={higherThan840 ? '65vh' : lowerThan690 ? '50vh' : '400px'}
         >
           <TabPanel height="100%" overflowY="auto">
             {props.currentUser.createdPosts.length ? (

@@ -25,7 +25,6 @@ type PostsArray =
   | Types.Array<PostDocument>;
 
 interface UserCoreObject {
-  receiveOpenPosts: boolean;
   email: string;
   pricePerHour: number;
   fullname: string;
@@ -35,6 +34,7 @@ interface UserCoreObject {
   location: string;
   avatar?: CloudFile;
   avgRating: number;
+  globalPostsEnabled: boolean;
   geometry?: {
     type: 'Point';
     coordinates: [number, number];
@@ -87,7 +87,6 @@ const userSchema = new Schema<UserDocument, UserModel, {}, InstanceMethods>({
   pricePerHour: { type: Number, default: 0 },
   fullname: { type: String, required: true },
   isTutor: { type: Boolean, default: false },
-  receiveOpenPosts: { type: Boolean, default: true },
   reviews: [reviewsArrayObject],
   createdReviews: [reviewsArrayObject],
   bookedSessions: [sessionsArrayObject],
@@ -106,6 +105,7 @@ const userSchema = new Schema<UserDocument, UserModel, {}, InstanceMethods>({
     coordinates: [Number],
   },
   avgRating: { type: Number, default: 0 },
+  globalPostsEnabled: { type: Boolean, default: true },
 });
 
 userSchema.pre('save', function (next) {

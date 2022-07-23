@@ -17,6 +17,7 @@ import {
   Tooltip,
   Input,
   Spinner,
+  Kbd,
 } from '@chakra-ui/react';
 import Link from 'next/link';
 import React, {
@@ -113,8 +114,11 @@ const AnswerPostModal = React.forwardRef<
     <Modal isOpen={isOpen} onClose={onClose} size="full">
       <ModalOverlay />
       <ModalContent>
+        <Kbd float="right" position="absolute" right="50px" top="15px">
+          esc
+        </Kbd>
         <ModalCloseButton />
-        <ModalBody>
+        <ModalBody mt="3">
           <Flex
             width="90%"
             direction={['column', 'column', 'row']}
@@ -139,29 +143,33 @@ const AnswerPostModal = React.forwardRef<
                   Description
                 </Heading>
                 <Text>{props.post?.description}</Text>
-                <Flex my="4">
-                  <FaPaperclip size={25} />
-                  <Heading as="h3" size="md" ml="1">
-                    Attachments
-                  </Heading>
-                </Flex>
-                {props.post.attachments.map((f: CloudFile, i: number) => (
-                  <Link href={f.url} key={f.public_id} passHref>
-                    <Button
-                      mb="3"
-                      as="a"
-                      leftIcon={
-                        f.url.includes('raw') ? (
-                          <FaFile size={18} />
-                        ) : (
-                          <FaImage size={18} />
-                        )
-                      }
-                    >
-                      <>Attachment {i + 1}</>
-                    </Button>
-                  </Link>
-                ))}
+                {!!props.post.attachments.length && (
+                  <>
+                    <Flex my="4">
+                      <FaPaperclip size={25} />
+                      <Heading as="h3" size="md" ml="1">
+                        Attachments
+                      </Heading>
+                    </Flex>
+                    {props.post.attachments.map((f: CloudFile, i: number) => (
+                      <Link href={f.url} key={f.public_id} passHref>
+                        <Button
+                          mb="3"
+                          as="a"
+                          leftIcon={
+                            f.url.includes('raw') ? (
+                              <FaFile size={18} />
+                            ) : (
+                              <FaImage size={18} />
+                            )
+                          }
+                        >
+                          <>Attachment {i + 1}</>
+                        </Button>
+                      </Link>
+                    ))}
+                  </>
+                )}
               </Flex>
             </Box>
             <Box width={['100%', '100%', '50%']} mx={['0', '0', '2']} my="2">
@@ -221,7 +229,7 @@ const AnswerPostModal = React.forwardRef<
                       size="xl"
                     />
                     <Heading as="h3" size="md" ml="3">
-                      Uploading attachments
+                      Saving Post
                     </Heading>
                   </Flex>
                 ) : (

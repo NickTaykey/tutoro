@@ -172,12 +172,6 @@ const Post: React.FC<Props> = ({ post, viewAsTutor, setSuccessAlert }) => {
             </Heading>
           </Flex>
           <Flex my="3" alignItems="center">
-            {post.type === PostType.GLOBAL &&
-              post.status === PostStatus.ANSWERED && (
-                <Box ml={[0, 3]}>
-                  <FaGlobe size={25} />
-                </Box>
-              )}
             <Badge fontSize="0.8em" bg="purple.600" color="white" ml="3">
               {post.subject}
             </Badge>

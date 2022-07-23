@@ -92,6 +92,7 @@ export default async function handler(
               ) === -1
             ) {
               post.answeredBy = userSession._id;
+              post.type = PostType.SPECIFIC;
               userSession.posts.push(post._id);
             }
             await Promise.all([post.save(), userSession.save()]);

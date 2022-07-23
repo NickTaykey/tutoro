@@ -140,7 +140,7 @@ const NewPostForm: React.FC<Props> = props => {
               </FormLabel>
               <Textarea
                 id="post-description"
-                {...register('description', { required: true, minLength: 10 })}
+                {...register('description', { required: true })}
               />
             </FormControl>
             <FormControl mb="4">
@@ -172,7 +172,7 @@ const NewPostForm: React.FC<Props> = props => {
                   size="xl"
                 />
                 <Heading as="h3" size="md" ml="3">
-                  Uploading attachments
+                  Saving Post
                 </Heading>
               </Flex>
             ) : (

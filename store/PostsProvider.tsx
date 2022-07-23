@@ -1,7 +1,7 @@
 import React, { useReducer } from 'react';
 import PostsContext, { APIError } from './posts-context';
 import ApiHelper from '../utils/api-helper';
-import { PostStatus } from '../types';
+import { PostStatus, PostType } from '../types';
 import type { PostDocumentObject } from '../models/Post';
 import { UserDocumentObject } from '../models/User';
 
@@ -39,6 +39,7 @@ function reducer(
         p._id === action.payload.postId
           ? {
               ...p,
+              type: PostType.SPECIFIC,
               status: PostStatus.ANSWERED,
               answer: action.payload.answer!,
               answeredBy: action.payload.answeredBy!,

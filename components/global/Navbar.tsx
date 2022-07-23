@@ -206,6 +206,25 @@ const Navbar: React.FC = () => {
                           />
                         </Box>
                       </Flex>
+                    ) : isUpdateProfileModalOpen ? (
+                      <Flex
+                        direction="column"
+                        shadow="md"
+                        borderWidth="1px"
+                        borderRadius="md"
+                        p="6"
+                        width="100%"
+                        mt={[2, 0]}
+                      >
+                        <FaRegTimesCircle
+                          size="25"
+                          onClick={onUpdateProfileModalClose}
+                          style={{ alignSelf: 'end' }}
+                        />
+                        <Box my="3">
+                          <UpdateTutorForm />
+                        </Box>
+                      </Flex>
                     ) : (
                       <>
                         <IconButton
@@ -222,7 +241,7 @@ const Navbar: React.FC = () => {
                             width="100%"
                             icon={<FaListUl size="25" />}
                             colorScheme="orange"
-                            onClick={showUpdateAvatarForm}
+                            onClick={onUpdateProfileModalOpen}
                             aria-label="Update avatar"
                             mt="2"
                           />

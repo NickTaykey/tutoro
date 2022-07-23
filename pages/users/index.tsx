@@ -27,6 +27,9 @@ import {
   AccordionIcon,
   Flex,
   Alert,
+  FormControl,
+  FormLabel,
+  Switch,
 } from '@chakra-ui/react';
 
 interface Props {
@@ -39,12 +42,43 @@ const ProfilePage: NextPage<Props> = ({
   pertinentGlobalPosts,
 }) => {
   const [successAlert, setSuccessAlert] = useState<string | null>(null);
+  const [globalPostsEnabled, setGlobalPostsEnabled] = useState<boolean>(
+    currentUser.globalPostsEnabled
+  );
+
+  const handlerGlobalPostsSwitch = () => {
+    setGlobalPostsEnabled(prevState => !prevState);
+    ApiHelper(
+      `/api/tutors/${currentUser._id}`,
+      { globalPostsEnabled: !globalPostsEnabled },
+      'PUT'
+    );
+  };
+
   return (
     <Layout>
       <Box width={['100%', null, '80%']} mx="auto">
-        <Heading as="h1" size="xl" textAlign="center" my={[5, 10]} mx="auto">
+        <Heading as="h1" size="xl" textAlign="center" my={[2, 2, 10]} mx="auto">
           Hello, {currentUser.fullname}!
         </Heading>
+        {currentUser.isTutor && (
+          <FormControl
+            display="flex"
+            alignItems="center"
+            mb={[2, 5]}
+            justifyContent={['center', null, 'start']}
+          >
+            <FormLabel htmlFor="global-posts-enabled" mb="0" fontSize="lg">
+              Global posts
+            </FormLabel>
+            <Switch
+              id="global-posts-enabled"
+              isChecked={globalPostsEnabled}
+              size="lg"
+              onChange={handlerGlobalPostsSwitch}
+            />
+          </FormControl>
+        )}
         {currentUser.isTutor ? (
           <>
             {successAlert && (
@@ -77,6 +111,7 @@ const ProfilePage: NextPage<Props> = ({
               </AccordionItem>
               {currentUser.isTutor && (
                 <TutorProfileView
+                  globalPostsEnabled={globalPostsEnabled}
                   setSuccessAlert={setSuccessAlert}
                   currentUser={currentUser}
                   pertinentGlobalPosts={pertinentGlobalPosts}
@@ -99,6 +134,7 @@ import Session from '../../models/Session';
 import Post, { PostDocument, PostDocumentObject } from '../../models/Post';
 import Layout from '../../components/global/Layout';
 import { useState } from 'react';
+import ApiHelper from '../../utils/api-helper';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
   await connectDB();
@@ -175,22 +211,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
         ],
       }),
     ];
-    if (user.isTutor) {
+    if (currentUser.isTutor) {
       promises = [
-        Post.find({
-          type: PostType.GLOBAL,
-          status: { $ne: PostStatus.ANSWERED },
-          subject: { $in: user.subjects },
-        })
-          .populate({
-            path: 'creator',
-            model: User,
-          })
-          .populate({
-            path: 'answeredBy',
-            model: User,
-          })
-          .exec(),
         user.populate({
           path: 'reviews',
           model: Review,
@@ -212,6 +234,24 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
         }),
         ...promises,
       ];
+      if (currentUser.globalPostsEnabled) {
+        promises.unshift(
+          Post.find({
+            type: PostType.GLOBAL,
+            status: { $ne: PostStatus.ANSWERED },
+            subject: { $in: user.subjects },
+          })
+            .populate({
+              path: 'creator',
+              model: User,
+            })
+            .populate({
+              path: 'answeredBy',
+              model: User,
+            })
+            .exec()
+        );
+      }
     }
 
     const [pertinentPosts] = await Promise.all(promises);
@@ -235,11 +275,14 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
     return {
       props: {
         currentUser,
-        pertinentGlobalPosts: user.isTutor
-          ? (pertinentPosts as Array<unknown>).map(p => {
-              return getPostDocumentObject(p as PostDocument);
-            })
-          : [],
+        pertinentGlobalPosts:
+          currentUser.isTutor &&
+          currentUser.globalPostsEnabled &&
+          pertinentPosts
+            ? (pertinentPosts as Array<unknown>).map(p => {
+                return getPostDocumentObject(p as PostDocument);
+              })
+            : [],
       },
     };
   }

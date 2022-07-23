@@ -56,14 +56,14 @@ const Session: React.FC<Props> = ({ session, viewAsTutor }) => {
   const endHour = `${date.getHours() + session.hours}:${date.getMinutes()}`;
 
   return (
-    <Box shadow="md" borderWidth="1px" p="6" width="100%">
+    <Box shadow="md" borderWidth="1px" p="6" width="100%" borderRadius="md">
       <Flex alignItems="center" direction={['column', 'row']}>
         <Flex alignItems="center">
           <Avatar
             src={
               viewAsTutor
-                ? (session.user as UserDocumentObject).avatar
-                : tutor.avatar
+                ? (session.user as UserDocumentObject).avatar?.url
+                : tutor.avatar?.url
             }
             name={
               viewAsTutor
