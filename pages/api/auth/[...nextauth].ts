@@ -45,7 +45,8 @@ export const authOptions: NextAuthOptions = {
           isTutor: user.isTutor,
           bio: user.bio,
           subjects: user.subjects,
-          pricePerHour: user.pricePerHour,
+          sessionPricePerHour: user.sessionPricePerHour,
+          pricePerPost: user.pricePerPost,
           location: user.location,
         },
       };

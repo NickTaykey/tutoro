@@ -23,18 +23,28 @@ export default async function handler(
         async (userSession, req, res) => {
           await connectDB();
           return mongoErrorHandler(req, res, 'user', async () => {
-            const [tutor, user] = await Promise.all([
-              User.findOne({
-                _id: req.query.tutorId,
-                isTutor: true,
-              }),
-              User.findById(userSession._id),
-            ]);
+            const tutor = await User.findOne({
+              _id: req.query.tutorId,
+              isTutor: true,
+            });
+            const hasUserCreatedPost =
+              new Set(...tutor.posts, ...userSession.createdPosts).size !==
+              tutor.posts.length + userSession.createdPosts.length;
+            const hasUserCreatedSession =
+              new Set(...tutor.requestedSessions, ...userSession.bookedSessions)
+                .size !==
+              tutor.requestedSessions.length +
+                userSession.bookedSessions.length;
 
             if (!tutor) {
               return res.status(404).json({ errorMessage: 'Tutor not found' });
             }
-            if (tutor._id.toString() === user._id.toString()) {
+            if (!hasUserCreatedPost && !hasUserCreatedSession)
+              return res.status(403).json({
+                errorMessage:
+                  'You must have booked a Session or created a Post to review a Tutor',
+              });
+            if (tutor._id.toString() === userSession._id.toString()) {
               return res.status(403).json({
                 errorMessage: 'As a Tutor you cannot review yourself!',
               });
@@ -42,12 +52,14 @@ export default async function handler(
 
             const reviewSet = new Set([
               ...tutor.reviews.map((rid: ObjectId) => rid.toString()),
-              ...user.createdReviews.map((rid: ObjectId) => rid.toString()),
+              ...userSession.createdReviews.map(rid =>
+                (rid as ObjectId).toString()
+              ),
             ]);
 
             const canUserCreateReview =
               reviewSet.size ===
-              user.createdReviews.length + tutor.reviews.length;
+              userSession.createdReviews.length + tutor.reviews.length;
 
             if (canUserCreateReview) {
               const sanitizedReqBody = sanitize(req.body);
@@ -58,8 +70,8 @@ export default async function handler(
                 user: userSession,
               });
               tutor.reviews.push(review);
-              user.createdReviews.push(review);
-              await Promise.all([tutor.calcAvgRating(), user.save()]);
+              userSession.createdReviews.push(review);
+              await Promise.all([tutor.calcAvgRating(), userSession.save()]);
               return res
                 .status(201)
                 .json({ ...review.toObject(), ownerAuthenticated: true });

@@ -28,7 +28,7 @@ import {
 } from '@chakra-ui/react';
 
 interface Props {
-  tutor: UserDocumentObject | null;
+  tutor?: UserDocumentObject;
 }
 
 interface FormStructure {
@@ -135,13 +135,11 @@ const Page: NextPage<Props> = ({ tutor }) => {
     formFields.date.getMinutes() < 10
       ? '0' + formFields.date.getMinutes().toString()
       : formFields.date.getMinutes().toString();
-
-  let markup = <h1>404 Tutor not found!</h1>;
-  if (tutor && tutor.reviews) {
-    markup = (
-      <Layout>
+  return (
+    <Layout>
+      {tutor ? (
         <Flex
-          width={['90%', null, null, '60%', '50%']}
+          width={['90%', null, null, '60%', '40%']}
           mx="auto"
           mb={3}
           align="center"
@@ -153,7 +151,7 @@ const Page: NextPage<Props> = ({ tutor }) => {
             Book a session with {tutor.fullname}
           </Heading>
           <Heading as="h3" size="md" my={3}>
-            Price: ${tutor.pricePerHour * formFields.hours}
+            Price: ${tutor.sessionPricePerHour * formFields.hours}
           </Heading>
           <form onSubmit={formSubmitHandler} style={{ width: '100%' }}>
             {validationError && (
@@ -252,10 +250,15 @@ const Page: NextPage<Props> = ({ tutor }) => {
             </Button>
           </form>
         </Flex>
-      </Layout>
-    );
-  }
-  return markup;
+      ) : (
+        <Flex justifyContent="center" alignItems="center" height="80vh">
+          <Heading as="h1" size="xl">
+            404 Tutor not found
+          </Heading>
+        </Flex>
+      )}
+    </Layout>
+  );
 };
 
 import { getServerSession } from 'next-auth';
@@ -290,18 +293,26 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
           redirect: { permanent: false, destination: '/tutoro' },
         };
       }
-      return { props: { tutor: tutor ? getUserDocumentObject(tutor) : null } };
+      if (tutor) {
+        return {
+          props: tutor ? { tutor: getUserDocumentObject(tutor) } : {},
+        };
+      }
+      return {
+        props: {},
+        redirect: { permanent: false, destination: '/tutoro' },
+      };
     }
+    return {
+      props: {},
+      redirect: { permanent: false, destination: '/tutoro' },
+    };
   } catch (e) {
-    return { props: { tutor: null } };
+    return {
+      props: {},
+      redirect: { permanent: false, destination: '/tutoro' },
+    };
   }
-  return {
-    props: {},
-    redirect: {
-      permanent: false,
-      destination: `http://${context.req.headers.host}/api/auth/signin?callbackUrl=/tutors/${context.query.tutorId}/sessions/new`,
-    },
-  };
 };
 
 export default Page;

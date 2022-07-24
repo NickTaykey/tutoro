@@ -94,6 +94,7 @@ const Home: NextPage<Props> = ({ currentUser, points, allSubjects }) => {
                 >
                   <Button
                     my="3"
+                    width={['100%', null, 'auto']}
                     onClick={() => push('/tutors/global/posts/new')}
                     leftIcon={<FaGlobe />}
                   >

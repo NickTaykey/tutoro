@@ -26,7 +26,8 @@ type PostsArray =
 
 interface UserCoreObject {
   email: string;
-  pricePerHour: number;
+  sessionPricePerHour: number;
+  pricePerPost: number;
   fullname: string;
   isTutor: boolean;
   subjects: string[];
@@ -84,7 +85,8 @@ const postsArrayObject = {
 
 const userSchema = new Schema<UserDocument, UserModel, {}, InstanceMethods>({
   email: { type: String, required: true, unique: true },
-  pricePerHour: { type: Number, default: 0 },
+  sessionPricePerHour: { type: Number, default: 0 },
+  pricePerPost: { type: Number, default: 0 },
   fullname: { type: String, required: true },
   isTutor: { type: Boolean, default: false },
   reviews: [reviewsArrayObject],

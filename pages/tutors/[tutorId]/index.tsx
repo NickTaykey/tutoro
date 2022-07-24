@@ -7,24 +7,22 @@ import User from '../../../models/User';
 import Review, { ReviewDocumentObject } from '../../../models/Review';
 
 interface Props {
-  host: string;
+  isUserAllowedToReview: boolean;
   userCreatedReviews: string[];
-  tutor: UserDocumentObject | null;
+  tutor?: UserDocumentObject;
 }
 
-const Page: NextPage<Props> = ({ tutor, userCreatedReviews, host }) => {
-  let markup = <h1>404 Tutor not found!</h1>;
-  if (tutor && tutor.reviews) {
-    markup = (
-      <TutorPage
-        tutor={tutor}
-        userCreatedReviews={userCreatedReviews}
-        host={host}
-      />
-    );
-  }
-  return markup;
-};
+const Page: NextPage<Props> = ({
+  isUserAllowedToReview,
+  userCreatedReviews,
+  tutor,
+}) => (
+  <TutorPage
+    tutor={tutor}
+    isUserAllowedToReview={isUserAllowedToReview}
+    userCreatedReviews={userCreatedReviews}
+  />
+);
 
 import { getUserDocumentObject } from '../../../utils/casting-helpers';
 import { authOptions } from '../../api/auth/[...nextauth]';
@@ -33,7 +31,6 @@ import { getServerSession } from 'next-auth';
 import mongoose from 'mongoose';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
-  const { host } = context.req.headers;
   const [, session] = await Promise.all([
     connectDB(),
     getServerSession(context, authOptions),
@@ -59,6 +56,12 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
     const tutor = getUserDocumentObject(userTutor as UserDocument);
     tutor.reviews = userTutor.reviews.map(getReviewDocumentObject);
     if (user) {
+      const hasUserCreatedPost =
+        new Set(...userTutor.posts, ...user.createdPosts).size !==
+        userTutor.posts.length + user.createdPosts.length;
+      const hasUserCreatedSession =
+        new Set(...userTutor.requestedSessions, ...user.bookedSessions).size !==
+        userTutor.requestedSessions.length + user.bookedSessions.length;
       const userCreatedReviews: string[] = user.createdReviews.map(
         (r: mongoose.ObjectId) => r.toString()
       );
@@ -68,17 +71,24 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
       return {
         props: {
           userCreatedReviews,
-          host: host!,
           tutor,
+          isUserAllowedToReview: hasUserCreatedPost || hasUserCreatedSession,
         },
       };
     }
     return {
-      props: { userCreatedReviews: [], host: host!, tutor },
+      props: {
+        userCreatedReviews: [],
+        tutor,
+        isUserAllowedToReview: false,
+      },
     };
   } catch (e) {
     return {
-      props: { userCreatedReviews: [], host: host!, tutor: null },
+      props: {
+        userCreatedReviews: [],
+        isUserAllowedToReview: false,
+      },
     };
   }
 };

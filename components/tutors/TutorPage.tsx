@@ -1,7 +1,7 @@
 import ReviewForm, { ReviewFormTypes } from '../reviews/ReviewForm';
 import ReviewsContextProvider from '../../store/ReviewsProvider';
 import ReviewContext from '../../store/reviews-context';
-import { useSession } from 'next-auth/react';
+import { ClientSafeProvider, LiteralUnion, useSession } from 'next-auth/react';
 import Review from '../reviews/Review';
 import Map, { Marker } from 'react-map-gl';
 import Layout from '../global/Layout';
@@ -17,20 +17,21 @@ import {
   Grid,
   GridItem,
   Box,
+  Center,
 } from '@chakra-ui/react';
-import { FaStar } from 'react-icons/fa';
+import { FaPen, FaStar } from 'react-icons/fa';
 import { useState } from 'react';
 
 interface Props {
-  host: String;
-  tutor: UserDocumentObject;
+  tutor?: UserDocumentObject;
   userCreatedReviews: string[];
+  isUserAllowedToReview: boolean;
 }
 
 const TutorPage: React.FC<Props> = ({
   tutor,
   userCreatedReviews: userCreatedReviewsProp,
-  host,
+  isUserAllowedToReview,
 }: Props) => {
   const { status, data } = useSession();
   const [userCreatedReviews, setUserCreatedReviews] = useState<string[]>(
@@ -45,10 +46,9 @@ const TutorPage: React.FC<Props> = ({
     setUserCreatedReviews(prevState => [...prevState, reviewId]);
   };
 
-  let markup = <h1>404 Tutor not found!</h1>;
-  if (tutor && tutor.reviews) {
-    markup = (
-      <Layout>
+  return (
+    <Layout>
+      {tutor ? (
         <Box width={['90%', null, null, '80%']} mx="auto">
           <Heading as="h1" size="xl" my="5">
             {tutor.fullname}
@@ -106,7 +106,13 @@ const TutorPage: React.FC<Props> = ({
               <Heading as="h2" size="md" my="3">
                 Reviews
               </Heading>
-              <VStack alignItems="start">
+              <VStack
+                spacing="0"
+                height="50vh"
+                maxHeight="500px"
+                justify={tutor.reviews.length ? 'start' : 'center'}
+                alignItems={tutor.reviews.length ? 'start' : 'center'}
+              >
                 <ReviewsContextProvider
                   reviews={tutor.reviews.map(r => ({
                     ...r,
@@ -115,38 +121,89 @@ const TutorPage: React.FC<Props> = ({
                   }))}
                 >
                   <ReviewContext.Consumer>
-                    {reviewsCtx => (
-                      <>
-                        {status === 'authenticated' &&
-                          data?.user?.email !== tutor.email &&
-                          !reviewsCtx.reviews.some(r =>
-                            userCreatedReviews.includes(r._id)
-                          ) && (
-                            <ReviewForm
-                              type={ReviewFormTypes.Create}
-                              tutorId={tutor._id}
-                              addUserCreateReviewId={addUserCreateReviewId}
-                            />
+                    {reviewsCtx => {
+                      const isNotTutor = data?.user?.email !== tutor.email;
+                      const hasNotAlreadyReviewed = !reviewsCtx.reviews.some(
+                        r => userCreatedReviews.includes(r._id)
+                      );
+                      return (
+                        <>
+                          {status === 'authenticated' &&
+                            hasNotAlreadyReviewed &&
+                            isNotTutor &&
+                            isUserAllowedToReview && (
+                              <ReviewForm
+                                type={ReviewFormTypes.Create}
+                                tutorId={tutor._id}
+                                addUserCreateReviewId={addUserCreateReviewId}
+                              />
+                            )}
+                          {status === 'unauthenticated' && (
+                            <Flex
+                              alignItems="center"
+                              justify="center"
+                              width="100%"
+                              my="5"
+                            >
+                              <FaPen size={20} />
+                              <Heading as="h3" size="md" ml="3">
+                                Sign In to review this Tutor
+                              </Heading>
+                            </Flex>
                           )}
-                        {reviewsCtx.reviews.map((r: ReviewDocumentObject) => (
-                          <Review
-                            key={r._id}
-                            review={r}
-                            deleteUserCreateReviewId={deleteUserCreateReviewId}
-                          />
-                        ))}
-                      </>
-                    )}
+                          {status === 'authenticated' &&
+                            !isUserAllowedToReview &&
+                            isNotTutor && (
+                              <Flex
+                                alignItems="center"
+                                justify="center"
+                                width="100%"
+                                my="5"
+                              >
+                                <FaPen size={20} />
+                                <Heading as="h3" size="md" ml="3">
+                                  Have a Session or Post to review
+                                </Heading>
+                              </Flex>
+                            )}
+                          {reviewsCtx.reviews.length ? (
+                            reviewsCtx.reviews.map(
+                              (r: ReviewDocumentObject) => (
+                                <Review
+                                  key={r._id}
+                                  review={r}
+                                  deleteUserCreateReviewId={
+                                    deleteUserCreateReviewId
+                                  }
+                                />
+                              )
+                            )
+                          ) : (
+                            <Heading as="h2" size="md" textAlign="center">
+                              Be the first to review {tutor.fullname} by having
+                              a Session or Post
+                            </Heading>
+                          )}
+                        </>
+                      );
+                    }}
                   </ReviewContext.Consumer>
                 </ReviewsContextProvider>
               </VStack>
             </GridItem>
           </Grid>
         </Box>
-      </Layout>
-    );
-  }
-  return markup;
+      ) : (
+        <Flex height="50vh" justify="center">
+          <Center>
+            <Heading as="h1" size="xl">
+              404 Tutor not found
+            </Heading>
+          </Center>
+        </Flex>
+      )}
+    </Layout>
+  );
 };
 
 export default TutorPage;

@@ -1,5 +1,4 @@
-import { useState, ChangeEvent, MouseEvent, useContext } from 'react';
-import { useSession } from 'next-auth/react';
+import { useState, useContext } from 'react';
 import { UserDocumentObject } from '../../models/User';
 import {
   Alert,
@@ -26,21 +25,22 @@ import { useForm, useFieldArray, SubmitHandler } from 'react-hook-form';
 import ApiHelper from '../../utils/api-helper';
 import ClusterMapContext from '../../store/cluster-map-context';
 
-interface Props {}
-
 type FormValues = {
   location: string;
   bio: string;
-  price: number;
+  sessionPricePerHour: number;
+  pricePerPost: number;
   subjects: Array<{ subject: string }>;
 };
 
-const UpdateAvatarForm: React.FC<Props> = props => {
+interface Props {
+  currentUser: UserDocumentObject;
+}
+
+const UpdateAvatarForm: React.FC<Props> = ({ currentUser }) => {
   const clusterMapCtx = useContext(ClusterMapContext);
   const [errorAlert, setErrorAlert] = useState<string | null>(null);
   const [successAlert, setSuccessAlert] = useState<string | null>(null);
-  const { data } = useSession();
-  const user = data!.user as UserDocumentObject;
   const {
     register,
     control,
@@ -50,10 +50,11 @@ const UpdateAvatarForm: React.FC<Props> = props => {
     watch,
   } = useForm<FormValues>({
     defaultValues: {
-      location: user.location,
-      bio: user.bio,
-      price: user.pricePerHour,
-      subjects: user.subjects.map(s => ({ subject: s })),
+      location: currentUser.location,
+      bio: currentUser.bio,
+      sessionPricePerHour: currentUser.sessionPricePerHour,
+      pricePerPost: currentUser.pricePerPost,
+      subjects: currentUser.subjects.map(s => ({ subject: s })),
     },
   });
   const {
@@ -67,7 +68,7 @@ const UpdateAvatarForm: React.FC<Props> = props => {
 
   const onSubmit: SubmitHandler<FormValues> = async data => {
     const res = await ApiHelper(
-      '/api/tutors',
+      `/api/tutors/${currentUser._id}`,
       { ...data, subjects: data.subjects.map(s => s.subject) },
       'PUT'
     );
@@ -109,19 +110,38 @@ const UpdateAvatarForm: React.FC<Props> = props => {
           </FormHelperText>
         </FormControl>
         <FormControl mb="2">
-          <FormLabel htmlFor="tutor-price">
+          <FormLabel htmlFor="tutor-price-session">
             Your price per hour of session
           </FormLabel>
           <Heading as="h3" size="md">
-            ${watch('price')}
+            €{watch('sessionPricePerHour')}
           </Heading>
           <Slider
-            aria-label="tutor-price"
-            id="tutor-price"
-            defaultValue={watch('price')}
+            aria-label="tutor-price-session"
+            id="tutor-price-session"
+            defaultValue={watch('sessionPricePerHour')}
             min={0}
             max={250}
-            onChange={(value: number) => setValue('price', value)}
+            onChange={(value: number) => setValue('sessionPricePerHour', value)}
+          >
+            <SliderTrack>
+              <SliderFilledTrack />
+            </SliderTrack>
+            <SliderThumb />
+          </Slider>
+        </FormControl>
+        <FormControl mb="2">
+          <FormLabel htmlFor="post-price">Your price per post</FormLabel>
+          <Heading as="h3" size="md">
+            €{watch('pricePerPost')}
+          </Heading>
+          <Slider
+            aria-label="post-price"
+            id="post-price"
+            defaultValue={watch('pricePerPost')}
+            min={0}
+            max={250}
+            onChange={(value: number) => setValue('pricePerPost', value)}
           >
             <SliderTrack>
               <SliderFilledTrack />

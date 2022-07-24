@@ -2,20 +2,22 @@ function ApiHelper(
   url: string,
   data: FormData | unknown,
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET',
-  stringifyBody: boolean = true
+  includeContentTypeJSON: boolean = true
 ) {
   let body: FormData | string | null = null;
   if (method === 'PUT' || method === 'POST') {
-    body = stringifyBody ? JSON.stringify(data) : (data as FormData);
+    body = includeContentTypeJSON ? JSON.stringify(data) : (data as FormData);
   }
   return fetch(
     `${url}/${
-      method === 'GET' ? '?' + new URLSearchParams(JSON.stringify(data)) : ''
+      method === 'GET'
+        ? '?' + new URLSearchParams(data as Record<string, string>)
+        : ''
     }`,
     {
       method,
       body,
-      headers: stringifyBody
+      headers: includeContentTypeJSON
         ? {
             'Content-Type': 'application/json',
           }

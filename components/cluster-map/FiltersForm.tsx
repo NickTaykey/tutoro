@@ -24,7 +24,6 @@ import {
   NumberDecrementStepper,
   RangeSliderMark,
   Select,
-  useColorMode,
 } from '@chakra-ui/react';
 import { FaBroom, FaFilter } from 'react-icons/fa';
 import { useContext } from 'react';
@@ -37,8 +36,10 @@ const FiltersForm: React.FC<Props> = props => {
         distance: 100,
         location: '',
         name: '',
-        priceMin: 5,
-        priceMax: 250,
+        sessionPriceMin: 5,
+        sessionPriceMax: 250,
+        postPriceMin: 5,
+        postPriceMax: 50,
         starsMin: 0,
         starsMax: 5,
         subject: '',
@@ -51,7 +52,7 @@ const FiltersForm: React.FC<Props> = props => {
   };
 
   const formSubmitHandler = (data: TutorFiltersFormFields) => {
-    ctx.setFilteredPoints({ ...data });
+    ctx.setFilteredPoints(data);
   };
 
   return (
@@ -75,16 +76,16 @@ const FiltersForm: React.FC<Props> = props => {
           />
         </FormControl>
         <FormControl my="4">
-          <Text fontWeight="medium">Price range</Text>
+          <Text fontWeight="medium">Session price range</Text>
           <RangeSlider
             mt={10}
-            aria-label={['tutor-price-min', 'tutor-price-max']}
-            defaultValue={[watch('priceMin'), watch('priceMax')]}
+            aria-label={['session-price-min', 'session-price-max']}
+            defaultValue={[watch('sessionPriceMin'), watch('sessionPriceMax')]}
             min={5}
             max={250}
             onChange={(values: number[]) => {
-              setValue('priceMin', values[0]);
-              setValue('priceMax', values[1]);
+              setValue('sessionPriceMin', values[0]);
+              setValue('sessionPriceMax', values[1]);
             }}
           >
             <RangeSliderTrack>
@@ -94,7 +95,7 @@ const FiltersForm: React.FC<Props> = props => {
             <RangeSliderThumb index={1} borderColor="blackAlpha.500" />
             <RangeSliderMark
               borderRadius="md"
-              value={watch('priceMin')}
+              value={watch('sessionPriceMin')}
               textAlign="center"
               bg="blue.500"
               color="white"
@@ -102,11 +103,11 @@ const FiltersForm: React.FC<Props> = props => {
               ml="-5"
               w="12"
             >
-              ${watch('priceMin')}
+              €{watch('sessionPriceMin')}
             </RangeSliderMark>
             <RangeSliderMark
               borderRadius="md"
-              value={watch('priceMax')}
+              value={watch('sessionPriceMax')}
               textAlign="center"
               bg="blue.500"
               color="white"
@@ -114,7 +115,51 @@ const FiltersForm: React.FC<Props> = props => {
               ml="-5"
               w="12"
             >
-              ${watch('priceMax')}
+              €{watch('sessionPriceMax')}
+            </RangeSliderMark>
+          </RangeSlider>
+        </FormControl>
+        <FormControl my="4">
+          <Text fontWeight="medium">Post price range</Text>
+          <RangeSlider
+            mt={10}
+            aria-label={['post-price-min', 'post-price-max']}
+            defaultValue={[watch('postPriceMin'), watch('postPriceMax')]}
+            min={5}
+            max={50}
+            onChange={(values: number[]) => {
+              setValue('postPriceMin', values[0]);
+              setValue('postPriceMax', values[1]);
+            }}
+          >
+            <RangeSliderTrack>
+              <RangeSliderFilledTrack />
+            </RangeSliderTrack>
+            <RangeSliderThumb index={0} borderColor="blackAlpha.500" />
+            <RangeSliderThumb index={1} borderColor="blackAlpha.500" />
+            <RangeSliderMark
+              borderRadius="md"
+              value={watch('postPriceMin')}
+              textAlign="center"
+              bg="blue.500"
+              color="white"
+              mt="-10"
+              ml="-5"
+              w="12"
+            >
+              €{watch('postPriceMin')}
+            </RangeSliderMark>
+            <RangeSliderMark
+              borderRadius="md"
+              value={watch('postPriceMax')}
+              textAlign="center"
+              bg="blue.500"
+              color="white"
+              mt="-10"
+              ml="-5"
+              w="12"
+            >
+              €{watch('postPriceMax')}
             </RangeSliderMark>
           </RangeSlider>
         </FormControl>

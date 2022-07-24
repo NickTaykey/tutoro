@@ -26,12 +26,15 @@ export default function handler(
           location,
           subject,
           name,
-          priceMin,
-          priceMax,
+          sessionPriceMin,
+          sessionPriceMax,
+          postPriceMin,
+          postPriceMax,
           distance,
           starsMin,
           starsMax,
         } = sanitize(req.query);
+
         let query: Array<any> = [];
         if (subject) {
           query.push({ subjects: subject.toLowerCase() });
@@ -39,16 +42,30 @@ export default function handler(
         if (name) {
           query.push({ fullname: new RegExp(name, 'i') });
         }
-        if (+priceMin && +priceMin >= 5 && +priceMin <= 250) {
-          query.push({ pricePerHour: { $gte: +priceMin } });
+        if (
+          +sessionPriceMin &&
+          +sessionPriceMin >= 5 &&
+          +sessionPriceMin <= 250
+        ) {
+          query.push({ sessionPricePerHour: { $gte: +sessionPriceMin } });
         }
-        if (+priceMax && +priceMax >= 5 && +priceMax <= 250) {
-          query.push({ pricePerHour: { $lte: +priceMax } });
+        if (
+          +sessionPriceMax &&
+          +sessionPriceMax >= 5 &&
+          +sessionPriceMax <= 250
+        ) {
+          query.push({ sessionPricePerHour: { $lte: +sessionPriceMax } });
+        }
+        if (+postPriceMin && +postPriceMin >= 5 && +postPriceMin <= 50) {
+          query.push({ sessionPricePerHour: { $gte: +postPriceMin } });
+        }
+        if (+postPriceMax && +postPriceMax >= 5 && +postPriceMax <= 250) {
+          query.push({ sessionPricePerHour: { $lte: +postPriceMax } });
         }
         if (+starsMin && +starsMin >= 0 && +starsMin <= 5) {
           query.push({ avgRating: { $gte: +starsMin } });
         }
-        if (+priceMax && +priceMax >= 0 && +starsMax <= 5) {
+        if (+sessionPriceMax && +sessionPriceMax >= 0 && +starsMax <= 5) {
           query.push({ avgRating: { $lte: +starsMax } });
         }
         if (location && Number(distance)) {

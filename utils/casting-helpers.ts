@@ -16,8 +16,9 @@ export const getUserDocumentObject = (
     bio: user.bio || '',
     location: user.location || '',
     subjects: user.subjects && user.subjects.length ? [...user.subjects] : [],
-    pricePerHour: user.pricePerHour,
     avgRating: user.avgRating,
+    sessionPricePerHour: user.sessionPricePerHour,
+    pricePerPost: user.pricePerPost,
     avatar: {
       public_id: user.avatar!.public_id ? user.avatar!.public_id : '',
       url: user.avatar!.url ? user.avatar!.url : '',

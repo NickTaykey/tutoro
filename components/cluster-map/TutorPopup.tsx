@@ -13,6 +13,7 @@ import {
   Avatar,
   Center,
 } from '@chakra-ui/react';
+import { useRouter } from 'next/router';
 
 interface Props {
   popupInfo: TutorObjectGeoJSON;
@@ -20,6 +21,7 @@ interface Props {
 }
 
 const TutorPopup: React.FC<Props> = ({ popupInfo, authenticatedTutor }) => {
+  const { push } = useRouter();
   const subjects = authenticatedTutor
     ? popupInfo.properties.subjects
     : JSON.parse(popupInfo.properties.subjects as string);
@@ -37,6 +39,14 @@ const TutorPopup: React.FC<Props> = ({ popupInfo, authenticatedTutor }) => {
       <Heading as="h3" size="md" mt="3">
         {popupInfo.properties.fullname}
       </Heading>
+      <Box my="4">
+        <Heading as="h4" size="sm" mb="2">
+          Session price €{popupInfo.properties.sessionPricePerHour}/h
+        </Heading>
+        <Heading as="h4" size="sm">
+          Post price €{popupInfo.properties.pricePerPost}
+        </Heading>
+      </Box>
       <Flex justify="start" my="3">
         {Array(popupInfo.properties.avgRating)
           .fill(null)
@@ -61,25 +71,35 @@ const TutorPopup: React.FC<Props> = ({ popupInfo, authenticatedTutor }) => {
         </UnorderedList>
       </Box>
       <VStack>
-        <Button colorScheme="gray" size="xs" width="100%">
-          <Link
-            href={`/tutors/${popupInfo.properties._id}`}
-            style={{ fontWeight: 'bold' }}
-          >
-            Learn more
-          </Link>
+        <Button
+          colorScheme="gray"
+          size="xs"
+          width="100%"
+          onClick={() => push(`/tutors/${popupInfo.properties._id}`)}
+        >
+          Learn more
         </Button>
         {!authenticatedTutor && (
           <>
-            <Button colorScheme="green" size="xs" width="100%">
-              <Link href={`/tutors/${popupInfo.properties._id}/sessions/new`}>
-                Book session
-              </Link>
+            <Button
+              colorScheme="green"
+              size="xs"
+              width="100%"
+              onClick={() =>
+                push(`/tutors/${popupInfo.properties._id}/sessions/new`)
+              }
+            >
+              Book session
             </Button>
-            <Button colorScheme="blue" size="xs" width="100%">
-              <Link href={`/tutors/${popupInfo.properties._id}/posts/new`}>
-                Create a Post
-              </Link>
+            <Button
+              colorScheme="blue"
+              size="xs"
+              width="100%"
+              onClick={() =>
+                push(`/tutors/${popupInfo.properties._id}/posts/new`)
+              }
+            >
+              Create a Post
             </Button>
           </>
         )}

@@ -42,6 +42,7 @@ const ClusterMap: React.FC = () => {
   };
 
   const onMapLoad = () => {
+    mapRef!.current!.resize();
     mapRef!.current!.on('click', 'unclustered-point', e => {
       const { properties } = e.features![0];
       setPopupInfo({
@@ -67,6 +68,18 @@ const ClusterMap: React.FC = () => {
         zoom: 7,
         bearing: 0,
         pitch: 0,
+      }}
+      onZoom={() => {
+        const unClusteredPoints = mapRef.current?.querySourceFeatures(
+          'tutors',
+          {
+            sourceLayer: 'unclustered-point',
+          }
+        );
+        const isNotClustered = unClusteredPoints?.find(
+          p => p.properties!._id === popupInfo?.properties._id
+        );
+        if (!isNotClustered) setPopupInfo(null);
       }}
       interactiveLayerIds={[clusterLayer.id!]}
       onClick={onMapClick}

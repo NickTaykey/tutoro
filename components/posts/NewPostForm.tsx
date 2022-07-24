@@ -1,4 +1,6 @@
 import type { NewPostFormFields } from '../../types';
+import type { UserDocumentObject } from '../../models/User';
+
 import { ChangeEvent, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/router';
@@ -19,9 +21,11 @@ import {
 } from '@chakra-ui/react';
 import Layout from '../global/Layout';
 import { FaArrowRight, FaBroom } from 'react-icons/fa';
+import { useSession } from 'next-auth/react';
 
 interface Props {
-  subjects: string[] | null;
+  subjects?: string[];
+  tutor?: UserDocumentObject;
 }
 
 const NewPostForm: React.FC<Props> = props => {
@@ -81,8 +85,7 @@ const NewPostForm: React.FC<Props> = props => {
     const res = await ApiHelper(
       `/api/${query.tutorId ? `/tutors/${query.tutorId}/posts` : '/posts'}`,
       formData,
-      'POST',
-      false
+      'POST'
     );
     setIsUploading(false);
     if (res.errorMessage) return setValidationError(res.errorMessage);
@@ -108,6 +111,9 @@ const NewPostForm: React.FC<Props> = props => {
             You can find answer to specific questions or have your homework
             reviewd.
           </Text>
+          <Heading as="h2" size="md" textAlign="center">
+            Price: €{props.tutor?.pricePerPost || 20}
+          </Heading>
           {query.tutorId === 'global' && (
             <Text my="3" fontWeight="bold" textAlign="center">
               You will be answered by one of our qualified tutors.
@@ -204,7 +210,9 @@ const NewPostForm: React.FC<Props> = props => {
         </Flex>
       ) : (
         <Flex justifyContent="center" alignItems="center" height="80vh">
-          <Heading>404 Tutor not found</Heading>
+          <Heading as="h1" size="xl">
+            404 Tutor not found
+          </Heading>
         </Flex>
       )}
     </Layout>

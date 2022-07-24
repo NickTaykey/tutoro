@@ -134,7 +134,12 @@ const ClusterMapContextProvider: React.FC<{
         },
         async setFilteredPoints(filters: TutorFilters | null) {
           if (filters) {
-            const res = await ApiHelper('/api/tutors/filter', filters, 'GET');
+            const res = await ApiHelper(
+              '/api/tutors/filter',
+              filters,
+              'GET',
+              true
+            );
             dispatchclusterMapStateAction({
               type: ClusterMapActionTypes.SET_FILTERED_POINTS,
               payload: { newPoints: getUsersPointsCollection(res.tutors) },

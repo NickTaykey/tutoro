@@ -20,7 +20,7 @@ import {
   ModalOverlay,
   Button,
 } from '@chakra-ui/react';
-import { signIn, signOut } from 'next-auth/react';
+import { getSession, signIn, signOut } from 'next-auth/react';
 import { UserDocumentObject } from '../../models/User';
 import {
   FaListUl,
@@ -47,18 +47,22 @@ type ProvidersList = Record<
 >;
 
 const Navbar: React.FC = () => {
-  const { status, data } = useSession();
   const [providersList, setProvidersList] = useState<ProvidersList | null>(
     null
   );
   const [newAvatarUrl, setNewAvatarUrl] = useState<string | null>(null);
   const [showDefaultAvatar, setShowDefaultAvatar] = useState<boolean>(false);
+  const [userStatus, setUserStatus] = useState<
+    'loading' | 'authenticated' | 'unauthenticated'
+  >('loading');
+  const [currentUser, setCurrentUser] = useState<UserDocumentObject | null>(
+    null
+  );
 
   useEffect(() => {
     getProviders().then((list: ProvidersList | null) => setProvidersList(list));
   }, [getProviders]);
 
-  const currentUser = data?.user as UserDocumentObject;
   const {
     isOpen: isDrawerOpen,
     onOpen: onDrawerOpen,
@@ -81,13 +85,19 @@ const Navbar: React.FC = () => {
   } = useDisclosure({ defaultIsOpen: false });
   const btnRef = React.useRef(null);
 
-  const currentUserObject = currentUser as UserDocumentObject;
-  const public_id = currentUserObject?.avatar?.public_id;
   const showResetAvatarBtn =
     !showDefaultAvatar &&
-    ((!!newAvatarUrl && !public_id) ||
-      (!newAvatarUrl && !!public_id) ||
-      (!!newAvatarUrl && !!public_id));
+    ((!!newAvatarUrl && !currentUser?.avatar?.public_id) ||
+      (!newAvatarUrl && !!currentUser?.avatar?.public_id) ||
+      (!!newAvatarUrl && !!currentUser?.avatar?.public_id));
+
+  useEffect(() => {
+    if (!isUpdateProfileModalOpen)
+      getSession().then(s => {
+        setCurrentUser(s?.user ? (s.user as UserDocumentObject) : null);
+        setUserStatus(s?.user ? 'authenticated' : 'unauthenticated');
+      });
+  }, [isUpdateProfileModalOpen]);
 
   return (
     <Box
@@ -139,7 +149,7 @@ const Navbar: React.FC = () => {
             <DrawerContent>
               <DrawerCloseButton />
               <DrawerBody>
-                {status === 'unauthenticated' && providersList && (
+                {userStatus === 'unauthenticated' && providersList && (
                   <Flex height="100%" direction="column" justify="center">
                     <Heading as="h1" size="md" textAlign="center" my="4">
                       Sign In
@@ -161,7 +171,7 @@ const Navbar: React.FC = () => {
                     )}
                   </Flex>
                 )}
-                {status === 'authenticated' && (
+                {userStatus === 'authenticated' && (
                   <Flex
                     alignItems="center"
                     justify="center"
@@ -170,13 +180,13 @@ const Navbar: React.FC = () => {
                   >
                     <Link href="/users">
                       <Avatar
-                        name={currentUser.fullname}
+                        name={currentUser?.fullname}
                         src={
                           showDefaultAvatar
                             ? ''
                             : newAvatarUrl
                             ? newAvatarUrl
-                            : currentUser.avatar?.url
+                            : currentUser?.avatar?.url
                         }
                         _hover={{ cursor: 'pointer' }}
                         mb="2"
@@ -206,7 +216,7 @@ const Navbar: React.FC = () => {
                           />
                         </Box>
                       </Flex>
-                    ) : isUpdateProfileModalOpen ? (
+                    ) : isUpdateProfileModalOpen && currentUser ? (
                       <Flex
                         direction="column"
                         shadow="md"
@@ -222,7 +232,7 @@ const Navbar: React.FC = () => {
                           style={{ alignSelf: 'end' }}
                         />
                         <Box my="3">
-                          <UpdateTutorForm />
+                          <UpdateTutorForm currentUser={currentUser} />
                         </Box>
                       </Flex>
                     ) : (
@@ -236,7 +246,7 @@ const Navbar: React.FC = () => {
                           aria-label="Update avatar"
                           mt="2"
                         />
-                        {currentUser.isTutor && (
+                        {currentUser?.isTutor && (
                           <IconButton
                             width="100%"
                             icon={<FaListUl size="25" />}
@@ -295,7 +305,7 @@ const Navbar: React.FC = () => {
                   </ModalBody>
                 </ModalContent>
               </Modal>
-              {status === 'unauthenticated' && (
+              {userStatus === 'unauthenticated' && (
                 <Flex alignItems="center" mr="4">
                   <Button
                     variant="link"
@@ -309,7 +319,7 @@ const Navbar: React.FC = () => {
               )}
             </>
           )}
-          {status === 'authenticated' && (
+          {userStatus === 'authenticated' && (
             <>
               <Modal
                 blockScrollOnMount={false}
@@ -330,7 +340,7 @@ const Navbar: React.FC = () => {
                   </ModalBody>
                 </ModalContent>
               </Modal>
-              {currentUser.isTutor && (
+              {currentUser?.isTutor && (
                 <Modal
                   blockScrollOnMount={false}
                   isOpen={isUpdateProfileModalOpen}
@@ -341,7 +351,7 @@ const Navbar: React.FC = () => {
                     <ModalHeader>Update your tutor profile</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
-                      <UpdateTutorForm />
+                      <UpdateTutorForm currentUser={currentUser} />
                     </ModalBody>
                   </ModalContent>
                 </Modal>
@@ -350,13 +360,13 @@ const Navbar: React.FC = () => {
                 <Link href="/users">
                   <Avatar
                     mr="2"
-                    name={currentUser.fullname}
+                    name={currentUser?.fullname}
                     src={
                       showDefaultAvatar
                         ? ''
                         : newAvatarUrl
                         ? newAvatarUrl
-                        : currentUser.avatar?.url
+                        : currentUser?.avatar?.url
                     }
                     _hover={{ cursor: 'pointer' }}
                   />
@@ -369,7 +379,7 @@ const Navbar: React.FC = () => {
                   aria-label="Update avatar"
                   mr={2}
                 />
-                {currentUser.isTutor && (
+                {currentUser?.isTutor && (
                   <IconButton
                     width="100%"
                     icon={<FaListUl size="25" />}

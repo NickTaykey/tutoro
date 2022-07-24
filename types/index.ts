@@ -34,8 +34,10 @@ export type TutorFiltersFormFields = {
   distance: number;
   name: string;
   location: string;
-  priceMin: number;
-  priceMax: number;
+  sessionPriceMin: number;
+  sessionPriceMax: number;
+  postPriceMin: number;
+  postPriceMax: number;
   starsMin: number;
   starsMax: number;
   subject: string;
@@ -44,8 +46,10 @@ export type TutorFiltersFormFields = {
 export type TutorFilters = {
   distance: number;
   name: string;
-  priceMin: number;
-  priceMax: number;
+  sessionPriceMin: number;
+  sessionPriceMax: number;
+  postPriceMin: number;
+  postPriceMax: number;
   starsMin: number;
   starsMax: number;
   subject: string;

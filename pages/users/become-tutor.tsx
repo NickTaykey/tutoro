@@ -6,7 +6,7 @@ import { authOptions } from '../api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth';
 import connectDB from '../../middleware/mongo-connect';
 import findTestingUsers from '../../utils/dev-testing-users';
-import User from '../../models/User';
+import User, { UserDocumentObject } from '../../models/User';
 import { useForm, useFieldArray } from 'react-hook-form';
 import ApiHelper from '../../utils/api-helper';
 import { useState } from 'react';
@@ -32,11 +32,13 @@ import {
 } from '@chakra-ui/react';
 import { FaPlus, FaTrashAlt } from 'react-icons/fa';
 import Layout from '../../components/global/Layout';
+import { useSession } from 'next-auth/react';
 
 type FormValues = {
   location: string;
   bio: string;
-  price: number;
+  sessionPricePerHour: number;
+  postPrice: number;
   subjects: Array<{ subject: string }>;
 };
 
@@ -52,7 +54,8 @@ const BecomeTutorPage: NextPage = () => {
     defaultValues: {
       location: '',
       bio: '',
-      price: 20,
+      sessionPricePerHour: 20,
+      postPrice: 10,
       subjects: [{ subject: '' }],
     },
   });
@@ -64,13 +67,15 @@ const BecomeTutorPage: NextPage = () => {
     control,
     name: 'subjects',
   });
+  const { data } = useSession();
+  const currentUser = data!.user as UserDocumentObject;
 
   const [errorAlert, setErrorAlert] = useState<string | null>();
   const router = useRouter();
 
   const onSubmit: SubmitHandler<FormValues> = async data => {
     const res = await ApiHelper(
-      '/api/tutors',
+      `/api/tutors/${currentUser._id}`,
       { ...data, subjects: data.subjects.map(s => s.subject) },
       'PUT'
     );
@@ -118,19 +123,45 @@ const BecomeTutorPage: NextPage = () => {
             />
           </FormControl>
           <FormControl mb="3">
-            <FormLabel htmlFor="price" id="price-label">
-              How much are you charging per hour?
+            <FormLabel htmlFor="post-price-input" id="post-price-label">
+              How much are you going to charge for your posts?
             </FormLabel>
             <Heading as="h3" size="md">
-              ${watch('price')}
+              ${watch('postPrice')}
             </Heading>
             <Slider
-              aria-labelledby="price-label"
-              aria-label="tutor price"
-              defaultValue={watch('price')}
+              aria-labelledby="post-price-label"
+              aria-label="post price"
+              defaultValue={watch('postPrice')}
               min={0}
               max={250}
-              onChange={(value: number) => setValue('price', value)}
+              onChange={(value: number) => setValue('postPrice', value)}
+            >
+              <SliderTrack>
+                <SliderFilledTrack />
+              </SliderTrack>
+              <SliderThumb />
+            </Slider>
+          </FormControl>
+          <FormControl mb="3">
+            <FormLabel
+              htmlFor="session-price-input"
+              id="session-price-hour-label"
+            >
+              How much are you charging per hour for your sessions?
+            </FormLabel>
+            <Heading as="h3" size="md">
+              ${watch('sessionPricePerHour')}
+            </Heading>
+            <Slider
+              aria-labelledby="session-price-hour-label"
+              aria-label="session price per hour"
+              defaultValue={watch('sessionPricePerHour')}
+              min={0}
+              max={250}
+              onChange={(value: number) =>
+                setValue('sessionPricePerHour', value)
+              }
             >
               <SliderTrack>
                 <SliderFilledTrack />
