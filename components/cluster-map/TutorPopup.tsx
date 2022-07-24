@@ -1,5 +1,4 @@
 import type { TutorObjectGeoJSON } from '../../types/index';
-import Link from 'next/link';
 import { FaStar } from 'react-icons/fa';
 import {
   Flex,

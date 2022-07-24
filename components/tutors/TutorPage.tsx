@@ -1,7 +1,7 @@
 import ReviewForm, { ReviewFormTypes } from '../reviews/ReviewForm';
 import ReviewsContextProvider from '../../store/ReviewsProvider';
 import ReviewContext from '../../store/reviews-context';
-import { ClientSafeProvider, LiteralUnion, useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import Review from '../reviews/Review';
 import Map, { Marker } from 'react-map-gl';
 import Layout from '../global/Layout';
@@ -18,9 +18,12 @@ import {
   GridItem,
   Box,
   Center,
+  Button,
+  Avatar,
 } from '@chakra-ui/react';
-import { FaPen, FaStar } from 'react-icons/fa';
+import { FaPen, FaPersonBooth, FaStar } from 'react-icons/fa';
 import { useState } from 'react';
+import { useRouter } from 'next/router';
 
 interface Props {
   tutor?: UserDocumentObject;
@@ -34,6 +37,7 @@ const TutorPage: React.FC<Props> = ({
   isUserAllowedToReview,
 }: Props) => {
   const { status, data } = useSession();
+  const { push } = useRouter();
   const [userCreatedReviews, setUserCreatedReviews] = useState<string[]>(
     userCreatedReviewsProp
   );
@@ -50,35 +54,61 @@ const TutorPage: React.FC<Props> = ({
     <Layout>
       {tutor ? (
         <Box width={['90%', null, null, '80%']} mx="auto">
-          <Heading as="h1" size="xl" my="5">
-            {tutor.fullname}
-          </Heading>
-          <Box>
-            <strong>Tutor in: </strong>
-            {tutor.subjects.map(s => (
-              <Badge mr="1" fontSize="0.8em" colorScheme="gray" key={s}>
-                {s}
-              </Badge>
-            ))}
-          </Box>
-          <Flex justify="start" my="3">
-            {Array(tutor.avgRating)
-              .fill(null)
-              .map((_, i) => (
-                <FaStar key={i} size={25} color="#ffbe0b" />
-              ))}
-            {Array(5 - tutor.avgRating)
-              .fill(null)
-              .map((_, i) => (
-                <FaStar key={i} size={25} color="#e5e5e5" />
-              ))}
+          <Flex alignItems="center">
+            <Avatar
+              src={tutor.avatar?.url ? tutor.avatar?.url : ''}
+              name={tutor.fullname}
+            />
+            <Heading as="h1" size="xl" my="5" ml="2">
+              {tutor.fullname}
+            </Heading>
           </Flex>
-          <Text>
-            <strong>Bio: </strong>
-            {tutor.bio}
-          </Text>
           <Grid templateColumns="repeat(2, 1fr)" columnGap="4" my="4">
             <GridItem colSpan={[2, null, null, 1]}>
+              <Box>
+                <strong>Tutor in: </strong>
+                {tutor.subjects.map(s => (
+                  <Badge mr="1" fontSize="0.8em" colorScheme="gray" key={s}>
+                    {s}
+                  </Badge>
+                ))}
+              </Box>
+              <Flex justify="start" my="3">
+                {Array(tutor.avgRating)
+                  .fill(null)
+                  .map((_, i) => (
+                    <FaStar key={i} size={25} color="#ffbe0b" />
+                  ))}
+                {Array(5 - tutor.avgRating)
+                  .fill(null)
+                  .map((_, i) => (
+                    <FaStar key={i} size={25} color="#e5e5e5" />
+                  ))}
+              </Flex>
+              <Text>
+                <strong>Bio: </strong>
+                {tutor.bio}
+              </Text>
+              <Flex direction="column" width="100%">
+                <Button
+                  mt="3"
+                  colorScheme="green"
+                  width="100%"
+                  leftIcon={<FaPersonBooth />}
+                  onClick={() => push(`/tutors/${tutor._id}/sessions/new`)}
+                >
+                  Book session
+                </Button>
+                <Button
+                  mt="3"
+                  colorScheme="blue"
+                  width="100%"
+                  leftIcon={<FaPen />}
+                  onClick={() => push(`/tutors/${tutor._id}/posts/new`)}
+                >
+                  Create a Post
+                </Button>
+              </Flex>
               <Heading as="h2" size="md" my="3">
                 Location
               </Heading>
@@ -103,13 +133,12 @@ const TutorPage: React.FC<Props> = ({
               </Map>
             </GridItem>
             <GridItem colSpan={[2, null, null, 1]}>
-              <Heading as="h2" size="md" my="3">
+              <Heading as="h2" size="md" mt={[5, null, 0]}>
                 Reviews
               </Heading>
               <VStack
-                spacing="0"
-                height="50vh"
-                maxHeight="500px"
+                height={tutor.reviews.length ? '500px' : '100%'}
+                maxHeight={tutor.reviews.length ? '500px' : 'auto'}
                 justify={tutor.reviews.length ? 'start' : 'center'}
                 alignItems={tutor.reviews.length ? 'start' : 'center'}
               >
@@ -139,12 +168,7 @@ const TutorPage: React.FC<Props> = ({
                               />
                             )}
                           {status === 'unauthenticated' && (
-                            <Flex
-                              alignItems="center"
-                              justify="center"
-                              width="100%"
-                              my="5"
-                            >
+                            <Flex alignItems="center" width="100%" my="5">
                               <FaPen size={20} />
                               <Heading as="h3" size="md" ml="3">
                                 Sign In to review this Tutor
@@ -154,12 +178,7 @@ const TutorPage: React.FC<Props> = ({
                           {status === 'authenticated' &&
                             !isUserAllowedToReview &&
                             isNotTutor && (
-                              <Flex
-                                alignItems="center"
-                                justify="center"
-                                width="100%"
-                                my="5"
-                              >
+                              <Flex alignItems="center" width="100%" my="5">
                                 <FaPen size={20} />
                                 <Heading as="h3" size="md" ml="3">
                                   Have a Session or Post to review
@@ -180,8 +199,7 @@ const TutorPage: React.FC<Props> = ({
                             )
                           ) : (
                             <Heading as="h2" size="md" textAlign="center">
-                              Be the first to review {tutor.fullname} by having
-                              a Session or Post
+                              Be the first to review by having a Session or Post
                             </Heading>
                           )}
                         </>
