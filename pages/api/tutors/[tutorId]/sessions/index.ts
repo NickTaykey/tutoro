@@ -3,7 +3,7 @@ import connectDB from '../../../../../middleware/mongo-connect';
 import mongoErrorHandler from '../../../../../middleware/mongo-error-handler';
 import serverSideErrorHandler from '../../../../../middleware/server-side-error-handler';
 import ensureHttpMethod from '../../../../../middleware/ensure-http-method';
-import Session from '../../../../../models/Session';
+import Session, { SessionDocument } from '../../../../../models/Session';
 import User from '../../../../../models/User';
 import requireAuth from '../../../../../middleware/require-auth';
 import { SessionStatus } from '../../../../../types';
@@ -12,6 +12,8 @@ import sgMail from '@sendgrid/mail';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { HTTPError } from '../../../../../types';
 import type { SessionDocumentObject } from '../../../../../models/Session';
+import createCheckoutSession from '../../../../../utils/create-checkout-session';
+import { getSessionDocumentObject } from '../../../../../utils/casting-helpers';
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
 
@@ -41,8 +43,8 @@ export default async function handler(
                 ...sanitizedBody,
                 hours: Number(sanitizedBody.hours),
                 date: new Date(sanitizedBody.date),
-                tutor: tutor._id,
-                user: sessionUser._id,
+                tutor: tutor,
+                user: sessionUser,
                 status: SessionStatus.NOT_APPROVED,
               });
               tutor.requestedSessions.push(createdSession._id);
@@ -68,7 +70,12 @@ export default async function handler(
                 tutor.save(),
                 // sgMail.send(emailMessage),
               ]);
-              return res.status(201).json(createdSession.toObject());
+              return createCheckoutSession(
+                getSessionDocumentObject(createdSession as SessionDocument),
+                req,
+                res
+              );
+              // return res.status(201).json(createdSession.toObject());
             }
             return res.status(400).json({ errorMessage: 'Invalid subject' });
           }

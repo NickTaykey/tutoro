@@ -4,6 +4,7 @@ import type { ObjectId, Document, Model } from 'mongoose';
 import type { UserDocument, UserDocumentObject } from '../models/User';
 
 interface Session {
+  checkoutCompleted: boolean;
   subject: string;
   topic: string;
   hours: number;
@@ -22,6 +23,7 @@ export interface SessionDocumentObject extends Session {
 type SessionModel = Model<SessionDocument>;
 
 const sessionSchema = new Schema<SessionDocument, SessionModel>({
+  checkoutCompleted: { type: Boolean, default: false },
   subject: { type: String, required: true },
   topic: { type: String, required: true },
   hours: { type: Number, required: true, default: 1 },

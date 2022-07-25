@@ -68,7 +68,6 @@ const NewPostForm: React.FC<Props> = props => {
     const formData = new FormData();
     formData.append('description', data.description);
     formData.append('subject', data.subject);
-
     if (filesList) {
       const allowedFileRegExp = new RegExp(
         'image|pdf|wordprocessing|spreadsheetml|presentationml'
@@ -85,11 +84,12 @@ const NewPostForm: React.FC<Props> = props => {
     const res = await ApiHelper(
       `/api/${query.tutorId ? `/tutors/${query.tutorId}/posts` : '/posts'}`,
       formData,
-      'POST'
+      'POST',
+      false
     );
     setIsUploading(false);
     if (res.errorMessage) return setValidationError(res.errorMessage);
-    replace('/users');
+    window.location.assign(res.redirectUrl);
   };
 
   return (

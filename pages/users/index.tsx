@@ -41,7 +41,10 @@ const ProfilePage: NextPage<Props> = ({
   currentUser,
   pertinentGlobalPosts,
 }) => {
-  const [successAlert, setSuccessAlert] = useState<string | null>(null);
+  const { query } = useRouter();
+  const [successAlert, setSuccessAlert] = useState<string | null>(
+    query.successAlert ? query.successAlert.toString() : null
+  );
   const [globalPostsEnabled, setGlobalPostsEnabled] = useState<boolean>(
     currentUser.globalPostsEnabled
   );
@@ -79,46 +82,44 @@ const ProfilePage: NextPage<Props> = ({
             />
           </FormControl>
         )}
+        {successAlert && (
+          <Alert
+            mb="5"
+            status="success"
+            mx="auto"
+            fontWeight="bold"
+            width={['90%', null, '100%']}
+          >
+            {successAlert}
+          </Alert>
+        )}
         {currentUser.isTutor ? (
-          <>
-            {successAlert && (
-              <Alert
-                mb="5"
-                status="success"
-                mx="auto"
-                fontWeight="bold"
-                width={['90%', null, '100%']}
-              >
-                {successAlert}
-              </Alert>
+          <Accordion allowMultiple>
+            <AccordionItem>
+              <h2>
+                <AccordionButton>
+                  <Flex flex="1" textAlign="left">
+                    <Box mr="3">
+                      <FaUserAlt size={25} />
+                    </Box>
+                    <Text fontWeight="bold">User profile</Text>
+                  </Flex>
+                  <AccordionIcon />
+                </AccordionButton>
+              </h2>
+              <AccordionPanel pb={4}>
+                <UserProfileView currentUser={currentUser} />
+              </AccordionPanel>
+            </AccordionItem>
+            {currentUser.isTutor && (
+              <TutorProfileView
+                globalPostsEnabled={globalPostsEnabled}
+                setSuccessAlert={setSuccessAlert}
+                currentUser={currentUser}
+                pertinentGlobalPosts={pertinentGlobalPosts}
+              />
             )}
-            <Accordion allowMultiple>
-              <AccordionItem>
-                <h2>
-                  <AccordionButton>
-                    <Flex flex="1" textAlign="left">
-                      <Box mr="3">
-                        <FaUserAlt size={25} />
-                      </Box>
-                      <Text fontWeight="bold">User profile</Text>
-                    </Flex>
-                    <AccordionIcon />
-                  </AccordionButton>
-                </h2>
-                <AccordionPanel pb={4}>
-                  <UserProfileView currentUser={currentUser} />
-                </AccordionPanel>
-              </AccordionItem>
-              {currentUser.isTutor && (
-                <TutorProfileView
-                  globalPostsEnabled={globalPostsEnabled}
-                  setSuccessAlert={setSuccessAlert}
-                  currentUser={currentUser}
-                  pertinentGlobalPosts={pertinentGlobalPosts}
-                />
-              )}
-            </Accordion>
-          </>
+          </Accordion>
         ) : (
           <UserProfileView currentUser={currentUser} />
         )}
@@ -135,6 +136,7 @@ import Post, { PostDocument, PostDocumentObject } from '../../models/Post';
 import Layout from '../../components/global/Layout';
 import { useState } from 'react';
 import ApiHelper from '../../utils/api-helper';
+import { useRouter } from 'next/router';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
   await connectDB();

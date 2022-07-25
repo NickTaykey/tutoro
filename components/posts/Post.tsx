@@ -21,6 +21,7 @@ import {
   useDisclosure,
   Show,
   Button,
+  Tooltip,
 } from '@chakra-ui/react';
 import {
   FaArchive,
@@ -31,18 +32,26 @@ import {
   FaPencilAlt,
   FaFile,
   FaImage,
+  FaStar,
 } from 'react-icons/fa';
+import { MdError } from 'react-icons/md';
 import AnswerPostModal from './AnswerPostModal';
 import type { AnswerPostModalHandler } from './AnswerPostModal';
 import Link from 'next/link';
 
 interface Props {
   post: PostDocumentObject;
+  isLatestCreated: boolean;
   viewAsTutor: boolean;
   setSuccessAlert?: (alertContent: string) => void;
 }
 
-const Post: React.FC<Props> = ({ post, viewAsTutor, setSuccessAlert }) => {
+const Post: React.FC<Props> = ({
+  post,
+  viewAsTutor,
+  setSuccessAlert,
+  isLatestCreated,
+}) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const ctx = useContext(PostsContext);
   const { status, data } = useSession();
@@ -132,7 +141,11 @@ const Post: React.FC<Props> = ({ post, viewAsTutor, setSuccessAlert }) => {
         alignItems="center"
         justifyContent="space-between"
       >
-        <Flex alignItems="center" direction={['column', 'row']}>
+        <Flex
+          alignItems="center"
+          direction={['column', 'row']}
+          justify="space-between"
+        >
           <Flex alignItems="center">
             {!viewAsTutor && post.type === PostType.SPECIFIC && (
               <Avatar
@@ -194,18 +207,37 @@ const Post: React.FC<Props> = ({ post, viewAsTutor, setSuccessAlert }) => {
             </Badge>
           </Flex>
         </Flex>
-        {post.answer && (
-          <Show above="sm">
-            <IconButton
-              width={['100%', 'auto']}
-              ml={[0, 3]}
-              aria-label="view tutor page"
-              icon={<FaExpandArrowsAlt />}
-              onClick={onOpen}
-            />
-          </Show>
+        {isLatestCreated && post.checkoutCompleted && (
+          <Box>
+            <FaStar size="25" color="var(--chakra-colors-red-500)" />
+          </Box>
+        )}
+        {!post.checkoutCompleted && (
+          <Tooltip
+            hasArrow
+            textAlign="center"
+            p="3"
+            label="The Post was not created because you did not complete the checkout process"
+            bg="red.100"
+            color="red.500"
+          >
+            <Box>
+              <MdError size="25" color="var(--chakra-colors-red-500)" />
+            </Box>
+          </Tooltip>
         )}
       </Flex>
+      {post.answer && (
+        <Show above="sm">
+          <IconButton
+            width={['100%', 'auto']}
+            ml={[0, 3]}
+            aria-label="view tutor page"
+            icon={<FaExpandArrowsAlt />}
+            onClick={onOpen}
+          />
+        </Show>
+      )}
       <Text mb="3" mt={[0, 3]} textAlign="justify">
         {showFullPostDescription || post.description.length < 100 ? (
           post.description

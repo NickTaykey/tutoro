@@ -5,6 +5,7 @@ import User from './User';
 import { PostType, PostStatus, CloudFile } from '../types';
 
 interface Post {
+  checkoutCompleted: boolean;
   subject: string;
   description: string;
   status: PostStatus;
@@ -27,6 +28,7 @@ type PostModel = Model<PostDocument>;
 
 const PostSchema = new Schema<PostDocument, PostModel>(
   {
+    checkoutCompleted: { type: Boolean, default: false },
     subject: { type: String, required: true },
     description: { type: String, required: true },
     status: {

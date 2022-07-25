@@ -199,8 +199,9 @@ const TutorProfileView: React.FC<Props> = ({
                                 <VStack pb="2">
                                   {getNotAnsweredPosts(
                                     getSpecificPosts(posts)
-                                  ).map((p: PostDocumentObject) => (
+                                  ).map((p: PostDocumentObject, i) => (
                                     <Post
+                                      isLatestCreated={i === 0}
                                       key={p._id}
                                       post={p}
                                       viewAsTutor
@@ -225,9 +226,10 @@ const TutorProfileView: React.FC<Props> = ({
                                 <VStack pb="2">
                                   {getAnsweredPosts(
                                     getAnsweredByMePosts(posts)
-                                  ).map((p: PostDocumentObject) => (
+                                  ).map((p: PostDocumentObject, i) => (
                                     <Post
                                       key={p._id}
+                                      isLatestCreated={i === 0}
                                       post={p}
                                       viewAsTutor
                                       setSuccessAlert={setSuccessAlert}
@@ -251,8 +253,9 @@ const TutorProfileView: React.FC<Props> = ({
                                 .length ? (
                                 <VStack pb="2">
                                   {getClosedPosts(getSpecificPosts(posts)).map(
-                                    (p: PostDocumentObject) => (
+                                    (p: PostDocumentObject, i) => (
                                       <Post
+                                        isLatestCreated={i === 0}
                                         key={p._id}
                                         post={p}
                                         viewAsTutor
@@ -311,8 +314,9 @@ const TutorProfileView: React.FC<Props> = ({
                                   <VStack pb="2">
                                     {getNotAnsweredPosts(
                                       getGlobalPosts(posts)
-                                    ).map((p: PostDocumentObject) => (
+                                    ).map((p: PostDocumentObject, i) => (
                                       <Post
+                                        isLatestCreated={i === 0}
                                         key={p._id}
                                         post={p}
                                         viewAsTutor
@@ -341,8 +345,9 @@ const TutorProfileView: React.FC<Props> = ({
                                   .length ? (
                                   <VStack pb="2">
                                     {getClosedPosts(getGlobalPosts(posts)).map(
-                                      (p: PostDocumentObject) => (
+                                      (p: PostDocumentObject, i) => (
                                         <Post
+                                          isLatestCreated={i === 0}
                                           key={p._id}
                                           post={p}
                                           viewAsTutor
@@ -408,8 +413,9 @@ const TutorProfileView: React.FC<Props> = ({
                                       <VStack pb="2">
                                         {getNotApprovedSessions(
                                           requestedSessions
-                                        ).map((s: SessionDocumentObject) => (
+                                        ).map((s: SessionDocumentObject, i) => (
                                           <Session
+                                            isLatestCreated={i === 0}
                                             key={s._id}
                                             session={s}
                                             viewAsTutor
@@ -438,8 +444,9 @@ const TutorProfileView: React.FC<Props> = ({
                                       <VStack pb="2">
                                         {getApprovedSessions(
                                           requestedSessions
-                                        ).map((s: SessionDocumentObject) => (
+                                        ).map((s: SessionDocumentObject, i) => (
                                           <Session
+                                            isLatestCreated={i === 0}
                                             key={s._id}
                                             session={s}
                                             viewAsTutor
@@ -468,8 +475,9 @@ const TutorProfileView: React.FC<Props> = ({
                                       <VStack pb="2">
                                         {getRejectedSessions(
                                           requestedSessions
-                                        ).map((s: SessionDocumentObject) => (
+                                        ).map((s: SessionDocumentObject, i) => (
                                           <Session
+                                            isLatestCreated={i === 0}
                                             key={s._id}
                                             session={s}
                                             viewAsTutor

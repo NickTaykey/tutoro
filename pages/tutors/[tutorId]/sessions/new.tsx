@@ -122,7 +122,7 @@ const Page: NextPage<Props> = ({ tutor }) => {
         'POST'
       ).then(res => {
         if (res.errorMessage) return setValidationError(res.errorMessage);
-        router.replace('/users');
+        window.location.assign(res.redirectUrl);
       });
     } else setValidationError(validationError.errorMessage);
   };
@@ -235,7 +235,7 @@ const Page: NextPage<Props> = ({ tutor }) => {
               mt={3}
               mr={[0, 2]}
             >
-              Submit request
+              Book session
             </Button>
             <Button
               width={['100%', null, 'auto']}

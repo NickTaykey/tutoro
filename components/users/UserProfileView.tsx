@@ -65,8 +65,13 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
                 <PostsContext.Consumer>
                   {ctx => (
                     <VStack>
-                      {ctx.posts.map((p: PostDocumentObject) => (
-                        <Post key={p._id} post={p} viewAsTutor={false} />
+                      {ctx.posts.map((p: PostDocumentObject, i) => (
+                        <Post
+                          key={p._id}
+                          post={p}
+                          viewAsTutor={false}
+                          isLatestCreated={i === 0}
+                        />
                       ))}
                     </VStack>
                   )}
@@ -88,8 +93,13 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
                 <SessionsContext.Consumer>
                   {ctx => (
                     <VStack>
-                      {ctx.sessions.map((s: SessionDocumentObject) => (
-                        <Session key={s._id} session={s} viewAsTutor={false} />
+                      {ctx.sessions.map((s: SessionDocumentObject, i) => (
+                        <Session
+                          isLatestCreated={i === 0}
+                          key={s._id}
+                          session={s}
+                          viewAsTutor={false}
+                        />
                       ))}
                     </VStack>
                   )}

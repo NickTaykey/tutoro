@@ -58,6 +58,7 @@ export const getReviewDocumentObject = (r: ReviewDocument) => {
 };
 
 export const getSessionDocumentObject = (s: SessionDocument) => ({
+  checkoutCompleted: s.checkoutCompleted,
   _id: s._id.toString(),
   subject: s.subject,
   topic: s.topic,
@@ -72,6 +73,7 @@ export const getPostDocumentObject = (p: PostDocument) => {
   const createdAt = new Date(p.createdAt!);
   const updatedAt = new Date(p.updatedAt!);
   return {
+    checkoutCompleted: p.checkoutCompleted,
     _id: p._id.toString(),
     subject: p.subject,
     description: p.description,

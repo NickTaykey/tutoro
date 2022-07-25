@@ -6,14 +6,16 @@ import serverSideErrorHandler from '../../../../../middleware/server-side-error-
 import requireAuth from '../../../../../middleware/require-auth';
 
 import { PostType, HTTPError } from '../../../../../types';
-import Post from '../../../../../models/Post';
-import User from '../../../../../models/User';
+import Post, { PostDocument } from '../../../../../models/Post';
+import User, { UserDocument } from '../../../../../models/User';
 import { parseForm } from '../../../../../utils/parse-form';
 import { unlink } from 'fs';
 import type { PostDocumentObject } from '../../../../../models/Post';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { File, Files } from 'formidable';
 import type { UploadApiResponse } from 'cloudinary';
+import createCheckoutSession from '../../../../../utils/create-checkout-session';
+import { getPostDocumentObject } from '../../../../../utils/casting-helpers';
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -51,7 +53,6 @@ export default async function handler(
               errorMessage: 'You can provide at the most 4 attachments',
             });
           }
-
           if (!fields.subject)
             return res
               .status(400)
@@ -93,7 +94,7 @@ export default async function handler(
             public_id: r.public_id,
             url: r.secure_url,
           }));
-          post.creator = userSession._id;
+          post.creator = userSession as UserDocument;
           userSession.createdPosts.push(post._id);
 
           if (post.type === PostType.SPECIFIC) {
@@ -108,14 +109,17 @@ export default async function handler(
               return res
                 .status(403)
                 .json({ errorMessage: 'You cannot create a Post to yourself' });
-            post.type = PostType.SPECIFIC;
-            post.answeredBy = tutor._id;
+            post.answeredBy = tutor as UserDocument;
             tutor.posts.push(post._id);
             await tutor.save();
           }
 
           await Promise.all([post.save(), userSession.save()]);
-          return res.status(201).json(post.toObject());
+          return createCheckoutSession(
+            getPostDocumentObject(post as PostDocument),
+            req,
+            res
+          );
         });
       });
     });
