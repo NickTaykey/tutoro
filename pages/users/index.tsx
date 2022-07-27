@@ -2,7 +2,7 @@ import TutorProfileView from '../../components/tutors/TutorProfileView';
 import UserProfileView from '../../components/users/UserProfileView';
 import { authOptions } from '../api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth';
-import User from '../../models/User';
+import User, { UserDocument } from '../../models/User';
 
 import type { GetServerSideProps, NextPage } from 'next';
 import type { UserDocumentObject } from '../../models/User';
@@ -59,72 +59,70 @@ const ProfilePage: NextPage<Props> = ({
   };
 
   return (
-    <Layout>
-      <Box width={['100%', null, '80%']} mx="auto">
-        <Heading as="h1" size="xl" textAlign="center" my={[2, 2, 10]} mx="auto">
-          Hello, {currentUser.fullname}!
-        </Heading>
-        {currentUser.isTutor && (
-          <FormControl
-            display="flex"
-            alignItems="center"
-            mb={[2, 5]}
-            justifyContent={['center', null, 'start']}
-          >
-            <FormLabel htmlFor="global-posts-enabled" mb="0" fontSize="lg">
-              Global posts
-            </FormLabel>
-            <Switch
-              id="global-posts-enabled"
-              isChecked={globalPostsEnabled}
-              size="lg"
-              onChange={handlerGlobalPostsSwitch}
+    <Box width={['100%', null, '80%']} mx="auto">
+      <Heading as="h1" size="xl" textAlign="center" my={[2, 2, 10]} mx="auto">
+        Hello, {currentUser.fullname}!
+      </Heading>
+      {currentUser.isTutor && (
+        <FormControl
+          display="flex"
+          alignItems="center"
+          mb={[2, 5]}
+          justifyContent={['center', null, 'start']}
+        >
+          <FormLabel htmlFor="global-posts-enabled" mb="0" fontSize="lg">
+            Global posts
+          </FormLabel>
+          <Switch
+            id="global-posts-enabled"
+            isChecked={globalPostsEnabled}
+            size="lg"
+            onChange={handlerGlobalPostsSwitch}
+          />
+        </FormControl>
+      )}
+      {successAlert && (
+        <Alert
+          mb="5"
+          status="success"
+          mx="auto"
+          fontWeight="bold"
+          width={['90%', null, '100%']}
+        >
+          {successAlert}
+        </Alert>
+      )}
+      {currentUser.isTutor ? (
+        <Accordion allowMultiple>
+          <AccordionItem>
+            <h2>
+              <AccordionButton>
+                <Flex flex="1" textAlign="left">
+                  <Box mr="3">
+                    <FaUserAlt size={25} />
+                  </Box>
+                  <Text fontWeight="bold">User profile</Text>
+                </Flex>
+                <AccordionIcon />
+              </AccordionButton>
+            </h2>
+            <AccordionPanel pb={4}>
+              <UserProfileView currentUser={currentUser} />
+            </AccordionPanel>
+          </AccordionItem>
+          {currentUser.isTutor && (
+            <TutorProfileView
+              globalPostsEnabled={globalPostsEnabled}
+              setSuccessAlert={setSuccessAlert}
+              currentUser={currentUser}
+              pertinentGlobalPosts={pertinentGlobalPosts}
             />
-          </FormControl>
-        )}
-        {successAlert && (
-          <Alert
-            mb="5"
-            status="success"
-            mx="auto"
-            fontWeight="bold"
-            width={['90%', null, '100%']}
-          >
-            {successAlert}
-          </Alert>
-        )}
-        {currentUser.isTutor ? (
-          <Accordion allowMultiple>
-            <AccordionItem>
-              <h2>
-                <AccordionButton>
-                  <Flex flex="1" textAlign="left">
-                    <Box mr="3">
-                      <FaUserAlt size={25} />
-                    </Box>
-                    <Text fontWeight="bold">User profile</Text>
-                  </Flex>
-                  <AccordionIcon />
-                </AccordionButton>
-              </h2>
-              <AccordionPanel pb={4}>
-                <UserProfileView currentUser={currentUser} />
-              </AccordionPanel>
-            </AccordionItem>
-            {currentUser.isTutor && (
-              <TutorProfileView
-                globalPostsEnabled={globalPostsEnabled}
-                setSuccessAlert={setSuccessAlert}
-                currentUser={currentUser}
-                pertinentGlobalPosts={pertinentGlobalPosts}
-              />
-            )}
-          </Accordion>
-        ) : (
-          <UserProfileView currentUser={currentUser} />
-        )}
-      </Box>
-    </Layout>
+          )}
+        </Accordion>
+      ) : (
+        <UserProfileView currentUser={currentUser} />
+      )}
+    </Box>
   );
 };
 
@@ -242,6 +240,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
             type: PostType.GLOBAL,
             status: { $ne: PostStatus.ANSWERED },
             subject: { $in: user.subjects },
+            creator: { $ne: currentUser._id },
           })
             .populate({
               path: 'creator',
@@ -274,17 +273,17 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
       getSessionDocumentObject
     );
 
+    let pertinentGlobalPosts: Array<PostDocumentObject> = [];
+    if (currentUser.isTutor && currentUser.globalPostsEnabled) {
+      pertinentGlobalPosts = (pertinentPosts as Array<PostDocument>)
+        .map((p: PostDocument): PostDocumentObject => getPostDocumentObject(p))
+        .filter(p => p.checkoutCompleted);
+    }
+
     return {
       props: {
         currentUser,
-        pertinentGlobalPosts:
-          currentUser.isTutor &&
-          currentUser.globalPostsEnabled &&
-          pertinentPosts
-            ? (pertinentPosts as Array<unknown>).map(p => {
-                return getPostDocumentObject(p as PostDocument);
-              })
-            : [],
+        pertinentGlobalPosts,
       },
     };
   }

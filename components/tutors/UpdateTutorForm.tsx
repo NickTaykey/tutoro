@@ -1,5 +1,4 @@
 import { useState, useContext } from 'react';
-import { UserDocumentObject } from '../../models/User';
 import {
   Alert,
   Box,
@@ -22,8 +21,8 @@ import {
 } from '@chakra-ui/react';
 import { FaPlus, FaTrashAlt } from 'react-icons/fa';
 import { useForm, useFieldArray, SubmitHandler } from 'react-hook-form';
-import ApiHelper from '../../utils/api-helper';
 import ClusterMapContext from '../../store/cluster-map-context';
+import AuthenticatedUserContext from '../../store/authenticated-user-context';
 
 type FormValues = {
   location: string;
@@ -33,12 +32,10 @@ type FormValues = {
   subjects: Array<{ subject: string }>;
 };
 
-interface Props {
-  currentUser: UserDocumentObject;
-}
-
-const UpdateAvatarForm: React.FC<Props> = ({ currentUser }) => {
+const UpdateAvatarForm: React.FC = () => {
+  const { updateTutorProfile } = useContext(AuthenticatedUserContext);
   const clusterMapCtx = useContext(ClusterMapContext);
+  const { user } = useContext(AuthenticatedUserContext);
   const [errorAlert, setErrorAlert] = useState<string | null>(null);
   const [successAlert, setSuccessAlert] = useState<string | null>(null);
   const {
@@ -50,11 +47,11 @@ const UpdateAvatarForm: React.FC<Props> = ({ currentUser }) => {
     watch,
   } = useForm<FormValues>({
     defaultValues: {
-      location: currentUser.location,
-      bio: currentUser.bio,
-      sessionPricePerHour: currentUser.sessionPricePerHour,
-      pricePerPost: currentUser.pricePerPost,
-      subjects: currentUser.subjects.map(s => ({ subject: s })),
+      location: user!.location,
+      bio: user!.bio,
+      sessionPricePerHour: user!.sessionPricePerHour,
+      pricePerPost: user!.pricePerPost,
+      subjects: user!.subjects.map(s => ({ subject: s })),
     },
   });
   const {
@@ -66,23 +63,24 @@ const UpdateAvatarForm: React.FC<Props> = ({ currentUser }) => {
     name: 'subjects',
   });
 
-  const onSubmit: SubmitHandler<FormValues> = async data => {
-    const res = await ApiHelper(
-      `/api/tutors/${currentUser._id}`,
-      { ...data, subjects: data.subjects.map(s => s.subject) },
-      'PUT'
-    );
-    if (res.errorMessage) return setErrorAlert(res.errorMessage);
-    clusterMapCtx.updateAuthenticatedTutorLocation(
-      res.location,
-      res.geometry.coordinates
-    );
-    setSuccessAlert('Your profile has been successfully updated!');
-    setErrorAlert(null);
+  const onSubmit: SubmitHandler<FormValues> = data => {
+    updateTutorProfile({
+      ...data,
+      subjects: data.subjects.map(s => s.subject),
+    })
+      .then(() => {
+        setErrorAlert(null);
+        setSuccessAlert('Your profile has been successfully updated!');
+        clusterMapCtx.updateAuthenticatedTutorLocation(
+          user!.location,
+          user!.geometry!.coordinates
+        );
+      })
+      .catch(({ errorMessage }) => setErrorAlert(errorMessage));
   };
 
   return (
-    <Box height={['70vh', 'auto']} overflowY="scroll">
+    <Box height={['70vh', 'auto']} overflowY={['scroll', 'auto']}>
       <form onSubmit={handleSubmit(onSubmit)}>
         {(!!errorAlert || !!successAlert) && (
           <Alert status={errorAlert ? 'error' : 'success'} mb={3}>

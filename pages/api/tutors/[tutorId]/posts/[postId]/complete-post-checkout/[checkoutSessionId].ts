@@ -21,11 +21,17 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
               post.save();
               const queryString = new URLSearchParams({
                 successAlert:
-                  "Checkout successfully completed! Your Post has been created, you'll receive an answer in a while,, thank you!",
+                  "Checkout successfully completed! Your Post has been created, you'll receive an answer in a while, thank you!",
               });
               return res.redirect('/users?' + queryString);
             })
-            .catch(() => res.redirect('/tutors'));
+            .catch(() => {
+              const queryString = new URLSearchParams({
+                errorAlert:
+                  'The checkout process failed unexpectedly, your Post has not been created, If you completed the checkout, please contact us.',
+              });
+              res.redirect('/tutors?' + queryString);
+            });
         }
       });
     });

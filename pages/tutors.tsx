@@ -30,7 +30,7 @@ interface Props {
 }
 
 const Home: NextPage<Props> = ({ currentUser, points, allSubjects }) => {
-  const { push } = useRouter();
+  const { push, query } = useRouter();
   return (
     <ClusterMapContextProvider
       points={points}
@@ -40,8 +40,11 @@ const Home: NextPage<Props> = ({ currentUser, points, allSubjects }) => {
     >
       <ClusterMapContext.Consumer>
         {clusterMapCtx => (
-          <Layout>
+          <>
             <Box width="90%" mx="auto">
+              {query.errorAlert && (
+                <Alert status="error">{query.errorAlert}</Alert>
+              )}
               {clusterMapCtx.filteredPoints && (
                 <Alert
                   status={
@@ -103,7 +106,7 @@ const Home: NextPage<Props> = ({ currentUser, points, allSubjects }) => {
                 </Tooltip>
               </Box>
             </Box>
-          </Layout>
+          </>
         )}
       </ClusterMapContext.Consumer>
     </ClusterMapContextProvider>

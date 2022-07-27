@@ -1,5 +1,6 @@
 import { FaStar } from 'react-icons/fa';
 import React, { useState, useImperativeHandle } from 'react';
+import { Flex } from '@chakra-ui/react';
 
 export type StarRatingHandle = {
   reset: () => void;
@@ -17,7 +18,7 @@ const StarRating = React.forwardRef<
     },
   }));
   return (
-    <div className="star-rating">
+    <Flex className="star-rating" alignItems="center">
       {[...Array(5)].map((_, idx) => {
         idx += 1;
         return (
@@ -43,7 +44,7 @@ const StarRating = React.forwardRef<
           </button>
         );
       })}
-    </div>
+    </Flex>
   );
 });
 

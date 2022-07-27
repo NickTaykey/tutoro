@@ -4,6 +4,7 @@ import { SessionProvider } from 'next-auth/react';
 import { ChakraProvider } from '@chakra-ui/react';
 import Head from 'next/head';
 import '../styles/react-datepicker.css';
+import Layout from '../components/global/Layout';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -14,7 +15,9 @@ function MyApp({ Component, pageProps }: AppProps) {
       </Head>
       <ChakraProvider>
         <SessionProvider session={pageProps.session} refetchInterval={0}>
-          <Component {...pageProps} />
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
         </SessionProvider>
       </ChakraProvider>
     </>

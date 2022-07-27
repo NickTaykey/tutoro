@@ -84,141 +84,133 @@ const BecomeTutorPage: NextPage = () => {
   };
 
   return (
-    <Layout>
-      <Box width={['90%', null, null, '80%', '40%']} mx="auto" my={[4, 4, 2]}>
-        <Heading
-          as="h1"
-          mb={!!Object.keys(errors).length ? 0 : 4}
-          textAlign="center"
-        >
-          Would you like to become a Tutor?
-        </Heading>
-        {!!errorAlert && (
-          <Alert status="error" my={3}>
-            {errorAlert}
-          </Alert>
-        )}
-        {!!Object.keys(errors).length && (
-          <Alert status="error" my={3}>
-            {Object.keys(errors)[0] === 'bio'
-              ? 'Provide some words sbout you'
-              : Object.keys(errors)[0] === 'location'
-              ? 'Specify a place where you will host sessions'
-              : `Provide your ${Object.keys(errors)[0]}`}
-          </Alert>
-        )}
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <FormControl mb="3">
-            <FormLabel htmlFor="bio">Some words about you</FormLabel>
-            <Textarea id="bio" {...register('bio', { required: true })} />
-          </FormControl>
-          <FormControl mb="3">
-            <FormLabel htmlFor="location">
-              Where will you host your sessions?
-            </FormLabel>
-            <Input
-              id="location"
-              type="text"
-              {...register('location', { required: true, maxLength: 50 })}
-            />
-          </FormControl>
-          <FormControl mb="3">
-            <FormLabel htmlFor="post-price-input" id="post-price-label">
-              How much are you going to charge for your posts?
-            </FormLabel>
-            <Heading as="h3" size="md">
-              ${watch('postPrice')}
-            </Heading>
-            <Slider
-              aria-labelledby="post-price-label"
-              aria-label="post price"
-              defaultValue={watch('postPrice')}
-              min={0}
-              max={250}
-              onChange={(value: number) => setValue('postPrice', value)}
-            >
-              <SliderTrack>
-                <SliderFilledTrack />
-              </SliderTrack>
-              <SliderThumb />
-            </Slider>
-          </FormControl>
-          <FormControl mb="3">
-            <FormLabel
-              htmlFor="session-price-input"
-              id="session-price-hour-label"
-            >
-              How much are you charging per hour for your sessions?
-            </FormLabel>
-            <Heading as="h3" size="md">
-              ${watch('sessionPricePerHour')}
-            </Heading>
-            <Slider
-              aria-labelledby="session-price-hour-label"
-              aria-label="session price per hour"
-              defaultValue={watch('sessionPricePerHour')}
-              min={0}
-              max={250}
-              onChange={(value: number) =>
-                setValue('sessionPricePerHour', value)
-              }
-            >
-              <SliderTrack>
-                <SliderFilledTrack />
-              </SliderTrack>
-              <SliderThumb />
-            </Slider>
-          </FormControl>
-          <FormControl mb="3">
-            <FormLabel id="subjects-label">What are you subjects?</FormLabel>
-            <UnorderedList styleType="none" mx="0">
-              {subjects.map((subject, index, subjects) => (
-                <ListItem key={subject.id} mb="2">
-                  <Flex>
-                    <InputGroup>
-                      <Input
-                        aria-labelledby="subjects-label"
-                        {...register(`subjects.${index}.subject`, {
-                          required: true,
-                        })}
-                      />
-                      {index && (
-                        <InputRightAddon
-                          bg="red.500"
-                          color="white"
-                          _hover={{ bg: 'red.600', cursor: 'pointer' }}
-                          onClick={() => subjects.length > 1 && remove(index)}
-                          children={<FaTrashAlt />}
-                        />
-                      )}
-                    </InputGroup>
-                  </Flex>
-                </ListItem>
-              ))}
-            </UnorderedList>
-            <Button
-              width={['100%', null, 'auto']}
-              bg="green.500"
-              color="white"
-              _hover={{ bg: 'green.600' }}
-              type="button"
-              onClick={() => append({ subject: '' })}
-              leftIcon={<FaPlus />}
-              aria-label="Add another subject"
-            >
-              Add a subject
-            </Button>
-          </FormControl>
-          <Button
-            type="submit"
-            colorScheme="blue"
-            width={['100%', null, 'auto']}
+    <Box width={['90%', null, null, '80%', '40%']} mx="auto" my={[4, 4, 2]}>
+      <Heading
+        as="h1"
+        mb={!!Object.keys(errors).length ? 0 : 4}
+        textAlign="center"
+      >
+        Would you like to become a Tutor?
+      </Heading>
+      {!!errorAlert && (
+        <Alert status="error" my={3}>
+          {errorAlert}
+        </Alert>
+      )}
+      {!!Object.keys(errors).length && (
+        <Alert status="error" my={3}>
+          {Object.keys(errors)[0] === 'bio'
+            ? 'Provide some words sbout you'
+            : Object.keys(errors)[0] === 'location'
+            ? 'Specify a place where you will host sessions'
+            : `Provide your ${Object.keys(errors)[0]}`}
+        </Alert>
+      )}
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <FormControl mb="3">
+          <FormLabel htmlFor="bio">Some words about you</FormLabel>
+          <Textarea id="bio" {...register('bio', { required: true })} />
+        </FormControl>
+        <FormControl mb="3">
+          <FormLabel htmlFor="location">
+            Where will you host your sessions?
+          </FormLabel>
+          <Input
+            id="location"
+            type="text"
+            {...register('location', { required: true, maxLength: 50 })}
+          />
+        </FormControl>
+        <FormControl mb="3">
+          <FormLabel htmlFor="post-price-input" id="post-price-label">
+            How much are you going to charge for your posts?
+          </FormLabel>
+          <Heading as="h3" size="md">
+            ${watch('postPrice')}
+          </Heading>
+          <Slider
+            aria-labelledby="post-price-label"
+            aria-label="post price"
+            defaultValue={watch('postPrice')}
+            min={0}
+            max={250}
+            onChange={(value: number) => setValue('postPrice', value)}
           >
-            Become a Tutor!
+            <SliderTrack>
+              <SliderFilledTrack />
+            </SliderTrack>
+            <SliderThumb />
+          </Slider>
+        </FormControl>
+        <FormControl mb="3">
+          <FormLabel
+            htmlFor="session-price-input"
+            id="session-price-hour-label"
+          >
+            How much are you charging per hour for your sessions?
+          </FormLabel>
+          <Heading as="h3" size="md">
+            ${watch('sessionPricePerHour')}
+          </Heading>
+          <Slider
+            aria-labelledby="session-price-hour-label"
+            aria-label="session price per hour"
+            defaultValue={watch('sessionPricePerHour')}
+            min={0}
+            max={250}
+            onChange={(value: number) => setValue('sessionPricePerHour', value)}
+          >
+            <SliderTrack>
+              <SliderFilledTrack />
+            </SliderTrack>
+            <SliderThumb />
+          </Slider>
+        </FormControl>
+        <FormControl mb="3">
+          <FormLabel id="subjects-label">What are you subjects?</FormLabel>
+          <UnorderedList styleType="none" mx="0">
+            {subjects.map((subject, index, subjects) => (
+              <ListItem key={subject.id} mb="2">
+                <Flex>
+                  <InputGroup>
+                    <Input
+                      aria-labelledby="subjects-label"
+                      {...register(`subjects.${index}.subject`, {
+                        required: true,
+                      })}
+                    />
+                    {index && (
+                      <InputRightAddon
+                        bg="red.500"
+                        color="white"
+                        _hover={{ bg: 'red.600', cursor: 'pointer' }}
+                        onClick={() => subjects.length > 1 && remove(index)}
+                        children={<FaTrashAlt />}
+                      />
+                    )}
+                  </InputGroup>
+                </Flex>
+              </ListItem>
+            ))}
+          </UnorderedList>
+          <Button
+            width={['100%', null, 'auto']}
+            bg="green.500"
+            color="white"
+            _hover={{ bg: 'green.600' }}
+            type="button"
+            onClick={() => append({ subject: '' })}
+            leftIcon={<FaPlus />}
+            aria-label="Add another subject"
+          >
+            Add a subject
           </Button>
-        </form>
-      </Box>
-    </Layout>
+        </FormControl>
+        <Button type="submit" colorScheme="blue" width={['100%', null, 'auto']}>
+          Become a Tutor!
+        </Button>
+      </form>
+    </Box>
   );
 };
 

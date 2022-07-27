@@ -9,6 +9,7 @@ import requireAuth from '../../../../middleware/require-auth';
 import sanitize from '../../../../middleware/mongo-sanitize';
 
 import mapbox from '@mapbox/mapbox-sdk/services/geocoding';
+import { getUserDocumentObject } from '../../../../utils/casting-helpers';
 
 const geoCodeClient = mapbox({
   accessToken: process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!,
@@ -29,9 +30,8 @@ export default async function handler(
             subjects,
             location,
             sessionPricePerHour,
-            postPrice,
+            pricePerPost,
           } = sanitize(req.body);
-
           if (globalPostsEnabled) {
             sessionUser.globalPostsEnabled = eval(globalPostsEnabled);
             sessionUser.save();
@@ -45,9 +45,9 @@ export default async function handler(
             sessionPricePerHour &&
             Number(sessionPricePerHour) >= 5 &&
             Number(sessionPricePerHour) <= 250 &&
-            postPrice &&
-            Number(postPrice) >= 5 &&
-            Number(postPrice) <= 250
+            pricePerPost &&
+            Number(pricePerPost) >= 5 &&
+            Number(pricePerPost) <= 250
           ) {
             const response = await geoCodeClient
               .forwardGeocode({ query: location, limit: 1 })
@@ -64,9 +64,9 @@ export default async function handler(
             );
             sessionUser.location = location;
             sessionUser.sessionPricePerHour = sessionPricePerHour;
-            sessionUser.pricePerPost = postPrice;
+            sessionUser.pricePerPost = pricePerPost;
             await sessionUser.save();
-            return res.status(200).json(sessionUser);
+            return res.status(200).json(getUserDocumentObject(sessionUser));
           }
 
           return res.status(400).json({
@@ -79,9 +79,9 @@ export default async function handler(
                   Number(sessionPricePerHour) < 5 ||
                   Number(sessionPricePerHour) <= 250
                 ? 'Session price per hour'
-                : !postPrice ||
-                  Number(postPrice) < 5 ||
-                  Number(postPrice) <= 250
+                : !pricePerPost ||
+                  Number(pricePerPost) < 5 ||
+                  Number(pricePerPost) <= 250
                 ? 'Post price'
                 : 'location'
             }`,

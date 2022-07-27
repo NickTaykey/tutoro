@@ -1,7 +1,8 @@
 import connectDB from '../../../middleware/mongo-connect';
 import GoogleProvider from 'next-auth/providers/google';
 import NextAuth, { NextAuthOptions } from 'next-auth';
-import User from '../../../models/User';
+import User, { UserDocument } from '../../../models/User';
+import { getUserDocumentObject } from '../../../utils/casting-helpers';
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -37,18 +38,7 @@ export const authOptions: NextAuthOptions = {
       if (!user) return { ...session, user: {} };
       return {
         ...session,
-        user: {
-          _id: user._id.toString(),
-          fullname: user.fullname,
-          email: user.email,
-          avatar: user.avatar,
-          isTutor: user.isTutor,
-          bio: user.bio,
-          subjects: user.subjects,
-          sessionPricePerHour: user.sessionPricePerHour,
-          pricePerPost: user.pricePerPost,
-          location: user.location,
-        },
+        user: getUserDocumentObject(user as UserDocument),
       };
     },
   },

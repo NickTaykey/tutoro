@@ -1,7 +1,7 @@
 import connectDB from '../../../../../middleware/mongo-connect';
 import sanitize from '../../../../../middleware/mongo-sanitize';
 import Review, { ReviewDocumentObject } from '../../../../../models/Review';
-import User from '../../../../../models/User';
+import User, { UserDocument } from '../../../../../models/User';
 import mongoErrorHandler from '../../../../../middleware/mongo-error-handler';
 import ensureHttpMethod from '../../../../../middleware/ensure-http-method';
 import serverSideErrorHandler from '../../../../../middleware/server-side-error-handler';
@@ -27,18 +27,31 @@ export default async function handler(
               _id: req.query.tutorId,
               isTutor: true,
             });
-            const hasUserCreatedPost =
-              new Set(...tutor.posts, ...userSession.createdPosts).size !==
-              tutor.posts.length + userSession.createdPosts.length;
-            const hasUserCreatedSession =
-              new Set(...tutor.requestedSessions, ...userSession.bookedSessions)
-                .size !==
-              tutor.requestedSessions.length +
-                userSession.bookedSessions.length;
-
             if (!tutor) {
               return res.status(404).json({ errorMessage: 'Tutor not found' });
             }
+            const tutorDocument = tutor as UserDocument;
+            const hasUserCreatedPost =
+              new Set(
+                ...tutorDocument.posts.map(id => (id as ObjectId).toString()),
+                ...userSession.createdPosts.map(id =>
+                  (id as ObjectId).toString()
+                )
+              ).size !==
+              tutorDocument.posts.length + userSession.createdPosts.length;
+
+            const hasUserCreatedSession =
+              new Set(
+                ...tutorDocument.requestedSessions.map(id =>
+                  (id as ObjectId).toString()
+                ),
+                ...userSession.bookedSessions.map(id =>
+                  (id as ObjectId).toString()
+                )
+              ).size !==
+              tutorDocument.requestedSessions.length +
+                userSession.bookedSessions.length;
+
             if (!hasUserCreatedPost && !hasUserCreatedSession)
               return res.status(403).json({
                 errorMessage:
@@ -51,7 +64,7 @@ export default async function handler(
             }
 
             const reviewSet = new Set([
-              ...tutor.reviews.map((rid: ObjectId) => rid.toString()),
+              ...tutorDocument.reviews.map(rid => (rid as ObjectId).toString()),
               ...userSession.createdReviews.map(rid =>
                 (rid as ObjectId).toString()
               ),
@@ -66,15 +79,20 @@ export default async function handler(
               const review = await Review.create({
                 text: sanitizedReqBody?.text,
                 stars: Number(sanitizedReqBody.stars),
-                tutor: tutor,
-                user: userSession,
+                tutor: tutorDocument._id,
+                user: userSession._id,
               });
               tutor.reviews.push(review);
               userSession.createdReviews.push(review);
               await Promise.all([tutor.calcAvgRating(), userSession.save()]);
               return res
                 .status(201)
-                .json({ ...review.toObject(), ownerAuthenticated: true });
+                .json({
+                  ...review.toObject(),
+                  user: userSession,
+                  tutor: tutorDocument,
+                  ownerAuthenticated: true,
+                });
             }
             return res.status(403).json({
               errorMessage: 'You have already written a review for this tutor.',

@@ -3,7 +3,7 @@ import { parseForm, FormidableError } from '../../utils/parse-form';
 import { v2 as cloudinary } from 'cloudinary';
 import requireAuth from '../../middleware/require-auth';
 import ensureHttpMethod from '../../middleware/ensure-http-method';
-import fs, { PathLike } from 'fs';
+import fs from 'fs';
 import type { CloudFile } from '../../types';
 import type { File, Part } from 'formidable';
 import type { UploadApiResponse } from 'cloudinary';

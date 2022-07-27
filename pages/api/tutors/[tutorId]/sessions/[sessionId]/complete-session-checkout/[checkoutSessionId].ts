@@ -25,7 +25,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
               });
               return res.redirect('/users?' + queryString);
             })
-            .catch(() => res.redirect('/tutors'));
+            .catch(() => {
+              const queryString = new URLSearchParams({
+                errorAlert:
+                  'The checkout process unexpectedly failed, your Session has not been booked, If you completed the checkout, please contact us.',
+              });
+              res.redirect('/tutors?' + queryString);
+            });
         }
       });
     });

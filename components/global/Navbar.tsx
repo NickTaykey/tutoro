@@ -12,92 +12,50 @@ import {
   IconButton,
   Box,
   useDisclosure,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
   Button,
 } from '@chakra-ui/react';
-import { getSession, signIn, signOut } from 'next-auth/react';
-import { UserDocumentObject } from '../../models/User';
+import { ClientSafeProvider, signIn, signOut } from 'next-auth/react';
 import {
   FaListUl,
   FaRegTimesCircle,
   FaRegUserCircle,
   FaSignOutAlt,
 } from 'react-icons/fa';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Link from 'next/link';
 import Logo from './Logo';
-import { getProviders, useSession } from 'next-auth/react';
-
-import type { ClientSafeProvider, LiteralUnion } from 'next-auth/react';
 
 import { FcGoogle } from 'react-icons/fc';
 import { GoThreeBars } from 'react-icons/go';
-import { BuiltInProviderType } from 'next-auth/providers';
 import UpdateAvatarForm from '../users/UpdateAvatarForm';
 import UpdateTutorForm from '../tutors/UpdateTutorForm';
-
-type ProvidersList = Record<
-  LiteralUnion<BuiltInProviderType, string>,
-  ClientSafeProvider
->;
+import AuthenticatedUserContext from '../../store/authenticated-user-context';
+import getProvidersList from '../../utils/get-providers';
 
 const Navbar: React.FC = () => {
-  const [providersList, setProvidersList] = useState<ProvidersList | null>(
-    null
-  );
-  const [newAvatarUrl, setNewAvatarUrl] = useState<string | null>(null);
-  const [showDefaultAvatar, setShowDefaultAvatar] = useState<boolean>(false);
-  const [userStatus, setUserStatus] = useState<
-    'loading' | 'authenticated' | 'unauthenticated'
-  >('loading');
-  const [currentUser, setCurrentUser] = useState<UserDocumentObject | null>(
-    null
-  );
-
-  useEffect(() => {
-    getProviders().then((list: ProvidersList | null) => setProvidersList(list));
-  }, [getProviders]);
-
   const {
     isOpen: isDrawerOpen,
     onOpen: onDrawerOpen,
     onClose: onDrawerClose,
   } = useDisclosure();
-  const {
-    isOpen: isAuthModalOpen,
-    onOpen: onAuthModalOpen,
-    onClose: onAuthModalClose,
-  } = useDisclosure();
-  const {
-    isOpen: isUpdateProfileModalOpen,
-    onOpen: onUpdateProfileModalOpen,
-    onClose: onUpdateProfileModalClose,
-  } = useDisclosure();
-  const {
-    isOpen: viewUpdateAvatarForm,
-    onOpen: showUpdateAvatarForm,
-    onClose: hideUpdateAvatarForm,
-  } = useDisclosure({ defaultIsOpen: false });
-  const btnRef = React.useRef(null);
-
-  const showResetAvatarBtn =
-    !showDefaultAvatar &&
-    ((!!newAvatarUrl && !currentUser?.avatar?.public_id) ||
-      (!newAvatarUrl && !!currentUser?.avatar?.public_id) ||
-      (!!newAvatarUrl && !!currentUser?.avatar?.public_id));
+  const [providersList, setProvidersList] = useState<ClientSafeProvider[]>([]);
 
   useEffect(() => {
-    if (!isUpdateProfileModalOpen)
-      getSession().then(s => {
-        setCurrentUser(s?.user ? (s.user as UserDocumentObject) : null);
-        setUserStatus(s?.user ? 'authenticated' : 'unauthenticated');
-      });
-  }, [isUpdateProfileModalOpen]);
+    getProvidersList().then(list => setProvidersList(list));
+  }, [getProvidersList]);
+
+  const {
+    user,
+    openSignInMenu,
+    showUpdateAvatarMenu,
+    openUpdateAvatarMenu,
+    closeUpdateAvatarMenu,
+    showUpdateTutorMenu,
+    openUpdateTutorMenu,
+    closeUpdateTutorMenu,
+  } = useContext(AuthenticatedUserContext);
+
+  const btnRef = React.useRef(null);
 
   return (
     <Box
@@ -149,29 +107,25 @@ const Navbar: React.FC = () => {
             <DrawerContent>
               <DrawerCloseButton />
               <DrawerBody>
-                {userStatus === 'unauthenticated' && providersList && (
+                {!user && providersList && (
                   <Flex height="100%" direction="column" justify="center">
                     <Heading as="h1" size="md" textAlign="center" my="4">
                       Sign In
                     </Heading>
-                    {Object.values(providersList).map(
-                      (provider: ClientSafeProvider) => {
-                        return (
-                          <Button
-                            width="100%"
-                            key={provider.name}
-                            leftIcon={<FcGoogle size="30" />}
-                            aria-label="Google OAuth Icon"
-                            onClick={() => signIn(provider.id)}
-                          >
-                            Google
-                          </Button>
-                        );
-                      }
-                    )}
+                    {providersList.map(provider => (
+                      <Button
+                        width="100%"
+                        key={provider.name}
+                        leftIcon={<FcGoogle size="30" />}
+                        aria-label="Google OAuth Icon"
+                        onClick={() => signIn(provider.id)}
+                      >
+                        Google
+                      </Button>
+                    ))}
                   </Flex>
                 )}
-                {userStatus === 'authenticated' && (
+                {user && (
                   <Flex
                     alignItems="center"
                     justify="center"
@@ -180,19 +134,13 @@ const Navbar: React.FC = () => {
                   >
                     <Link href="/users">
                       <Avatar
-                        name={currentUser?.fullname}
-                        src={
-                          showDefaultAvatar
-                            ? ''
-                            : newAvatarUrl
-                            ? newAvatarUrl
-                            : currentUser?.avatar?.url
-                        }
+                        name={user.fullname}
+                        src={user.avatar?.url || ''}
                         _hover={{ cursor: 'pointer' }}
                         mb="2"
                       />
                     </Link>
-                    {viewUpdateAvatarForm ? (
+                    {showUpdateAvatarMenu ? (
                       <Flex
                         direction="column"
                         shadow="md"
@@ -204,19 +152,14 @@ const Navbar: React.FC = () => {
                       >
                         <FaRegTimesCircle
                           size="25"
-                          onClick={hideUpdateAvatarForm}
+                          onClick={closeUpdateAvatarMenu}
                           style={{ alignSelf: 'end' }}
                         />
                         <Box my="3">
-                          <UpdateAvatarForm
-                            showResetAvatarBtn={showResetAvatarBtn}
-                            setShowDefaultAvatar={setShowDefaultAvatar}
-                            setNewAvatarUrl={setNewAvatarUrl}
-                            closeUpdateAvatarModal={onUpdateProfileModalClose}
-                          />
+                          <UpdateAvatarForm />
                         </Box>
                       </Flex>
-                    ) : isUpdateProfileModalOpen && currentUser ? (
+                    ) : showUpdateTutorMenu && user ? (
                       <Flex
                         direction="column"
                         shadow="md"
@@ -228,11 +171,11 @@ const Navbar: React.FC = () => {
                       >
                         <FaRegTimesCircle
                           size="25"
-                          onClick={onUpdateProfileModalClose}
+                          onClick={closeUpdateTutorMenu}
                           style={{ alignSelf: 'end' }}
                         />
                         <Box my="3">
-                          <UpdateTutorForm currentUser={currentUser} />
+                          <UpdateTutorForm />
                         </Box>
                       </Flex>
                     ) : (
@@ -242,16 +185,16 @@ const Navbar: React.FC = () => {
                           icon={<FaRegUserCircle size="25" />}
                           colorScheme="cyan"
                           color="white"
-                          onClick={showUpdateAvatarForm}
+                          onClick={openUpdateAvatarMenu}
                           aria-label="Update avatar"
                           mt="2"
                         />
-                        {currentUser?.isTutor && (
+                        {user.isTutor && (
                           <IconButton
                             width="100%"
                             icon={<FaListUl size="25" />}
                             colorScheme="orange"
-                            onClick={onUpdateProfileModalOpen}
+                            onClick={openUpdateTutorMenu}
                             aria-label="Update avatar"
                             mt="2"
                           />
@@ -273,101 +216,26 @@ const Navbar: React.FC = () => {
           </Drawer>
         </Show>
         <Show breakpoint="(min-width: 768px)">
-          {providersList && (
-            <>
-              <Modal
-                isOpen={isAuthModalOpen}
-                onClose={onAuthModalClose}
-                isCentered
+          {!user && (
+            <Flex alignItems="center" mr="4">
+              <Button
+                variant="link"
+                size="lg"
+                onClick={openSignInMenu}
+                _hover={{ textDecoration: 'none', color: 'blackAlpha.800' }}
               >
-                <ModalOverlay />
-                <ModalContent>
-                  <ModalCloseButton />
-                  <ModalHeader textAlign="center">
-                    Sign In to Tutoro
-                  </ModalHeader>
-                  <ModalBody mb="5">
-                    {Object.values(providersList).map(
-                      (provider: ClientSafeProvider) => {
-                        return (
-                          <Button
-                            width="100%"
-                            key={provider.name}
-                            leftIcon={<FcGoogle size="30" />}
-                            aria-label="Google OAuth Icon"
-                            onClick={() => signIn(provider.id)}
-                          >
-                            Google
-                          </Button>
-                        );
-                      }
-                    )}
-                  </ModalBody>
-                </ModalContent>
-              </Modal>
-              {userStatus === 'unauthenticated' && (
-                <Flex alignItems="center" mr="4">
-                  <Button
-                    variant="link"
-                    size="lg"
-                    onClick={onAuthModalOpen}
-                    _hover={{ textDecoration: 'none', color: 'blackAlpha.800' }}
-                  >
-                    Sign In
-                  </Button>
-                </Flex>
-              )}
-            </>
+                Sign In
+              </Button>
+            </Flex>
           )}
-          {userStatus === 'authenticated' && (
+          {user && (
             <>
-              <Modal
-                blockScrollOnMount={false}
-                isOpen={viewUpdateAvatarForm}
-                onClose={hideUpdateAvatarForm}
-              >
-                <ModalOverlay />
-                <ModalContent>
-                  <ModalHeader>Choose another avatar!</ModalHeader>
-                  <ModalCloseButton />
-                  <ModalBody>
-                    <UpdateAvatarForm
-                      showResetAvatarBtn={showResetAvatarBtn}
-                      setShowDefaultAvatar={setShowDefaultAvatar}
-                      setNewAvatarUrl={setNewAvatarUrl}
-                      closeUpdateAvatarModal={hideUpdateAvatarForm}
-                    />
-                  </ModalBody>
-                </ModalContent>
-              </Modal>
-              {currentUser?.isTutor && (
-                <Modal
-                  blockScrollOnMount={false}
-                  isOpen={isUpdateProfileModalOpen}
-                  onClose={onUpdateProfileModalClose}
-                >
-                  <ModalOverlay />
-                  <ModalContent>
-                    <ModalHeader>Update your tutor profile</ModalHeader>
-                    <ModalCloseButton />
-                    <ModalBody>
-                      <UpdateTutorForm currentUser={currentUser} />
-                    </ModalBody>
-                  </ModalContent>
-                </Modal>
-              )}
               <Flex alignItems="center">
                 <Link href="/users">
                   <Avatar
                     mr="2"
-                    name={currentUser?.fullname}
-                    src={
-                      showDefaultAvatar
-                        ? ''
-                        : newAvatarUrl
-                        ? newAvatarUrl
-                        : currentUser?.avatar?.url
-                    }
+                    name={user.fullname}
+                    src={user.avatar?.url || ''}
                     _hover={{ cursor: 'pointer' }}
                   />
                 </Link>
@@ -375,16 +243,16 @@ const Navbar: React.FC = () => {
                   icon={<FaRegUserCircle size="25" />}
                   colorScheme="cyan"
                   color="white"
-                  onClick={showUpdateAvatarForm}
+                  onClick={openUpdateAvatarMenu}
                   aria-label="Update avatar"
                   mr={2}
                 />
-                {currentUser?.isTutor && (
+                {user.isTutor && (
                   <IconButton
                     width="100%"
                     icon={<FaListUl size="25" />}
                     colorScheme="orange"
-                    onClick={onUpdateProfileModalOpen}
+                    onClick={openUpdateTutorMenu}
                     aria-label="Update avatar"
                     mr={2}
                   />

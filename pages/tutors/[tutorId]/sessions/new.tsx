@@ -136,7 +136,7 @@ const Page: NextPage<Props> = ({ tutor }) => {
       ? '0' + formFields.date.getMinutes().toString()
       : formFields.date.getMinutes().toString();
   return (
-    <Layout>
+    <>
       {tutor ? (
         <Flex
           width={['90%', null, null, '60%', '40%']}
@@ -257,7 +257,7 @@ const Page: NextPage<Props> = ({ tutor }) => {
           </Heading>
         </Flex>
       )}
-    </Layout>
+    </>
   );
 };
 

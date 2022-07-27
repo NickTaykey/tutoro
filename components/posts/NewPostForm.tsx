@@ -93,7 +93,7 @@ const NewPostForm: React.FC<Props> = props => {
   };
 
   return (
-    <Layout>
+    <>
       {props.subjects ? (
         <Flex
           height={[null, null, null, '75vh']}
@@ -215,7 +215,7 @@ const NewPostForm: React.FC<Props> = props => {
           </Heading>
         </Flex>
       )}
-    </Layout>
+    </>
   );
 };
 

@@ -15,7 +15,9 @@ import {
   Textarea,
   Button,
   Alert,
+  IconButton,
 } from '@chakra-ui/react';
+import { FaPen, FaRegTimesCircle } from 'react-icons/fa';
 
 type CreateReviewFormProps = {
   type: ReviewFormTypes.Create;
@@ -35,7 +37,7 @@ const ReviewForm: React.FC<
   const ctx = useContext(ReviewContext);
   const isEdit = props.type === ReviewFormTypes.Edit;
   const imperativeHandlingRef = useRef<StarRatingHandle>(null);
-  const [errorAlert, setErrorAlert] = useState<string>('');
+  const [errorAlert, setErrorAlert] = useState<string | null>(null);
   const [stars, setStars] = useState<number>(isEdit ? props.review.stars : 0);
   const [text, setText] = useState<string>(
     isEdit && props.review?.text ? props.review.text : ''
@@ -51,7 +53,7 @@ const ReviewForm: React.FC<
       else {
         setStars(0);
         setText('');
-        setErrorAlert('');
+        setErrorAlert(null);
         props.addUserCreateReviewId(apiResponse._id);
         imperativeHandlingRef.current!.reset();
       }
@@ -93,13 +95,13 @@ const ReviewForm: React.FC<
           {errorAlert}
         </Alert>
       )}
-      <fieldset>
+      <FormControl my="2">
         <StarRating
           ref={imperativeHandlingRef}
           stars={stars}
           setStars={setStars}
         />
-      </fieldset>
+      </FormControl>
       <FormControl>
         <FormLabel htmlFor="email">
           Describe your experience (optional)
@@ -113,9 +115,24 @@ const ReviewForm: React.FC<
           onChange={e => setText(e.target.value)}
         />
       </FormControl>
-      <Button type="submit" colorScheme="blue" my="3" width={['100%', 'auto']}>
+      <Button
+        type="submit"
+        colorScheme="blue"
+        my="3"
+        width={['100%', 'auto']}
+        leftIcon={<FaPen size="15" />}
+      >
         {isEdit ? 'Update' : 'Post'} review
       </Button>
+      {isEdit && (
+        <IconButton
+          width={['100%', 'auto']}
+          ml={[0, 2]}
+          icon={<FaRegTimesCircle size="25" />}
+          aria-label="close edit Review form"
+          onClick={() => props.hideForm()}
+        />
+      )}
     </form>
   );
 };

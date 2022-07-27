@@ -1,6 +1,4 @@
 import { useState, ChangeEvent, MouseEvent, useContext } from 'react';
-import { useSession } from 'next-auth/react';
-import { UserDocumentObject } from '../../models/User';
 import {
   Alert,
   Avatar,
@@ -16,44 +14,36 @@ import {
 } from '@chakra-ui/react';
 import { FaBroom, FaFileUpload, FaTrash } from 'react-icons/fa';
 import ClusterMapContext from '../../store/cluster-map-context';
-import type { CloudFile } from '../../types';
-import ApiHelper from '../../utils/api-helper';
+import AuthenticatedUserContext from '../../store/authenticated-user-context';
 
-interface Props {
-  setNewAvatarUrl(newAvatar: string): void;
-  setShowDefaultAvatar(newState: boolean): void;
-  closeUpdateAvatarModal(): void;
-  showResetAvatarBtn: boolean;
-}
-
-const UpdateAvatarForm: React.FC<Props> = props => {
+const UpdateAvatarForm: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [errorAlert, setErrorAlert] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState<boolean>(false);
-  const { data } = useSession();
-  const currentUser = data?.user as UserDocumentObject;
   const clusterMapCtx = useContext(ClusterMapContext);
+  const { user, updateAvatar, resetAvatar, closeUpdateAvatarMenu } = useContext(
+    AuthenticatedUserContext
+  );
 
   const onFileUploadChange = (e: ChangeEvent<HTMLInputElement>) => {
     const fileInput = e.target;
 
     if (!fileInput.files) {
-      alert('No file was chosen');
-      return;
+      return setErrorAlert('No file was chosen');
     }
 
     if (!fileInput.files || fileInput.files.length === 0) {
-      alert('Files list is empty');
-      return;
+      return setErrorAlert('Files list is empty');
     }
 
     const file = fileInput.files[0];
 
     if (!file.type.startsWith('image')) {
-      alert('Please select a valide image');
-      return;
+      return setErrorAlert('Please select a valide image');
     }
+
+    setErrorAlert(null);
 
     setFile(file);
     setPreviewUrl(URL.createObjectURL(file));
@@ -71,77 +61,51 @@ const UpdateAvatarForm: React.FC<Props> = props => {
     setPreviewUrl(null);
   };
 
-  const onUploadFile = async (e: MouseEvent<HTMLButtonElement>) => {
+  const onUploadFile = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
     if (!file) {
       return;
     }
 
-    try {
-      const formData = new FormData();
-      formData.append('avatar', file);
-      setIsUploading(true);
-
-      const {
-        error,
-        newAvatar,
-      }: {
-        error: string | null;
-        newAvatar: CloudFile | null;
-      } = await ApiHelper(`/api/${currentUser._id}`, formData, 'PUT', false);
-
-      if (error || (!error && !newAvatar)) {
-        return setErrorAlert(
-          error || 'Unexpected server side error... try again later.'
-        );
-      }
-      props.closeUpdateAvatarModal();
-      props.setNewAvatarUrl(newAvatar!.url);
-      props.setShowDefaultAvatar(false);
-
-      if (currentUser.isTutor) {
-        clusterMapCtx.updateAuthenticatedTutorAvatar(newAvatar!);
-      }
-      setIsUploading(false);
-    } catch (error) {
-      setErrorAlert('Unexpected server side error... try again later.');
-    }
+    const formData = new FormData();
+    formData.append('avatar', file);
+    setIsUploading(true);
+    updateAvatar(formData)
+      .then(() => {
+        closeUpdateAvatarMenu();
+        if (user!.isTutor) {
+          clusterMapCtx.updateAuthenticatedTutorAvatar(user!.avatar!);
+        }
+        setIsUploading(false);
+      })
+      .catch(({ errorMessage }) => setErrorAlert(errorMessage));
   };
 
   const resetDefaultAvatar = async () => {
-    try {
-      const res = await fetch(`/api/${currentUser._id}`, {
-        method: 'PUT',
-      });
-      const {
-        error,
-      }: {
-        error: string | null;
-      } = await res.json();
-      if (error) {
-        return setErrorAlert(
-          error || 'Unexpected server side error... try again later.'
-        );
-      }
-      props.closeUpdateAvatarModal();
-      props.setShowDefaultAvatar(true);
-      if (currentUser.isTutor) {
-        clusterMapCtx.updateAuthenticatedTutorAvatar({
-          url: '',
-          public_id: '',
-        });
-      }
-    } catch (error) {
-      setErrorAlert('Unexpected server side error... try again later.');
-    }
+    resetAvatar()
+      .then(() => {
+        closeUpdateAvatarMenu();
+        if (user!.isTutor) {
+          clusterMapCtx.updateAuthenticatedTutorAvatar({
+            url: '',
+            public_id: '',
+          });
+        }
+      })
+      .catch(({ errorMessage }) => setErrorAlert(errorMessage));
   };
 
   return (
     <form onSubmit={e => e.preventDefault()}>
+      {errorAlert && (
+        <Alert status="error" my="2">
+          {errorAlert}
+        </Alert>
+      )}
       {previewUrl ? (
         <Center>
-          <Avatar name={currentUser.fullname} src={previewUrl} size="xl" />
+          <Avatar name={user!.fullname} src={previewUrl} size="xl" />
         </Center>
       ) : (
         <FormControl mb="2">
@@ -193,7 +157,7 @@ const UpdateAvatarForm: React.FC<Props> = props => {
           )}
         </Box>
       )}
-      {props.showResetAvatarBtn && !isUploading && (
+      {user?.avatar?.url && !isUploading && (
         <Button
           mt="2"
           leftIcon={<FaTrash />}
@@ -203,11 +167,6 @@ const UpdateAvatarForm: React.FC<Props> = props => {
         >
           Reset default avatar
         </Button>
-      )}
-      {errorAlert && (
-        <Alert status="error" my="2">
-          {errorAlert}
-        </Alert>
       )}
     </form>
   );

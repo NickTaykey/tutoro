@@ -13,6 +13,8 @@ import {
   Center,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
+import { useContext } from 'react';
+import AuthenticatedUserContext from '../../store/authenticated-user-context';
 
 interface Props {
   popupInfo: TutorObjectGeoJSON;
@@ -21,6 +23,7 @@ interface Props {
 
 const TutorPopup: React.FC<Props> = ({ popupInfo, authenticatedTutor }) => {
   const { push } = useRouter();
+  const { user, openSignInMenu } = useContext(AuthenticatedUserContext);
   const subjects = authenticatedTutor
     ? popupInfo.properties.subjects
     : JSON.parse(popupInfo.properties.subjects as string);
@@ -84,9 +87,11 @@ const TutorPopup: React.FC<Props> = ({ popupInfo, authenticatedTutor }) => {
               colorScheme="green"
               size="xs"
               width="100%"
-              onClick={() =>
-                push(`/tutors/${popupInfo.properties._id}/sessions/new`)
-              }
+              onClick={() => {
+                user
+                  ? push(`/tutors/${popupInfo.properties._id}/sessions/new`)
+                  : openSignInMenu();
+              }}
             >
               Book session
             </Button>
@@ -94,9 +99,11 @@ const TutorPopup: React.FC<Props> = ({ popupInfo, authenticatedTutor }) => {
               colorScheme="blue"
               size="xs"
               width="100%"
-              onClick={() =>
-                push(`/tutors/${popupInfo.properties._id}/posts/new`)
-              }
+              onClick={() => {
+                user
+                  ? push(`/tutors/${popupInfo.properties._id}/posts/new`)
+                  : openSignInMenu();
+              }}
             >
               Create a Post
             </Button>

@@ -60,22 +60,14 @@ const Review: React.FC<Props> = ({
   return (
     <Box shadow="md" borderWidth="1px" p="6" width="100%" borderRadius="md">
       {showUpdateForm ? (
-        <>
-          <Box float="right" _hover={{ cursor: 'pointer' }}>
-            <FaRegTimesCircle
-              size="25"
-              onClick={() => setShowUpdateForm(false)}
-            />
-          </Box>
-          <ReviewForm
-            type={ReviewFormTypes.Edit}
-            review={review}
-            hideForm={() => setShowUpdateForm(false)}
-          />
-        </>
+        <ReviewForm
+          type={ReviewFormTypes.Edit}
+          review={review}
+          hideForm={() => setShowUpdateForm(false)}
+        />
       ) : (
         <>
-          <Modal isOpen={isOpen} onClose={onClose} isCentered>
+          <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
             <ModalContent width="90%">
               <ModalHeader>This action is irreversibile</ModalHeader>
