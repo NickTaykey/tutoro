@@ -57,7 +57,7 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
           </Tab>
         </TabList>
         <TabPanels
-          height={higherThan840 ? '65vh' : lowerThan690 ? '50vh' : '400px'}
+          height={higherThan840 ? '60vh' : lowerThan690 ? '50vh' : '400px'}
         >
           <TabPanel height="100%" overflowY="auto">
             {props.currentUser.createdPosts.length ? (

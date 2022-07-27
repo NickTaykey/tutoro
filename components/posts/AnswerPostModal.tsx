@@ -18,6 +18,7 @@ import {
   Input,
   Spinner,
   Kbd,
+  Show,
 } from '@chakra-ui/react';
 import Link from 'next/link';
 import React, {
@@ -28,13 +29,8 @@ import React, {
   ChangeEvent,
 } from 'react';
 import { useForm } from 'react-hook-form';
-import {
-  FaArrowRight,
-  FaBroom,
-  FaFile,
-  FaImage,
-  FaPaperclip,
-} from 'react-icons/fa';
+import { FaArrowRight, FaBroom, FaFile, FaImage } from 'react-icons/fa';
+import { MdOutlineAttachment } from 'react-icons/md';
 import { PostDocumentObject } from '../../models/Post';
 import { AnswerFormFields, CloudFile } from '../../types';
 
@@ -114,11 +110,13 @@ const AnswerPostModal = React.forwardRef<
     <Modal isOpen={isOpen} onClose={onClose} size="full">
       <ModalOverlay />
       <ModalContent>
-        <Kbd float="right" position="absolute" right="50px" top="15px">
-          esc
-        </Kbd>
+        <Show above="md">
+          <Kbd float="right" position="absolute" right="50px" top="15px">
+            esc
+          </Kbd>
+        </Show>
         <ModalCloseButton />
-        <ModalBody mt="3">
+        <ModalBody mt="3" overflowY="scroll">
           <Flex
             width="90%"
             direction={['column', 'column', 'row']}
@@ -146,26 +144,29 @@ const AnswerPostModal = React.forwardRef<
                 {!!props.post.attachments.length && (
                   <>
                     <Flex my="4">
-                      <FaPaperclip size={25} />
+                      <MdOutlineAttachment size={25} />
                       <Heading as="h3" size="md" ml="1">
                         Attachments
                       </Heading>
                     </Flex>
                     {props.post.attachments.map((f: CloudFile, i: number) => (
                       <Link href={f.url} key={f.public_id} passHref>
-                        <Button
-                          mb="3"
-                          as="a"
-                          leftIcon={
-                            f.url.includes('raw') ? (
-                              <FaFile size={18} />
-                            ) : (
-                              <FaImage size={18} />
-                            )
-                          }
-                        >
-                          <>Attachment {i + 1}</>
-                        </Button>
+                        <a target="_blank">
+                          <Button
+                            width="100%"
+                            mb="3"
+                            as="a"
+                            leftIcon={
+                              f.url.includes('raw') ? (
+                                <FaFile size={18} />
+                              ) : (
+                                <FaImage size={18} />
+                              )
+                            }
+                          >
+                            <>Attachment {i + 1}</>
+                          </Button>
+                        </a>
                       </Link>
                     ))}
                   </>

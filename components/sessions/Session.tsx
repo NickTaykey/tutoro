@@ -69,7 +69,7 @@ const Session: React.FC<Props> = ({
         justifyContent="space-between"
         alignItems="center"
       >
-        <Flex alignItems="center">
+        <Flex alignItems="center" direction={['column', 'row']}>
           <Flex alignItems="center">
             <Avatar
               src={

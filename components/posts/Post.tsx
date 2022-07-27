@@ -27,14 +27,13 @@ import {
   FaArchive,
   FaArrowUp,
   FaExpandArrowsAlt,
-  FaPaperclip,
   FaGlobe,
   FaPencilAlt,
   FaFile,
   FaImage,
   FaStar,
 } from 'react-icons/fa';
-import { MdError } from 'react-icons/md';
+import { MdError, MdOutlineAttachment } from 'react-icons/md';
 import AnswerPostModal from './AnswerPostModal';
 import type { AnswerPostModalHandler } from './AnswerPostModal';
 import Link from 'next/link';
@@ -101,7 +100,7 @@ const Post: React.FC<Props> = ({
                 <Box mb="3">
                   <Heading as="h2" size="md" mb="2">
                     <Flex>
-                      <FaPaperclip size={25} />
+                      <MdOutlineAttachment size={25} fontWeight="light" />
                       <Text ml="1">Attachments</Text>
                     </Flex>
                   </Heading>
@@ -151,12 +150,12 @@ const Post: React.FC<Props> = ({
               <Avatar
                 src={answeredBy.avatar?.url}
                 name={answeredBy.fullname}
-                mr="2"
+                mx="2"
               />
             )}
             {viewAsTutor && (
               <Avatar
-                mr="2"
+                mx="2"
                 src={creator.avatar?.url}
                 name={creator.fullname}
               />
@@ -167,7 +166,7 @@ const Post: React.FC<Props> = ({
                 <Avatar
                   src={(post.answeredBy as UserDocumentObject).avatar?.url}
                   name={(post.answeredBy as UserDocumentObject).fullname}
-                  mr="2"
+                  mx="2"
                 />
               )}
             <Heading as="h3" size="md">
@@ -177,12 +176,24 @@ const Post: React.FC<Props> = ({
                 post.status !== PostStatus.ANSWERED ? (
                 <Flex alignItems="center">
                   <FaGlobe size="50" />
-                  <Text ml="2">Global</Text>
+                  <Text mx="2">Global</Text>
                 </Flex>
               ) : (
                 answeredBy?.fullname
               )}
             </Heading>
+            <Show below="sm">
+              {isLatestCreated && post.checkoutCompleted && (
+                <Box>
+                  <FaStar size="25" color="var(--chakra-colors-red-500)" />
+                </Box>
+              )}
+              {!post.checkoutCompleted && (
+                <Box>
+                  <MdError size="25" color="var(--chakra-colors-red-500)" />
+                </Box>
+              )}
+            </Show>
           </Flex>
           <Flex my="3" alignItems="center">
             <Badge fontSize="0.8em" bg="purple.600" color="white" ml="3">
@@ -207,37 +218,41 @@ const Post: React.FC<Props> = ({
             </Badge>
           </Flex>
         </Flex>
-        {isLatestCreated && post.checkoutCompleted && (
-          <Box>
-            <FaStar size="25" color="var(--chakra-colors-red-500)" />
-          </Box>
-        )}
-        {!post.checkoutCompleted && (
-          <Tooltip
-            hasArrow
-            textAlign="center"
-            p="3"
-            label="The Post was not created because you did not complete the checkout process"
-            bg="red.100"
-            color="red.500"
-          >
-            <Box>
-              <MdError size="25" color="var(--chakra-colors-red-500)" />
-            </Box>
-          </Tooltip>
-        )}
+        <Flex alignItems="center">
+          <Show above="sm">
+            {isLatestCreated && post.checkoutCompleted && (
+              <Box>
+                <FaStar size="25" color="var(--chakra-colors-red-500)" />
+              </Box>
+            )}
+            {!post.checkoutCompleted && (
+              <Tooltip
+                hasArrow
+                textAlign="center"
+                p="3"
+                label="The Post was not created because you did not complete the checkout process"
+                bg="red.100"
+                color="red.500"
+              >
+                <Box>
+                  <MdError size="25" color="var(--chakra-colors-red-500)" />
+                </Box>
+              </Tooltip>
+            )}
+          </Show>
+          {post.answer && (
+            <Show above="sm">
+              <IconButton
+                width={['100%', 'auto']}
+                ml={[0, 3]}
+                aria-label="view tutor page"
+                icon={<FaExpandArrowsAlt />}
+                onClick={onOpen}
+              />
+            </Show>
+          )}
+        </Flex>
       </Flex>
-      {post.answer && (
-        <Show above="sm">
-          <IconButton
-            width={['100%', 'auto']}
-            ml={[0, 3]}
-            aria-label="view tutor page"
-            icon={<FaExpandArrowsAlt />}
-            onClick={onOpen}
-          />
-        </Show>
-      )}
       <Text mb="3" mt={[0, 3]} textAlign="justify">
         {showFullPostDescription || post.description.length < 100 ? (
           post.description
@@ -259,14 +274,14 @@ const Post: React.FC<Props> = ({
         </Box>
         <Flex direction="column" mt={[4, 0]}>
           <Flex mb="1">
-            <FaPaperclip size={25} />
+            <MdOutlineAttachment size={25} fontWeight="light" />
             <Text ml="2" fontWeight="bold">
               {post.attachments.length} Post attachments
             </Text>
           </Flex>
           {post.status === PostStatus.ANSWERED && (
             <Flex mb="1">
-              <FaPaperclip size={25} />
+              <MdOutlineAttachment size={25} fontWeight="light" />
               <Text ml="2" fontWeight="bold">
                 {post.attachments.length} Answer attachments
               </Text>

@@ -10,6 +10,7 @@ import {
   ModalContent,
   ModalHeader,
   ModalOverlay,
+  Show,
   useDisclosure,
 } from '@chakra-ui/react';
 import type { UpdateTutorObject } from './authenticated-user-context';
@@ -183,60 +184,62 @@ const AuthenticatedUserProvider: React.FC<{
         },
       }}
     >
-      {!user && (
-        <Modal isOpen={showSignInMenu} onClose={closeSignInMenu} isCentered>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalCloseButton />
-            <ModalHeader textAlign="center">Sign In to Tutoro</ModalHeader>
-            <ModalBody mb="5">
-              {providersList.map(provider => (
-                <Button
-                  width="100%"
-                  key={provider.name}
-                  leftIcon={<FcGoogle size="30" />}
-                  aria-label="Google OAuth Icon"
-                  onClick={() => signIn(provider.id)}
-                >
-                  Google
-                </Button>
-              ))}
-            </ModalBody>
-          </ModalContent>
-        </Modal>
-      )}
-      {user && (
-        <Modal
-          blockScrollOnMount={false}
-          isOpen={showUpdateAvatarMenu}
-          onClose={closeUpdateAvatarMenu}
-        >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Choose another avatar!</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <UpdateAvatarForm />
-            </ModalBody>
-          </ModalContent>
-        </Modal>
-      )}
-      {user && user.isTutor && (
-        <Modal
-          blockScrollOnMount={false}
-          isOpen={showUpdateTutorMenu}
-          onClose={closeUpdateTutorMenu}
-        >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Update your tutor profile</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <UpdateTutorForm />
-            </ModalBody>
-          </ModalContent>
-        </Modal>
-      )}
+      <Show breakpoint="(min-width: 767px)">
+        {!user && (
+          <Modal isOpen={showSignInMenu} onClose={closeSignInMenu} isCentered>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalCloseButton />
+              <ModalHeader textAlign="center">Sign In to Tutoro</ModalHeader>
+              <ModalBody mb="5">
+                {providersList.map(provider => (
+                  <Button
+                    width="100%"
+                    key={provider.name}
+                    leftIcon={<FcGoogle size="30" />}
+                    aria-label="Google OAuth Icon"
+                    onClick={() => signIn(provider.id)}
+                  >
+                    Google
+                  </Button>
+                ))}
+              </ModalBody>
+            </ModalContent>
+          </Modal>
+        )}
+        {user && (
+          <Modal
+            blockScrollOnMount={false}
+            isOpen={showUpdateAvatarMenu}
+            onClose={closeUpdateAvatarMenu}
+          >
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>Choose another avatar!</ModalHeader>
+              <ModalCloseButton />
+              <ModalBody>
+                <UpdateAvatarForm />
+              </ModalBody>
+            </ModalContent>
+          </Modal>
+        )}
+        {user && user.isTutor && (
+          <Modal
+            blockScrollOnMount={false}
+            isOpen={showUpdateTutorMenu}
+            onClose={closeUpdateTutorMenu}
+          >
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>Update your tutor profile</ModalHeader>
+              <ModalCloseButton />
+              <ModalBody>
+                <UpdateTutorForm />
+              </ModalBody>
+            </ModalContent>
+          </Modal>
+        )}
+      </Show>
       {children}
     </AuthenticatedUserContext.Provider>
   );
