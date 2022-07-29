@@ -117,7 +117,7 @@ const ReviewForm: React.FC<
       </FormControl>
       <Button
         type="submit"
-        colorScheme="blue"
+        variant="primary"
         my="3"
         width={['100%', 'auto']}
         leftIcon={<FaPen size="15" />}

@@ -5,15 +5,15 @@ import { ChakraProvider } from '@chakra-ui/react';
 import Head from 'next/head';
 import '../styles/react-datepicker.css';
 import Layout from '../components/global/Layout';
+import theme from '../theme';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <link rel="shortcut icon" href="/favicon.ico" />
         <title>Tutoro</title>
       </Head>
-      <ChakraProvider>
+      <ChakraProvider theme={theme}>
         <SessionProvider session={pageProps.session} refetchInterval={0}>
           <Layout>
             <Component {...pageProps} />

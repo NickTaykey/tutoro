@@ -32,7 +32,7 @@ export default async function handler(
             sessionPricePerHour,
             pricePerPost,
           } = sanitize(req.body);
-          if (globalPostsEnabled) {
+          if (typeof globalPostsEnabled !== 'undefined') {
             sessionUser.globalPostsEnabled = eval(globalPostsEnabled);
             sessionUser.save();
             return res.status(200);

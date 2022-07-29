@@ -842,4 +842,23 @@
 
 #date {
   width: 100%;
+  border-radius: 0;
+}
+
+.datepicker-container {
+  width: 100%;
+  font-size: 16;
+  font-weight: 700;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  letter-spacing: 1px;
+  box-shadow: -5px 5px 5px 1px rgba(0, 0, 0, 0.25);
+  width: 100%;
+}
+
+.datepicker-container:hover {
+  box-shadow: -2.5px 2.5px 2.5px 1px rgba(0, 0, 0, 0.125);
+}
+
+.datepicker-container > * {
+  border: none;
 }

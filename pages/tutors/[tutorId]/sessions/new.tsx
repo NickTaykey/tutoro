@@ -151,7 +151,7 @@ const Page: NextPage<Props> = ({ tutor }) => {
             Book a session with {tutor.fullname}
           </Heading>
           <Heading as="h3" size="md" my={3}>
-            Price: ${tutor.sessionPricePerHour * formFields.hours}
+            Price: €{tutor.sessionPricePerHour * formFields.hours}
           </Heading>
           <form onSubmit={formSubmitHandler} style={{ width: '100%' }}>
             {validationError && (
@@ -203,12 +203,14 @@ const Page: NextPage<Props> = ({ tutor }) => {
                 </NumberInputStepper>
               </NumberInput>
             </FormControl>
-            <Text mb="3">When would you like to have this session?</Text>
+            <Text mb="3" fontWeight="bold">
+              When would you like to have this session?
+            </Text>
             <FormControl>
-              <Text fontWeight="bold" mb="2">
+              <Text fontWeight="light" mb="2">
                 Date
               </Text>
-              <Box mb="4">
+              <Box mb="4" className="datepicker-container">
                 <ReactDatePicker
                   id="date"
                   selected={formFields.date}
@@ -216,7 +218,7 @@ const Page: NextPage<Props> = ({ tutor }) => {
                   minDate={new Date(Date.now())}
                 />
               </Box>
-              <FormLabel htmlFor="time" fontWeight="bold">
+              <FormLabel htmlFor="time" fontWeight="light">
                 Time
               </FormLabel>
               <Input
@@ -227,27 +229,29 @@ const Page: NextPage<Props> = ({ tutor }) => {
                 value={`${currentHour}:${currentMinutes}`}
               />
             </FormControl>
-            <Button
-              colorScheme="blue"
-              rightIcon={<FaArrowRight />}
-              type="submit"
-              width={['100%', null, 'auto']}
-              mt={3}
-              mr={[0, 2]}
-            >
-              Book session
-            </Button>
-            <Button
-              width={['100%', null, 'auto']}
-              colorScheme="red"
-              type="reset"
-              onClick={resetFormHandler}
-              rightIcon={<FaBroom />}
-              mt={3}
-              mr={[0, 2]}
-            >
-              Clear form
-            </Button>
+            <Box mt="3">
+              <Button
+                variant="primary"
+                rightIcon={<FaArrowRight />}
+                type="submit"
+                width={['100%', null, 'auto']}
+                mt={3}
+                mr={[0, 2]}
+              >
+                Book session
+              </Button>
+              <Button
+                width={['100%', null, 'auto']}
+                variant="danger"
+                type="reset"
+                onClick={resetFormHandler}
+                rightIcon={<FaBroom />}
+                mt={3}
+                mr={[0, 2]}
+              >
+                Clear form
+              </Button>
+            </Box>
           </form>
         </Flex>
       ) : (

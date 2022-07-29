@@ -24,6 +24,9 @@ interface AuthenticatedUserContextObject {
   closeUpdateTutorMenu(): void;
   updateAvatar(formData: FormData): Promise<null | UserUpdateError>;
   resetAvatar(): Promise<null | UserUpdateError>;
+  becomeTutor(
+    formData: Record<string, string | string[]>
+  ): Promise<null | UserUpdateError>;
   updateTutorProfile(
     newTutor: UpdateTutorObject
   ): Promise<null | UserUpdateError>;
@@ -48,6 +51,9 @@ const AuthenticatedUserContext =
       return Promise.resolve(null);
     },
     updateTutorProfile(newTutor: UpdateTutorObject) {
+      return Promise.resolve(null);
+    },
+    becomeTutor(formData: Record<string, string | string[]>) {
       return Promise.resolve(null);
     },
   });

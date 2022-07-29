@@ -57,10 +57,10 @@ export default function handler(
           query.push({ sessionPricePerHour: { $lte: +sessionPriceMax } });
         }
         if (+postPriceMin && +postPriceMin >= 5 && +postPriceMin <= 50) {
-          query.push({ sessionPricePerHour: { $gte: +postPriceMin } });
+          query.push({ pricePerPost: { $gte: +postPriceMin } });
         }
         if (+postPriceMax && +postPriceMax >= 5 && +postPriceMax <= 250) {
-          query.push({ sessionPricePerHour: { $lte: +postPriceMax } });
+          query.push({ pricePerPost: { $lte: +postPriceMax } });
         }
         if (+starsMin && +starsMin >= 0 && +starsMin <= 5) {
           query.push({ avgRating: { $gte: +starsMin } });

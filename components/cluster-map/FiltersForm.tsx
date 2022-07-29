@@ -1,10 +1,5 @@
-import type { TutorFilters, TutorFiltersFormFields } from '../../types';
+import type { TutorFiltersFormFields } from '../../types';
 import { useForm } from 'react-hook-form';
-
-interface Props {
-  allSubjects: string[];
-}
-
 import {
   Heading,
   FormControl,
@@ -29,8 +24,12 @@ import { FaBroom, FaFilter } from 'react-icons/fa';
 import { useContext } from 'react';
 import ClusterMapContext from '../../store/cluster-map-context';
 
+interface Props {
+  allSubjects: string[];
+}
+
 const FiltersForm: React.FC<Props> = props => {
-  const { register, handleSubmit, reset, setValue, watch } =
+  const { register, handleSubmit, setValue, watch, reset } =
     useForm<TutorFiltersFormFields>({
       defaultValues: {
         distance: 100,
@@ -48,6 +47,7 @@ const FiltersForm: React.FC<Props> = props => {
 
   const ctx = useContext(ClusterMapContext);
   const formResetHandler = () => {
+    reset();
     ctx.setFilteredPoints(null);
   };
 
@@ -89,15 +89,15 @@ const FiltersForm: React.FC<Props> = props => {
             }}
           >
             <RangeSliderTrack>
-              <RangeSliderFilledTrack />
+              <RangeSliderFilledTrack bgColor="primaryV1" />
             </RangeSliderTrack>
             <RangeSliderThumb index={0} borderColor="blackAlpha.500" />
             <RangeSliderThumb index={1} borderColor="blackAlpha.500" />
             <RangeSliderMark
-              borderRadius="md"
               value={watch('sessionPriceMin')}
               textAlign="center"
-              bg="blue.500"
+              bg="primaryV1"
+              borderRadius="none"
               color="white"
               mt="-10"
               ml="-5"
@@ -106,10 +106,10 @@ const FiltersForm: React.FC<Props> = props => {
               €{watch('sessionPriceMin')}
             </RangeSliderMark>
             <RangeSliderMark
-              borderRadius="md"
               value={watch('sessionPriceMax')}
               textAlign="center"
-              bg="blue.500"
+              bg="primaryV1"
+              borderRadius="none"
               color="white"
               mt="-10"
               ml="-5"
@@ -133,15 +133,15 @@ const FiltersForm: React.FC<Props> = props => {
             }}
           >
             <RangeSliderTrack>
-              <RangeSliderFilledTrack />
+              <RangeSliderFilledTrack bgColor="primaryV1" />
             </RangeSliderTrack>
             <RangeSliderThumb index={0} borderColor="blackAlpha.500" />
             <RangeSliderThumb index={1} borderColor="blackAlpha.500" />
             <RangeSliderMark
-              borderRadius="md"
               value={watch('postPriceMin')}
               textAlign="center"
-              bg="blue.500"
+              bg="primaryV1"
+              borderRadius="none"
               color="white"
               mt="-10"
               ml="-5"
@@ -150,10 +150,10 @@ const FiltersForm: React.FC<Props> = props => {
               €{watch('postPriceMin')}
             </RangeSliderMark>
             <RangeSliderMark
-              borderRadius="md"
               value={watch('postPriceMax')}
               textAlign="center"
-              bg="blue.500"
+              bg="primaryV1"
+              borderRadius="none"
               color="white"
               mt="-10"
               ml="-5"
@@ -167,6 +167,7 @@ const FiltersForm: React.FC<Props> = props => {
           <Text fontWeight="medium">Stars range</Text>
           <RangeSlider
             mt={10}
+            color="primaryV1"
             aria-label={['tutor-stars-min', 'tutor-stars-max']}
             min={0}
             max={5}
@@ -177,15 +178,14 @@ const FiltersForm: React.FC<Props> = props => {
             }}
           >
             <RangeSliderTrack>
-              <RangeSliderFilledTrack />
+              <RangeSliderFilledTrack bgColor="primaryV1" />
             </RangeSliderTrack>
             <RangeSliderThumb index={0} borderColor="blackAlpha.500" />
             <RangeSliderThumb index={1} borderColor="blackAlpha.500" />
             <RangeSliderMark
-              borderRadius="md"
               value={watch('starsMin')}
               textAlign="center"
-              bg="blue.500"
+              bg="primaryV1"
               color="white"
               mt="-10"
               ml="-5"
@@ -194,10 +194,9 @@ const FiltersForm: React.FC<Props> = props => {
               {watch('starsMin')}
             </RangeSliderMark>
             <RangeSliderMark
-              borderRadius="md"
               value={watch('starsMax')}
               textAlign="center"
-              bg="blue.500"
+              bg="primaryV1"
               color="white"
               mt="-10"
               ml="-5"
@@ -227,7 +226,7 @@ const FiltersForm: React.FC<Props> = props => {
         </FormControl>
         <FormControl my="4">
           <FormLabel htmlFor="tutor-distance">
-            Distance<strong>(km)</strong>
+            Distance <strong>(km)</strong>
           </FormLabel>
           <NumberInput defaultValue={0}>
             <NumberInputField {...register('distance', { min: 0 })} />
@@ -241,22 +240,17 @@ const FiltersForm: React.FC<Props> = props => {
           Find tutors by distance from a location
         </Text>
         <Button
-          colorScheme="blue"
+          variant="primary"
           type="submit"
           width="100%"
           mb="2"
-          textTransform="uppercase"
-          bgGradient="linear-gradient(to right, #1fa2ff, #12d8fa, #a6ffcb);"
-          _hover={{
-            bgGradient: 'linear-gradient(to right, #1a2980, #26d0ce);',
-          }}
           leftIcon={<FaFilter />}
         >
           Apply filters
         </Button>
         {ctx.filteredPoints?.features && (
           <Button
-            colorScheme="red"
+            variant="danger"
             type="reset"
             width="100%"
             onClick={formResetHandler}

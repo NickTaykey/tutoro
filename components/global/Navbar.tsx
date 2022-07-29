@@ -13,6 +13,8 @@ import {
   Box,
   useDisclosure,
   Button,
+  VStack,
+  HStack,
 } from '@chakra-ui/react';
 import { ClientSafeProvider, signIn, signOut } from 'next-auth/react';
 import {
@@ -75,10 +77,11 @@ const Navbar: React.FC = () => {
             fontFamily="itim"
             ml="1"
             _hover={{ cursor: 'pointer' }}
+            style={{ fontFamily: 'Inter', fontWeight: '500' }}
           >
             <Flex alignItems="center">
               <Logo width={60} height={60} />
-              <Text textTransform="uppercase" ml={2}>
+              <Text textTransform="capitalize" ml={2}>
                 tutoro
               </Text>
             </Flex>
@@ -87,6 +90,7 @@ const Navbar: React.FC = () => {
         <Show breakpoint="(max-width: 767px)">
           <IconButton
             ref={btnRef}
+            boxShadow="none"
             onClick={onDrawerOpen}
             size="lg"
             backgroundColor="white"
@@ -105,7 +109,9 @@ const Navbar: React.FC = () => {
           >
             <DrawerOverlay />
             <DrawerContent>
-              <DrawerCloseButton />
+              {!showUpdateAvatarMenu && !showUpdateTutorMenu && (
+                <DrawerCloseButton />
+              )}
               <DrawerBody>
                 {!user && providersList && (
                   <Flex height="100%" direction="column" justify="center">
@@ -132,14 +138,17 @@ const Navbar: React.FC = () => {
                     direction="column"
                     height="100%"
                   >
-                    <Link href="/users">
-                      <Avatar
-                        name={user.fullname}
-                        src={user.avatar?.url || ''}
-                        _hover={{ cursor: 'pointer' }}
-                        mb="2"
-                      />
-                    </Link>
+                    {!showUpdateAvatarMenu && !showUpdateTutorMenu && (
+                      <Link href="/users">
+                        <Avatar
+                          size="xl"
+                          name={user.fullname}
+                          src={user.avatar?.url || ''}
+                          _hover={{ cursor: 'pointer' }}
+                          mb="2"
+                        />
+                      </Link>
+                    )}
                     {showUpdateAvatarMenu ? (
                       <Flex
                         direction="column"
@@ -150,11 +159,13 @@ const Navbar: React.FC = () => {
                         width="100%"
                         mt={[2, 0]}
                       >
-                        <FaRegTimesCircle
-                          size="25"
+                        <Box
+                          color="gray.500"
                           onClick={closeUpdateAvatarMenu}
-                          style={{ alignSelf: 'end' }}
-                        />
+                          alignSelf="end"
+                        >
+                          <FaRegTimesCircle size="25" />
+                        </Box>
                         <Box my="3">
                           <UpdateAvatarForm />
                         </Box>
@@ -169,21 +180,22 @@ const Navbar: React.FC = () => {
                         width="100%"
                         mt={[2, 0]}
                       >
-                        <FaRegTimesCircle
-                          size="25"
-                          onClick={closeUpdateTutorMenu}
-                          style={{ alignSelf: 'end' }}
-                        />
+                        <Box color="gray.500" alignSelf="end">
+                          <FaRegTimesCircle
+                            size="25"
+                            onClick={closeUpdateTutorMenu}
+                          />
+                        </Box>
                         <Box my="3">
                           <UpdateTutorForm />
                         </Box>
                       </Flex>
                     ) : (
-                      <>
+                      <VStack width="100%" spacing="4">
                         <IconButton
                           width="100%"
                           icon={<FaRegUserCircle size="25" />}
-                          colorScheme="cyan"
+                          variant="cyan"
                           color="white"
                           onClick={openUpdateAvatarMenu}
                           aria-label="Update avatar"
@@ -193,7 +205,7 @@ const Navbar: React.FC = () => {
                           <IconButton
                             width="100%"
                             icon={<FaListUl size="25" />}
-                            colorScheme="orange"
+                            variant="warning"
                             onClick={openUpdateTutorMenu}
                             aria-label="Update avatar"
                             mt="2"
@@ -207,7 +219,7 @@ const Navbar: React.FC = () => {
                           aria-label="Sign out button"
                           mt="2"
                         />
-                      </>
+                      </VStack>
                     )}
                   </Flex>
                 )}
@@ -229,43 +241,36 @@ const Navbar: React.FC = () => {
             </Flex>
           )}
           {user && (
-            <>
-              <Flex alignItems="center">
-                <Link href="/users">
-                  <Avatar
-                    mr="2"
-                    name={user.fullname}
-                    src={user.avatar?.url || ''}
-                    _hover={{ cursor: 'pointer' }}
-                  />
-                </Link>
+            <HStack spacing="3" mr="3">
+              <Link href="/users">
+                <Avatar name={user.fullname} src={user.avatar?.url || ''} />
+              </Link>
+              <IconButton
+                icon={<FaRegUserCircle size="25" />}
+                variant="cyan"
+                color="white"
+                onClick={openUpdateAvatarMenu}
+                aria-label="Update avatar"
+                mr={2}
+              />
+              {user.isTutor && (
                 <IconButton
-                  icon={<FaRegUserCircle size="25" />}
-                  colorScheme="cyan"
-                  color="white"
-                  onClick={openUpdateAvatarMenu}
+                  width="100%"
+                  icon={<FaListUl size="25" />}
+                  variant="warning"
+                  onClick={openUpdateTutorMenu}
                   aria-label="Update avatar"
                   mr={2}
                 />
-                {user.isTutor && (
-                  <IconButton
-                    width="100%"
-                    icon={<FaListUl size="25" />}
-                    colorScheme="orange"
-                    onClick={openUpdateTutorMenu}
-                    aria-label="Update avatar"
-                    mr={2}
-                  />
-                )}
-                <IconButton
-                  icon={<FaSignOutAlt size="25" />}
-                  colorScheme="gray"
-                  onClick={() => signOut()}
-                  aria-label="Sign out button"
-                  mr={4}
-                />
-              </Flex>
-            </>
+              )}
+              <IconButton
+                icon={<FaSignOutAlt size="25" />}
+                colorScheme="gray"
+                onClick={() => signOut()}
+                aria-label="Sign out button"
+                mr={4}
+              />
+            </HStack>
           )}
         </Show>
       </Flex>

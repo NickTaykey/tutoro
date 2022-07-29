@@ -21,6 +21,7 @@ import {
   Show,
 } from '@chakra-ui/react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import React, {
   useState,
   useImperativeHandle,
@@ -51,6 +52,7 @@ const AnswerPostModal = React.forwardRef<
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [validationError, setValidationError] = useState<string | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const router = useRouter();
 
   const {
     register,
@@ -116,7 +118,7 @@ const AnswerPostModal = React.forwardRef<
           </Kbd>
         </Show>
         <ModalCloseButton />
-        <ModalBody mt="3" overflowY="scroll">
+        <ModalBody mt="3" overflowY="auto">
           <Flex
             width="90%"
             direction={['column', 'column', 'row']}
@@ -150,24 +152,22 @@ const AnswerPostModal = React.forwardRef<
                       </Heading>
                     </Flex>
                     {props.post.attachments.map((f: CloudFile, i: number) => (
-                      <Link href={f.url} key={f.public_id} passHref>
-                        <a target="_blank">
-                          <Button
-                            width="100%"
-                            mb="3"
-                            as="a"
-                            leftIcon={
-                              f.url.includes('raw') ? (
-                                <FaFile size={18} />
-                              ) : (
-                                <FaImage size={18} />
-                              )
-                            }
-                          >
-                            <>Attachment {i + 1}</>
-                          </Button>
+                      <Button
+                        width="100%"
+                        mb="3"
+                        key={f.public_id}
+                        leftIcon={
+                          f.url.includes('raw') ? (
+                            <FaFile size={18} />
+                          ) : (
+                            <FaImage size={18} />
+                          )
+                        }
+                      >
+                        <a href={f.url} target="_blank">
+                          <>Attachment {i + 1}</>
                         </a>
-                      </Link>
+                      </Button>
                     ))}
                   </>
                 )}
@@ -249,7 +249,7 @@ const AnswerPostModal = React.forwardRef<
                         disabled={
                           filesList && filesList.length > 4 ? true : false
                         }
-                        colorScheme="blue"
+                        variant="primary"
                         type="submit"
                         w="100%"
                         mt={[3, 3, 0, 0, 0]}
@@ -260,7 +260,7 @@ const AnswerPostModal = React.forwardRef<
                       </Button>
                     </Tooltip>
                     <Button
-                      colorScheme="red"
+                      variant="danger"
                       type="reset"
                       rightIcon={<FaBroom />}
                       w="100%"

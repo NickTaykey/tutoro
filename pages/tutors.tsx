@@ -13,30 +13,26 @@ import {
   Grid,
   GridItem,
   Box,
-  Flex,
   Alert,
   AlertIcon,
   Heading,
   Button,
   Tooltip,
 } from '@chakra-ui/react';
-import React from 'react';
-import Layout from '../components/global/Layout';
+import React, { useContext } from 'react';
 
 interface Props {
   points: PointsCollection;
-  currentUser: UserDocumentObject | null;
   allSubjects: string[];
 }
 
-const Home: NextPage<Props> = ({ currentUser, points, allSubjects }) => {
+const Home: NextPage<Props> = ({ points, allSubjects }) => {
+  const { user, openSignInMenu } = useContext(AuthenticatedUserContext);
   const { push, query } = useRouter();
   return (
     <ClusterMapContextProvider
       points={points}
-      authenticatedTutor={
-        currentUser?.isTutor ? getTutorGeoJSON(currentUser) : null
-      }
+      authenticatedTutor={user?.isTutor ? getTutorGeoJSON(user) : null}
     >
       <ClusterMapContext.Consumer>
         {clusterMapCtx => (
@@ -60,7 +56,7 @@ const Home: NextPage<Props> = ({ currentUser, points, allSubjects }) => {
               )}
               <Grid
                 templateColumns="repeat(12, 1fr)"
-                templateRows="repeat(12, 1fr)"
+                templateRows="repeat(11, 1fr)"
                 gap={[4, null, null, 6]}
                 my={4}
               >
@@ -68,14 +64,48 @@ const Home: NextPage<Props> = ({ currentUser, points, allSubjects }) => {
                   colSpan={[12, null, null, 8, 9]}
                   rowSpan={[5, null, 12]}
                 >
-                  <Flex
+                  <Grid
+                    templateColumns="1fr"
+                    templateRows="10fr 2fr"
                     alignItems={[null, null, null, 'center']}
                     justifyContent={[null, null, null, 'center']}
                     width="100%"
                     height="100%"
+                    gap="0"
                   >
-                    <ClusterMap />
-                  </Flex>
+                    <GridItem
+                      height="100%"
+                      boxShadow={'-5px 5px 5px 1px rgba(0, 0, 0, 0.25)'}
+                    >
+                      <ClusterMap />
+                    </GridItem>
+                    <GridItem>
+                      <Box>
+                        <Heading as="h2" size="lg" my="3">
+                          Not sure who to ask?
+                        </Heading>
+                        <Tooltip
+                          hasArrow
+                          label="Our first Tutor available will answer your Post"
+                          bg="gray.300"
+                          color="black"
+                          placement="right"
+                        >
+                          <Button
+                            width={['100%', null, 'auto']}
+                            onClick={() =>
+                              user
+                                ? push('/tutors/global/posts/new')
+                                : openSignInMenu()
+                            }
+                            leftIcon={<FaGlobe />}
+                          >
+                            New global post
+                          </Button>
+                        </Tooltip>
+                      </Box>
+                    </GridItem>
+                  </Grid>
                 </GridItem>
                 <GridItem
                   colSpan={[12, null, null, 4, 3]}
@@ -84,27 +114,6 @@ const Home: NextPage<Props> = ({ currentUser, points, allSubjects }) => {
                   <FiltersForm allSubjects={allSubjects} />
                 </GridItem>
               </Grid>
-              <Box>
-                <Heading as="h2" size="lg">
-                  Not sure who to ask?
-                </Heading>
-                <Tooltip
-                  hasArrow
-                  label="Our first Tutor available will answer your Post"
-                  bg="gray.300"
-                  color="black"
-                  placement="right"
-                >
-                  <Button
-                    my="3"
-                    width={['100%', null, 'auto']}
-                    onClick={() => push('/tutors/global/posts/new')}
-                    leftIcon={<FaGlobe />}
-                  >
-                    Create a global post
-                  </Button>
-                </Tooltip>
-              </Box>
             </Box>
           </>
         )}
@@ -124,6 +133,7 @@ import ClusterMapContext from '../store/cluster-map-context';
 import type { ReviewDocument, ReviewDocumentObject } from '../models/Review';
 import { useRouter } from 'next/router';
 import { FaGlobe } from 'react-icons/fa';
+import AuthenticatedUserContext from '../store/authenticated-user-context';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
   const populateReviewConfig = {
@@ -164,23 +174,9 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
     )
   );
   if (session && session?.user?.email) {
-    const currentUser = await User.findOne({
-      email: session.user.email,
-    })
-      .populate(populateReviewConfig)
-      .exec();
-
-    const currentUserObject = getUserDocumentObject(
-      currentUser as UserDocument
-    );
-    currentUserObject.reviews = currentUser.reviews.map(
-      getReviewDocumentObject
-    );
-
     return {
       props: {
         allSubjects,
-        currentUser: currentUserObject,
         points: getUsersPointsCollection(populatedTutorObjects),
       },
     };
@@ -188,7 +184,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
   return {
     props: {
       allSubjects,
-      currentUser: null,
       points: getUsersPointsCollection(populatedTutorObjects),
     },
   };

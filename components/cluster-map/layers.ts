@@ -1,4 +1,5 @@
 import type { LayerProps } from 'react-map-gl';
+import colors from '../../theme/colors';
 
 export const clusterLayer: LayerProps = {
   id: 'clusters',
@@ -9,7 +10,7 @@ export const clusterLayer: LayerProps = {
     'circle-color': [
       'step',
       ['get', 'point_count'],
-      '#51bbd6',
+      colors.primaryV1,
       100,
       '#f1f075',
       750,
@@ -37,7 +38,7 @@ export const unclusteredPointLayer: LayerProps = {
   source: 'tutors',
   filter: ['!', ['has', 'point_count']],
   paint: {
-    'circle-color': '#11b4da',
+    'circle-color': colors.primaryV3,
     'circle-radius': 8,
     'circle-stroke-width': 1,
     'circle-stroke-color': '#fff',

@@ -19,9 +19,7 @@ import {
   Box,
   Spinner,
 } from '@chakra-ui/react';
-import Layout from '../global/Layout';
 import { FaArrowRight, FaBroom } from 'react-icons/fa';
-import { useSession } from 'next-auth/react';
 
 interface Props {
   subjects?: string[];
@@ -107,16 +105,15 @@ const NewPostForm: React.FC<Props> = props => {
           <Heading as="h1" size="lg" textAlign="center">
             Create a Post
           </Heading>
-          <Text my="3" fontWeight="light" textAlign="center">
-            You can find answer to specific questions or have your homework
-            reviewd.
+          <Text my="3" fontWeight="light" textAlign="center" color="gray.500">
+            Find answer to specific questions or have homework reviewed.
           </Text>
           <Heading as="h2" size="md" textAlign="center">
             Price: €{props.tutor?.pricePerPost || 20}
           </Heading>
           {query.tutorId === 'global' && (
-            <Text my="3" fontWeight="bold" textAlign="center">
-              You will be answered by one of our qualified tutors.
+            <Text my="3" fontWeight="light" textAlign="center" color="gray.500">
+              Be answered by a qualified Tutor.
             </Text>
           )}
           <form
@@ -129,9 +126,7 @@ const NewPostForm: React.FC<Props> = props => {
               </Alert>
             )}
             <FormControl mb="4">
-              <FormLabel htmlFor="post-subject" fontWeight="bold">
-                Subject
-              </FormLabel>
+              <FormLabel htmlFor="post-subject">Subject</FormLabel>
               <Select id="post-subject" {...register('subject')}>
                 {props.subjects.map(s => (
                   <option key={s} value={s}>
@@ -141,9 +136,7 @@ const NewPostForm: React.FC<Props> = props => {
               </Select>
             </FormControl>
             <FormControl mb="4">
-              <FormLabel htmlFor="post-description" fontWeight="bold">
-                Description
-              </FormLabel>
+              <FormLabel htmlFor="post-description">Description</FormLabel>
               <Textarea
                 id="post-description"
                 {...register('description', { required: true })}
@@ -155,7 +148,7 @@ const NewPostForm: React.FC<Props> = props => {
                   Maximum 4 attachments
                 </Alert>
               )}
-              <FormLabel htmlFor="attachments-input" fontWeight="bold">
+              <FormLabel htmlFor="attachments-input">
                 Optional, any attachments to share?
               </FormLabel>
               <Input
@@ -164,7 +157,7 @@ const NewPostForm: React.FC<Props> = props => {
                 id="attachments-input"
                 onChange={onFileUploadChange}
               />
-              <Text fontWeight="bold" my="2">
+              <Text fontWeight="light" my="2" color="gray.500">
                 Only images, PDFs and office format files
               </Text>
             </FormControl>
@@ -185,7 +178,7 @@ const NewPostForm: React.FC<Props> = props => {
               <Box mt="3">
                 <Button
                   disabled={filesList && filesList.length > 4 ? true : false}
-                  colorScheme="blue"
+                  variant="primary"
                   type="submit"
                   width={['100%', null, 'auto']}
                   mr={[0, 2]}
@@ -194,7 +187,7 @@ const NewPostForm: React.FC<Props> = props => {
                   Create Post
                 </Button>
                 <Button
-                  colorScheme="red"
+                  variant="danger"
                   type="reset"
                   onClick={formResetHandler}
                   rightIcon={<FaBroom />}

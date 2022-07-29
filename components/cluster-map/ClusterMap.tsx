@@ -1,4 +1,4 @@
-import { useState, useRef, useContext } from 'react';
+import { useState, useRef, useContext, useEffect } from 'react';
 import Map, {
   GeolocateControl,
   FullscreenControl,
@@ -20,6 +20,8 @@ import ClusterMapContext from '../../store/cluster-map-context';
 import type { MapRef, GeoJSONSource } from 'react-map-gl';
 import type { MapLayerMouseEvent } from 'mapbox-gl';
 import type { TutorObjectGeoJSON } from '../../types';
+import colors from '../../theme/colors';
+import mapboxgl from 'mapbox-gl';
 
 const ClusterMap: React.FC = () => {
   const [popupInfo, setPopupInfo] = useState<TutorObjectGeoJSON | null>(null);
@@ -60,6 +62,10 @@ const ClusterMap: React.FC = () => {
   const { points, filteredPoints, authenticatedTutor } =
     useContext(ClusterMapContext);
 
+  useEffect(() => {
+    mapRef?.current?.resize();
+  }, [points, filteredPoints]);
+
   return (
     <Map
       initialViewState={{
@@ -85,7 +91,7 @@ const ClusterMap: React.FC = () => {
       onClick={onMapClick}
       onLoad={onMapLoad}
       ref={mapRef}
-      style={{ minHeight: '300px' }}
+      style={{ minHeight: '100%', height: '100%' }}
       mapStyle="mapbox://styles/mapbox/streets-v10"
       mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
       testMode={true}
@@ -107,7 +113,7 @@ const ClusterMap: React.FC = () => {
           longitude={authenticatedTutor.geometry.coordinates[0]}
           latitude={authenticatedTutor.geometry.coordinates[1]}
           anchor="top"
-          color="var(--chakra-colors-red-500)"
+          color={colors.dangerV1}
           onClick={() => setPopupInfo(authenticatedTutor)}
         />
       )}

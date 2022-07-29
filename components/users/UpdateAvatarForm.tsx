@@ -12,7 +12,12 @@ import {
   Input,
   Spinner,
 } from '@chakra-ui/react';
-import { FaBroom, FaFileUpload, FaTrash } from 'react-icons/fa';
+import {
+  FaBroom,
+  FaFileUpload,
+  FaRegTimesCircle,
+  FaTrash,
+} from 'react-icons/fa';
 import ClusterMapContext from '../../store/cluster-map-context';
 import AuthenticatedUserContext from '../../store/authenticated-user-context';
 
@@ -117,6 +122,8 @@ const UpdateAvatarForm: React.FC = () => {
             type="file"
             name="avatar"
             my="2"
+            fontWeight="600"
+            fontSize="14"
             onChange={onFileUploadChange}
           />
           <FormHelperText>Allowed formats: jpg, jpeg and png</FormHelperText>
@@ -141,7 +148,7 @@ const UpdateAvatarForm: React.FC = () => {
                 width="100%"
                 mb="2"
                 aria-label="Clear avatar input"
-                colorScheme="red"
+                variant="danger"
                 icon={<FaBroom />}
                 onClick={onCancelFile}
               />
@@ -149,7 +156,7 @@ const UpdateAvatarForm: React.FC = () => {
                 aria-label="Upload image"
                 width="100%"
                 mb="2"
-                colorScheme="blue"
+                variant="primary"
                 onClick={onUploadFile}
                 icon={<FaFileUpload />}
               />
@@ -159,10 +166,11 @@ const UpdateAvatarForm: React.FC = () => {
       )}
       {user?.avatar?.url && !isUploading && (
         <Button
-          mt="2"
+          my="4"
           leftIcon={<FaTrash />}
-          color="red"
+          color="dangerV1"
           variant="outline"
+          textTransform="capitalize"
           onClick={resetDefaultAvatar}
         >
           Reset default avatar

@@ -135,6 +135,27 @@ const AuthenticatedUserProvider: React.FC<{
             }
           });
         },
+        becomeTutor(formData: Record<string, string[]>) {
+          return new Promise(async (resolve, reject) => {
+            if (authenticatedUserState) {
+              const res = await ApiHelper(
+                `/api/tutors/${authenticatedUserState._id}`,
+                formData,
+                'PUT'
+              );
+              if (res.errorMessage)
+                return reject({
+                  errorMessage:
+                    'Unexpected server side error, impossible to update your profile, try again later...',
+                });
+              dispatchAuthenticatedUserAction({
+                type: AuthenticatedUserActionTypes.UPDATE_TUTOR,
+                payload: res,
+              });
+              return resolve(null);
+            }
+          });
+        },
         resetAvatar() {
           return new Promise(async (resolve, reject) => {
             if (authenticatedUserState) {

@@ -65,8 +65,8 @@ const seeder = async () => {
     const tutor = new User({
       fullname: faker.name.findName(),
       email: faker.internet.email(),
-      sessionPricePerHour: Math.trunc(Math.random() * 250) + 6,
-      pricePerPost: Math.trunc(Math.random() * 50) + 6,
+      sessionPricePerHour: Math.trunc(Math.random() * 245) + 6,
+      pricePerPost: Math.trunc(Math.random() * 45) + 6,
       subjects: getRandomSubjects(),
       bio: faker.lorem.lines(1),
       location: faker.lorem.words(2),

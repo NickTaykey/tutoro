@@ -8,18 +8,16 @@ import {
   FormHelperText,
   FormLabel,
   Heading,
+  IconButton,
   Input,
-  InputGroup,
-  InputRightAddon,
-  ListItem,
   Slider,
   SliderFilledTrack,
   SliderThumb,
   SliderTrack,
   Textarea,
-  UnorderedList,
+  VStack,
 } from '@chakra-ui/react';
-import { FaPlus, FaTrashAlt } from 'react-icons/fa';
+import { FaCheck, FaPlus, FaTrashAlt } from 'react-icons/fa';
 import { useForm, useFieldArray, SubmitHandler } from 'react-hook-form';
 import ClusterMapContext from '../../store/cluster-map-context';
 import AuthenticatedUserContext from '../../store/authenticated-user-context';
@@ -33,16 +31,17 @@ type FormValues = {
 };
 
 const UpdateAvatarForm: React.FC = () => {
-  const { updateTutorProfile } = useContext(AuthenticatedUserContext);
+  const { updateTutorProfile, closeUpdateTutorMenu } = useContext(
+    AuthenticatedUserContext
+  );
   const clusterMapCtx = useContext(ClusterMapContext);
   const { user } = useContext(AuthenticatedUserContext);
   const [errorAlert, setErrorAlert] = useState<string | null>(null);
-  const [successAlert, setSuccessAlert] = useState<string | null>(null);
   const {
     register,
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, touchedFields },
     setValue,
     watch,
   } = useForm<FormValues>({
@@ -64,50 +63,50 @@ const UpdateAvatarForm: React.FC = () => {
   });
 
   const onSubmit: SubmitHandler<FormValues> = data => {
-    updateTutorProfile({
-      ...data,
-      subjects: data.subjects.map(s => s.subject),
-    })
-      .then(() => {
-        setErrorAlert(null);
-        setSuccessAlert('Your profile has been successfully updated!');
-        clusterMapCtx.updateAuthenticatedTutorLocation(
-          user!.location,
-          user!.geometry!.coordinates
-        );
+    if (Object.keys(touchedFields).length) {
+      updateTutorProfile({
+        ...data,
+        subjects: data.subjects.map(s => s.subject),
       })
-      .catch(({ errorMessage }) => setErrorAlert(errorMessage));
+        .then(() => {
+          setErrorAlert(null);
+          clusterMapCtx.updateAuthenticatedTutorLocation(
+            user!.location,
+            user!.geometry!.coordinates
+          );
+        })
+        .catch(({ errorMessage }) => setErrorAlert(errorMessage));
+      return;
+    }
+    closeUpdateTutorMenu();
   };
 
   return (
-    <Box height={['70vh', 'auto']} overflowY={['scroll', 'auto']}>
+    <Box height={['70vh', null, 'auto']} overflowY="auto" p="3">
       <form onSubmit={handleSubmit(onSubmit)}>
-        {(!!errorAlert || !!successAlert) && (
-          <Alert status={errorAlert ? 'error' : 'success'} mb={3}>
-            {errorAlert || successAlert}
-          </Alert>
-        )}
-        {!!Object.keys(errors).length && (
+        {(!!Object.keys(errors).length || errorAlert) && (
           <Alert status="error" my={3}>
-            {Object.keys(errors)[0] === 'bio'
-              ? 'Provide some words sbout you'
-              : Object.keys(errors)[0] === 'location'
-              ? 'Specify a place where you will host sessions'
-              : `Provide your ${Object.keys(errors)[0]}`}
+            {!!Object.keys(errors).length
+              ? Object.keys(errors)[0] === 'bio'
+                ? 'Provide some words sbout you'
+                : Object.keys(errors)[0] === 'location'
+                ? 'Specify a place where you will host sessions'
+                : `Provide your ${Object.keys(errors)[0]}`
+              : errorAlert}
           </Alert>
         )}
         <FormControl mb="3">
           <FormLabel htmlFor="bio">Some words about you</FormLabel>
           <Textarea id="bio" {...register('bio', { required: true })} />
         </FormControl>
-        <FormControl mb="2">
+        <FormControl mb="3">
           <FormLabel htmlFor="tutor-location">Location</FormLabel>
           <Input type="text" id="tutor-location" {...register('location')} />
-          <FormHelperText>
+          <FormHelperText mt="3">
             Where will you host your tutoring sessions?
           </FormHelperText>
         </FormControl>
-        <FormControl mb="2">
+        <FormControl mb="3">
           <FormLabel htmlFor="tutor-price-session">
             Your price per hour of session
           </FormLabel>
@@ -128,7 +127,7 @@ const UpdateAvatarForm: React.FC = () => {
             <SliderThumb />
           </Slider>
         </FormControl>
-        <FormControl mb="2">
+        <FormControl mb="3">
           <FormLabel htmlFor="post-price">Your price per post</FormLabel>
           <Heading as="h3" size="md">
             €{watch('pricePerPost')}
@@ -147,47 +146,48 @@ const UpdateAvatarForm: React.FC = () => {
             <SliderThumb />
           </Slider>
         </FormControl>
-        <FormControl mb="3">
+        <FormControl>
           <FormLabel id="subjects-label">What are you subjects?</FormLabel>
-          <UnorderedList styleType="none" mx="0">
+          <VStack spacing={3}>
             {subjects.map((subject, index, subjects) => (
-              <ListItem key={subject.id} mb="2">
-                <Flex>
-                  <InputGroup>
-                    <Input
-                      aria-labelledby="subjects-label"
-                      {...register(`subjects.${index}.subject`, {
-                        required: true,
-                      })}
-                    />
-                    {index && (
-                      <InputRightAddon
-                        bg="red.500"
-                        color="white"
-                        _hover={{ bg: 'red.600', cursor: 'pointer' }}
-                        onClick={() => subjects.length > 1 && remove(index)}
-                        children={<FaTrashAlt />}
-                      />
-                    )}
-                  </InputGroup>
-                </Flex>
-              </ListItem>
+              <Flex width="100%" key={subject.id}>
+                <Input
+                  aria-labelledby="subjects-label"
+                  {...register(`subjects.${index}.subject`, {
+                    required: true,
+                  })}
+                />
+                {!!index && (
+                  <IconButton
+                    aria-label="delete subject"
+                    ml="2"
+                    onClick={() => subjects.length > 1 && remove(index)}
+                    children={<FaTrashAlt />}
+                    variant="danger"
+                  />
+                )}
+              </Flex>
             ))}
-          </UnorderedList>
+          </VStack>
           <Button
             width={['100%', null, 'auto']}
-            bg="green.500"
-            color="white"
-            _hover={{ bg: 'green.600' }}
+            variant="success"
             type="button"
             onClick={() => append({ subject: '' })}
             leftIcon={<FaPlus />}
             aria-label="Add another subject"
+            mt="3"
           >
             Add a subject
           </Button>
         </FormControl>
-        <Button type="submit" colorScheme="blue" width={['100%', null, 'auto']}>
+        <Button
+          type="submit"
+          variant="primary"
+          width={['100%', null, 'auto']}
+          my="3"
+          leftIcon={<FaCheck />}
+        >
           Update
         </Button>
       </form>

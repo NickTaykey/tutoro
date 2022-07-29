@@ -7,6 +7,7 @@ import {
   Badge,
   IconButton,
   Tooltip,
+  Show,
 } from '@chakra-ui/react';
 import { useContext, useState } from 'react';
 import { FaArchive, FaArrowUp, FaCheck, FaStar } from 'react-icons/fa';
@@ -14,6 +15,7 @@ import { MdError } from 'react-icons/md';
 import type { SessionDocumentObject } from '../../models/Session';
 import type { UserDocumentObject } from '../../models/User';
 import SessionsContext from '../../store/sessions-context';
+import colors from '../../theme/colors';
 import { SessionStatus } from '../../types';
 
 interface Props {
@@ -83,9 +85,17 @@ const Session: React.FC<Props> = ({
                   : tutor.fullname
               }
             />
-            <Heading as="h3" size="md" ml="3" mt={[3, 0, 0, 0, 0]}>
+            <Heading as="h3" size="md" mx="1">
               {viewAsTutor ? user.fullname : tutor.fullname}
             </Heading>
+            <Show below="sm">
+              {isLatestCreated && session.checkoutCompleted && (
+                <FaStar size="25" color={colors.dangerV1} />
+              )}
+              {!session.checkoutCompleted && (
+                <MdError size="25" color={colors.dangerV1} />
+              )}
+            </Show>
           </Flex>
           <Flex my="3">
             <Badge fontSize="0.8em" bg="purple.600" color="white" ml="3">
@@ -110,25 +120,27 @@ const Session: React.FC<Props> = ({
             </Badge>
           </Flex>
         </Flex>
-        {isLatestCreated && session.checkoutCompleted && (
-          <Box>
-            <FaStar size="25" color="var(--chakra-colors-red-500)" />
-          </Box>
-        )}
-        {!session.checkoutCompleted && (
-          <Tooltip
-            hasArrow
-            textAlign="center"
-            p="3"
-            label="The Session was not booked because you did not complete the checkout process"
-            bg="red.100"
-            color="red.500"
-          >
+        <Show above="sm">
+          {isLatestCreated && session.checkoutCompleted && (
             <Box>
-              <MdError size="25" color="var(--chakra-colors-red-500)" />
+              <FaStar size="25" color={colors.dangerV1} />
             </Box>
-          </Tooltip>
-        )}
+          )}
+          {!session.checkoutCompleted && (
+            <Tooltip
+              hasArrow
+              textAlign="center"
+              p="3"
+              label="The Session was not booked because you did not complete the checkout process"
+              bg="red.100"
+              color="red.500"
+            >
+              <Box>
+                <MdError size="25" color={colors.dangerV1} />
+              </Box>
+            </Tooltip>
+          )}
+        </Show>
       </Flex>
       <Text mb="3" mt={[0, 3]}>
         {showFullTopic || session.topic.length < 100 ? (
@@ -157,14 +169,14 @@ const Session: React.FC<Props> = ({
           <IconButton
             onClick={resetSessionHandler}
             aria-label="reset session status"
-            colorScheme="blue"
+            variant="primary"
             icon={<FaArrowUp />}
           />
         )}
         {viewAsTutor && session.status === SessionStatus.NOT_APPROVED && (
           <IconButton
             aria-label="approve session"
-            colorScheme="green"
+            variant="success"
             onClick={approveSessionHandler}
             icon={<FaCheck />}
             mb={[1, 0]}
@@ -174,7 +186,7 @@ const Session: React.FC<Props> = ({
         {viewAsTutor && session.status !== SessionStatus.REJECTED && (
           <IconButton
             aria-label="reject session"
-            colorScheme="red"
+            variant="danger"
             onClick={rejectSessionHandler}
             icon={<FaArchive />}
             mb={[1, 0]}

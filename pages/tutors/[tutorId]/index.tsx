@@ -32,8 +32,6 @@ import { authOptions } from '../../api/auth/[...nextauth]';
 import connectDB from '../../../middleware/mongo-connect';
 import { getServerSession } from 'next-auth';
 import mongoose, { ObjectId } from 'mongoose';
-import { PostDocument } from '../../../models/Post';
-import Layout from '../../../components/global/Layout';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
   const [session] = await Promise.all([

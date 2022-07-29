@@ -37,6 +37,7 @@ import { MdError, MdOutlineAttachment } from 'react-icons/md';
 import AnswerPostModal from './AnswerPostModal';
 import type { AnswerPostModalHandler } from './AnswerPostModal';
 import Link from 'next/link';
+import colors from '../../theme/colors';
 
 interface Props {
   post: PostDocumentObject;
@@ -110,6 +111,7 @@ const Post: React.FC<Props> = ({
                         <Button
                           mb="3"
                           as="a"
+                          textTransform="capitalize"
                           leftIcon={
                             f.url.includes('raw') ? (
                               <FaFile size={18} />
@@ -150,12 +152,12 @@ const Post: React.FC<Props> = ({
               <Avatar
                 src={answeredBy.avatar?.url}
                 name={answeredBy.fullname}
-                mx="2"
+                mx={[0, 2]}
               />
             )}
             {viewAsTutor && (
               <Avatar
-                mx="2"
+                mx={[0, 2]}
                 src={creator.avatar?.url}
                 name={creator.fullname}
               />
@@ -166,10 +168,10 @@ const Post: React.FC<Props> = ({
                 <Avatar
                   src={(post.answeredBy as UserDocumentObject).avatar?.url}
                   name={(post.answeredBy as UserDocumentObject).fullname}
-                  mx="2"
+                  mx={[0, 2]}
                 />
               )}
-            <Heading as="h3" size="md">
+            <Heading as="h3" size="md" mx="2">
               {viewAsTutor ? (
                 creator.fullname
               ) : post.type === PostType.GLOBAL &&
@@ -185,12 +187,12 @@ const Post: React.FC<Props> = ({
             <Show below="sm">
               {isLatestCreated && post.checkoutCompleted && (
                 <Box>
-                  <FaStar size="25" color="var(--chakra-colors-red-500)" />
+                  <FaStar size="25" color={colors.dangerV1} />
                 </Box>
               )}
               {!post.checkoutCompleted && (
                 <Box>
-                  <MdError size="25" color="var(--chakra-colors-red-500)" />
+                  <MdError size="25" color={colors.dangerV1} />
                 </Box>
               )}
             </Show>
@@ -222,7 +224,7 @@ const Post: React.FC<Props> = ({
           <Show above="sm">
             {isLatestCreated && post.checkoutCompleted && (
               <Box>
-                <FaStar size="25" color="var(--chakra-colors-red-500)" />
+                <FaStar size="25" color={colors.dangerV1} />
               </Box>
             )}
             {!post.checkoutCompleted && (
@@ -235,7 +237,7 @@ const Post: React.FC<Props> = ({
                 color="red.500"
               >
                 <Box>
-                  <MdError size="25" color="var(--chakra-colors-red-500)" />
+                  <MdError size="25" color={colors.dangerV1} />
                 </Box>
               </Tooltip>
             )}
@@ -322,27 +324,27 @@ const Post: React.FC<Props> = ({
               <IconButton
                 onClick={updatePostStatusHandler}
                 aria-label="re-open post"
-                colorScheme="blue"
+                variant="primary"
                 icon={<FaArrowUp />}
               />
             )}
             {viewAsTutor && post.status !== PostStatus.CLOSED && (
               <>
                 <IconButton
-                  colorScheme="green"
+                  variant="success"
                   aria-label="answer post"
                   icon={<FaPencilAlt />}
-                  mr={[0, 1]}
-                  mb={[1, 0]}
+                  mr={[0, 3]}
+                  mb={[3, 0]}
                   onClick={() => imperativeHandlingRef.current?.onOpen()}
                 />
                 <IconButton
                   onClick={updatePostStatusHandler}
                   aria-label="close post"
-                  colorScheme="red"
+                  variant="danger"
                   icon={<FaArchive />}
-                  mr={[0, 1]}
-                  mb={[1, 0]}
+                  mr={[0, 3]}
+                  mb={[3, 0]}
                 />
               </>
             )}

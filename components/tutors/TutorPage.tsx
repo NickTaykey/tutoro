@@ -90,7 +90,7 @@ const TutorPage: React.FC<Props> = ({
           <Flex direction="column" width="100%">
             <Button
               mt="3"
-              colorScheme="green"
+              variant="success"
               width="100%"
               leftIcon={<FaPersonBooth />}
               onClick={() => {
@@ -103,7 +103,7 @@ const TutorPage: React.FC<Props> = ({
             </Button>
             <Button
               mt="3"
-              colorScheme="blue"
+              variant="primary"
               width="100%"
               leftIcon={<FaPen />}
               onClick={() => {

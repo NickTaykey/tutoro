@@ -6,10 +6,9 @@ import { authOptions } from '../api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth';
 import connectDB from '../../middleware/mongo-connect';
 import findTestingUsers from '../../utils/dev-testing-users';
-import User, { UserDocumentObject } from '../../models/User';
+import User from '../../models/User';
 import { useForm, useFieldArray } from 'react-hook-form';
-import ApiHelper from '../../utils/api-helper';
-import { useState } from 'react';
+import { useContext } from 'react';
 import { useRouter } from 'next/router';
 import {
   Alert,
@@ -20,25 +19,24 @@ import {
   Heading,
   Input,
   Flex,
-  ListItem,
+  Text,
   Slider,
   SliderFilledTrack,
   SliderThumb,
   SliderTrack,
   Textarea,
-  UnorderedList,
-  InputGroup,
-  InputRightAddon,
+  IconButton,
+  VStack,
 } from '@chakra-ui/react';
-import { FaPlus, FaTrashAlt } from 'react-icons/fa';
-import Layout from '../../components/global/Layout';
+import { FaHandsHelping, FaPlus, FaTrashAlt } from 'react-icons/fa';
 import { useSession } from 'next-auth/react';
+import AuthenticatedUserContext from '../../store/authenticated-user-context';
 
 type FormValues = {
   location: string;
   bio: string;
   sessionPricePerHour: number;
-  postPrice: number;
+  pricePerPost: number;
   subjects: Array<{ subject: string }>;
 };
 
@@ -55,7 +53,7 @@ const BecomeTutorPage: NextPage = () => {
       location: '',
       bio: '',
       sessionPricePerHour: 20,
-      postPrice: 10,
+      pricePerPost: 10,
       subjects: [{ subject: '' }],
     },
   });
@@ -67,19 +65,19 @@ const BecomeTutorPage: NextPage = () => {
     control,
     name: 'subjects',
   });
-  const { data } = useSession();
-  const currentUser = data!.user as UserDocumentObject;
+  const { becomeTutor } = useContext(AuthenticatedUserContext);
 
-  const [errorAlert, setErrorAlert] = useState<string | null>();
   const router = useRouter();
 
   const onSubmit: SubmitHandler<FormValues> = async data => {
-    const res = await ApiHelper(
-      `/api/tutors/${currentUser._id}`,
-      { ...data, subjects: data.subjects.map(s => s.subject) },
-      'PUT'
-    );
-    if (res.errorMessage) return setErrorAlert(res.errorMessage);
+    const formData: Record<string, string | string[]> = {};
+    for (let e of Object.entries(data)) {
+      formData[e[0]] =
+        e[0] === 'subjects'
+          ? (e[1] as Array<{ subject: string }>).map(({ subject }) => subject)
+          : e[1].toString();
+    }
+    becomeTutor(formData);
     return router.replace('/users');
   };
 
@@ -92,11 +90,6 @@ const BecomeTutorPage: NextPage = () => {
       >
         Would you like to become a Tutor?
       </Heading>
-      {!!errorAlert && (
-        <Alert status="error" my={3}>
-          {errorAlert}
-        </Alert>
-      )}
       {!!Object.keys(errors).length && (
         <Alert status="error" my={3}>
           {Object.keys(errors)[0] === 'bio'
@@ -126,15 +119,15 @@ const BecomeTutorPage: NextPage = () => {
             How much are you going to charge for your posts?
           </FormLabel>
           <Heading as="h3" size="md">
-            ${watch('postPrice')}
+            ${watch('pricePerPost')}
           </Heading>
           <Slider
             aria-labelledby="post-price-label"
             aria-label="post price"
-            defaultValue={watch('postPrice')}
+            defaultValue={watch('pricePerPost')}
             min={0}
             max={250}
-            onChange={(value: number) => setValue('postPrice', value)}
+            onChange={(value: number) => setValue('pricePerPost', value)}
           >
             <SliderTrack>
               <SliderFilledTrack />
@@ -168,37 +161,33 @@ const BecomeTutorPage: NextPage = () => {
         </FormControl>
         <FormControl mb="3">
           <FormLabel id="subjects-label">What are you subjects?</FormLabel>
-          <UnorderedList styleType="none" mx="0">
+          <VStack spacing="3">
             {subjects.map((subject, index, subjects) => (
-              <ListItem key={subject.id} mb="2">
-                <Flex>
-                  <InputGroup>
-                    <Input
-                      aria-labelledby="subjects-label"
-                      {...register(`subjects.${index}.subject`, {
-                        required: true,
-                      })}
-                    />
-                    {index && (
-                      <InputRightAddon
-                        bg="red.500"
-                        color="white"
-                        _hover={{ bg: 'red.600', cursor: 'pointer' }}
-                        onClick={() => subjects.length > 1 && remove(index)}
-                        children={<FaTrashAlt />}
-                      />
-                    )}
-                  </InputGroup>
-                </Flex>
-              </ListItem>
+              <Flex key={subject.id} width="100%">
+                <Input
+                  aria-labelledby="subjects-label"
+                  {...register(`subjects.${index}.subject`, {
+                    required: true,
+                  })}
+                />
+                {!!index && (
+                  <IconButton
+                    aria-label="delete subject"
+                    variant="danger"
+                    color="white"
+                    ml="2"
+                    onClick={() => subjects.length > 1 && remove(index)}
+                    icon={<FaTrashAlt />}
+                  />
+                )}
+              </Flex>
             ))}
-          </UnorderedList>
+          </VStack>
           <Button
             width={['100%', null, 'auto']}
-            bg="green.500"
-            color="white"
-            _hover={{ bg: 'green.600' }}
+            mt="3"
             type="button"
+            variant="success"
             onClick={() => append({ subject: '' })}
             leftIcon={<FaPlus />}
             aria-label="Add another subject"
@@ -206,8 +195,14 @@ const BecomeTutorPage: NextPage = () => {
             Add a subject
           </Button>
         </FormControl>
-        <Button type="submit" colorScheme="blue" width={['100%', null, 'auto']}>
-          Become a Tutor!
+        <Button
+          type="submit"
+          variant="primary"
+          width={['100%', null, 'auto']}
+          mt="3"
+        >
+          <FaHandsHelping size="25" />
+          <Text ml="2">Become a Tutor!</Text>
         </Button>
       </form>
     </Box>

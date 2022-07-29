@@ -84,7 +84,7 @@ const ProfilePage: NextPage<Props> = ({
       {successAlert && (
         <Alert
           mb="5"
-          status="success"
+          variant="success"
           mx="auto"
           fontWeight="bold"
           width={['90%', null, '100%']}

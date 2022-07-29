@@ -37,6 +37,7 @@ import {
   FaStar,
   FaUserTie,
 } from 'react-icons/fa';
+import colors from '../../theme/colors';
 
 interface Props {
   pertinentGlobalPosts: PostDocumentObject[];
@@ -140,7 +141,7 @@ const TutorProfileView: React.FC<Props> = ({
           </AccordionButton>
         </h2>
         <AccordionPanel pb={4}>
-          <Tabs isFitted variant="soft-rounded" colorScheme="blue">
+          <Tabs isFitted variant="soft-rounded">
             <TabList
               my="3"
               width={['95%', null, '100%']}
@@ -183,10 +184,13 @@ const TutorProfileView: React.FC<Props> = ({
                               <FaHourglassHalf size="25" />
                             </Tab>
                             <Tab color="green" _selected={{ bg: 'green.100' }}>
-                              <FaCheckCircle size="25" />
+                              <FaCheckCircle
+                                color={colors.successV1}
+                                size="25"
+                              />
                             </Tab>
                             <Tab color="red.500" _selected={{ bg: 'red.100' }}>
-                              <FaArchive size="25" />
+                              <FaArchive color={colors.dangerV1} size="25" />
                             </Tab>
                           </TabList>
                           <TabPanels
@@ -301,7 +305,7 @@ const TutorProfileView: React.FC<Props> = ({
                                 color="red.500"
                                 _selected={{ bg: 'red.100' }}
                               >
-                                <FaArchive size="25" />
+                                <FaArchive color={colors.dangerV1} size="25" />
                               </Tab>
                             </TabList>
                             <TabPanels
@@ -394,10 +398,13 @@ const TutorProfileView: React.FC<Props> = ({
                               <FaHourglassHalf size="25" />
                             </Tab>
                             <Tab color="green" _selected={{ bg: 'green.100' }}>
-                              <FaCheckCircle size="25" />
+                              <FaCheckCircle
+                                color={colors.successV1}
+                                size="25"
+                              />
                             </Tab>
                             <Tab color="red.500" _selected={{ bg: 'red.100' }}>
-                              <FaArchive size="25" />
+                              <FaArchive color={colors.dangerV1} size="25" />
                             </Tab>
                           </TabList>
                           <SessionsContextProvider sessions={requestedSessions}>

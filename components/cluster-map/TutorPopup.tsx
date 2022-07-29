@@ -15,6 +15,7 @@ import {
 import { useRouter } from 'next/router';
 import { useContext } from 'react';
 import AuthenticatedUserContext from '../../store/authenticated-user-context';
+import Link from 'next/link';
 
 interface Props {
   popupInfo: TutorObjectGeoJSON;
@@ -33,10 +34,12 @@ const TutorPopup: React.FC<Props> = ({ popupInfo, authenticatedTutor }) => {
   return (
     <Box data-testid="popup-container" p="1">
       <Center>
-        <Avatar
-          src={avatar ? avatar : ''}
-          name={popupInfo.properties.fullname}
-        />
+        <Link href={`/tutors/${popupInfo.properties._id}`}>
+          <Avatar
+            src={avatar ? avatar : ''}
+            name={popupInfo.properties.fullname}
+          />
+        </Link>
       </Center>
       <Heading as="h3" size="md" mt="3">
         {popupInfo.properties.fullname}
