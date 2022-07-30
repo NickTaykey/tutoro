@@ -24,11 +24,16 @@ import {
   Button,
   VStack,
   useMediaQuery,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import { FaHandsHelping } from 'react-icons/fa';
 
 interface Props {
   currentUser: UserDocumentObject;
+  errorAlert: string | null;
+  successAlert: string | null;
+  setSuccessAlert(alertContent: string | null): void;
+  setErrorAlert(alertContent: string | null): void;
 }
 
 const UserProfileView: React.FC<Props> = (props: Props) => {
@@ -36,6 +41,9 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
   const [higherThan840] = useMediaQuery('(min-height: 840px)');
   const [isLandscapeWidth] = useMediaQuery('(max-width: 930px)');
   const [isLandscapeHeight] = useMediaQuery('(max-height: 500px)');
+
+  const unSelectedTabColor = useColorModeValue('gray.600', 'white');
+
   const isXSLandscape = isLandscapeWidth && isLandscapeHeight;
   return (
     <Box width="100%" mx="auto">
@@ -46,18 +54,26 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
           mx="auto"
           flexDirection={['column', 'row']}
         >
-          <Tab fontSize="sm">
+          <Tab fontSize="sm" color={unSelectedTabColor}>
             ({props.currentUser.createdPosts.length}) Posts
           </Tab>
-          <Tab mx="1" fontSize="sm">
+          <Tab mx="1" fontSize="sm" color={unSelectedTabColor}>
             ({props.currentUser.bookedSessions.length}) Sessions
           </Tab>
-          <Tab fontSize="sm">
+          <Tab fontSize="sm" color={unSelectedTabColor}>
             ({props.currentUser.createdReviews.length}) Reviews
           </Tab>
         </TabList>
         <TabPanels
-          height={higherThan840 ? '60vh' : lowerThan690 ? '50vh' : '400px'}
+          height={
+            higherThan840
+              ? props.errorAlert || props.successAlert
+                ? '55vh'
+                : '60vh'
+              : lowerThan690
+              ? '45vh'
+              : '400px'
+          }
         >
           <TabPanel height="100%" overflowY="auto">
             {props.currentUser.createdPosts.length ? (
@@ -154,6 +170,7 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
               bgGradient="linear(to-l, #7928CA, #FF0080)"
               width={['calc(90% + 4px)', '95%', '80%']}
               mx="auto"
+              color="white"
               leftIcon={<FaHandsHelping size={25} />}
               textTransform="uppercase"
             >

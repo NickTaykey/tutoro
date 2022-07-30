@@ -1,6 +1,6 @@
 import type { StyleFunctionProps } from '@chakra-ui/theme-tools';
 import type { ComponentStyleConfig } from '@chakra-ui/react';
-import brandColors from '../colors';
+import colors from '../colors';
 
 const alertOverrides: ComponentStyleConfig = {
   baseStyle: (props: StyleFunctionProps) => ({
@@ -8,10 +8,20 @@ const alertOverrides: ComponentStyleConfig = {
       fontSize: '16',
       fontWeight: '600',
       boxShadow: '-5px 5px 5px 1px rgba(0, 0, 0, 0.25)',
-      color:
-        props.status === 'error' ? brandColors.dangerV1 : brandColors.successV1,
       backgroundColor:
-        props.status === 'error' ? brandColors.dangerV2 : brandColors.successV2,
+        props.status === 'error'
+          ? `${
+              props.colorMode === 'dark' ? colors.dangerV2 : 'auto'
+            }!important;`
+          : `${
+              props.colorMode === 'dark' ? colors.successV2 : 'auto'
+            }!important;`,
+      color:
+        props.colorMode === 'dark'
+          ? 'white'
+          : props.status === 'error'
+          ? `${colors.dangerV1}!important;`
+          : `${colors.successV1}!important;`,
     },
   }),
 };

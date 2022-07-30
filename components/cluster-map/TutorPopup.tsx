@@ -11,6 +11,7 @@ import {
   VStack,
   Avatar,
   Center,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useContext } from 'react';
@@ -31,8 +32,9 @@ const TutorPopup: React.FC<Props> = ({ popupInfo, authenticatedTutor }) => {
   const avatar = authenticatedTutor
     ? popupInfo.properties.avatar?.url
     : JSON.parse(popupInfo.properties.avatar as string).url;
+  const popupBgColor = useColorModeValue('gray.50', 'gray.700');
   return (
-    <Box data-testid="popup-container" p="1">
+    <Box data-testid="popup-container" p="1" bgColor={popupBgColor}>
       <Center>
         <Link href={`/tutors/${popupInfo.properties._id}`}>
           <Avatar

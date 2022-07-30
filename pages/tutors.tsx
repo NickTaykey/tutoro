@@ -39,7 +39,10 @@ const Home: NextPage<Props> = ({ points, allSubjects }) => {
           <>
             <Box width="90%" mx="auto">
               {query.errorAlert && (
-                <Alert status="error">{query.errorAlert}</Alert>
+                <Alert status="error">
+                  <AlertIcon />
+                  {query.errorAlert}
+                </Alert>
               )}
               {clusterMapCtx.filteredPoints && (
                 <Alert
@@ -81,7 +84,7 @@ const Home: NextPage<Props> = ({ points, allSubjects }) => {
                     </GridItem>
                     <GridItem>
                       <Box>
-                        <Heading as="h2" size="lg" my="3">
+                        <Heading as="h2" size="lg" my="3" letterSpacing="1px">
                           Not sure who to ask?
                         </Heading>
                         <Tooltip

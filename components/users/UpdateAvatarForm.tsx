@@ -1,6 +1,7 @@
 import { useState, ChangeEvent, MouseEvent, useContext } from 'react';
 import {
   Alert,
+  AlertIcon,
   Avatar,
   Box,
   Button,
@@ -105,6 +106,7 @@ const UpdateAvatarForm: React.FC = () => {
     <form onSubmit={e => e.preventDefault()}>
       {errorAlert && (
         <Alert status="error" my="2">
+          <AlertIcon />
           {errorAlert}
         </Alert>
       )}

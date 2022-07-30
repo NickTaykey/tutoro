@@ -6,7 +6,8 @@ const colors = {
   dangerV1: '#FB4D3D',
   dangerV2: 'rgba(251, 77, 61, .5)',
   successV1: '#2B9348',
-  successV2: 'rgba(43, 147, 72, 0.5)',
+  successV2: 'rgba(43, 147, 72, .5)',
+  successV3: 'rgba(63, 199, 101, .5)',
   special: '#648DE5',
 };
 

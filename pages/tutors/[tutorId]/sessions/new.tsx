@@ -25,6 +25,9 @@ import {
   Heading,
   Flex,
   Alert,
+  useColorMode,
+  useColorModeValue,
+  AlertIcon,
 } from '@chakra-ui/react';
 
 interface Props {
@@ -135,8 +138,16 @@ const Page: NextPage<Props> = ({ tutor }) => {
     formFields.date.getMinutes() < 10
       ? '0' + formFields.date.getMinutes().toString()
       : formFields.date.getMinutes().toString();
+
+  const dateInputBgColor = useColorModeValue('gray-50', 'gray-600');
+
   return (
     <>
+      <style jsx>{`
+        *:global(input#date) {
+          background-color: var(--chakra-colors-${dateInputBgColor}) !important;
+        }
+      `}</style>
       {tutor ? (
         <Flex
           width={['90%', null, null, '60%', '40%']}
@@ -156,6 +167,7 @@ const Page: NextPage<Props> = ({ tutor }) => {
           <form onSubmit={formSubmitHandler} style={{ width: '100%' }}>
             {validationError && (
               <Alert status="error" mb="5" fontWeight="bold">
+                <AlertIcon />
                 {validationError}
               </Alert>
             )}

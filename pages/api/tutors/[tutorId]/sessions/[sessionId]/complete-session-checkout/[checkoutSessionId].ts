@@ -20,15 +20,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
               session.checkoutCompleted = true;
               session.save();
               const queryString = new URLSearchParams({
-                successAlert:
-                  'Checkout successfully completed! Your Session has been created, thank you!',
+                successAlert: 'Checkout successfully completed!',
               });
               return res.redirect('/users?' + queryString);
             })
             .catch(() => {
               const queryString = new URLSearchParams({
-                errorAlert:
-                  'The checkout process unexpectedly failed, your Session has not been booked, If you completed the checkout, please contact us.',
+                errorAlert: 'Checkout process failed, contact us.',
               });
               res.redirect('/tutors?' + queryString);
             });

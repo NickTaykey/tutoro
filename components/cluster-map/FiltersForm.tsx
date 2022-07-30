@@ -64,7 +64,7 @@ const FiltersForm: React.FC<Props> = props => {
       mx="auto"
     >
       <form onSubmit={handleSubmit(formSubmitHandler)}>
-        <Heading as="h2" size="xl">
+        <Heading as="h2" size="xl" letterSpacing="1px">
           Filters
         </Heading>
         <FormControl my="4">
@@ -236,7 +236,7 @@ const FiltersForm: React.FC<Props> = props => {
             </NumberInputStepper>
           </NumberInput>
         </FormControl>
-        <Text fontWeight="light" color="gray.500" mt="0" mb="4">
+        <Text fontWeight="light" mt="0" mb="4">
           Find tutors by distance from a location
         </Text>
         <Button

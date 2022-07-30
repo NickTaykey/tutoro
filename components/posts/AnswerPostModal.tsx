@@ -19,6 +19,7 @@ import {
   Spinner,
   Kbd,
   Show,
+  AlertIcon,
 } from '@chakra-ui/react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -179,11 +180,13 @@ const AnswerPostModal = React.forwardRef<
               </Heading>
               {validationError && (
                 <Alert status="error" my="4">
+                  <AlertIcon />
                   {validationError}
                 </Alert>
               )}
               {!!Object.keys(errors).length && (
                 <Alert status="error" my="4">
+                  <AlertIcon />
                   {Object.keys(errors)[0].includes('text')
                     ? 'Provide the description of your answer'
                     : ` Provide your ${Object.keys(errors)[0]}}`}
@@ -203,6 +206,7 @@ const AnswerPostModal = React.forwardRef<
                 <FormControl mb="4">
                   {filesList && filesList.length! > 4 && (
                     <Alert status="error" fontWeight="bold" my="3">
+                      <AlertIcon />
                       Maximum 4 attachments
                     </Alert>
                   )}

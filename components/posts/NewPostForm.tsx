@@ -18,6 +18,8 @@ import {
   Alert,
   Box,
   Spinner,
+  useColorModeValue,
+  AlertIcon,
 } from '@chakra-ui/react';
 import { FaArrowRight, FaBroom } from 'react-icons/fa';
 
@@ -27,7 +29,7 @@ interface Props {
 }
 
 const NewPostForm: React.FC<Props> = props => {
-  const { query, replace } = useRouter();
+  const { query } = useRouter();
   const [filesList, setFilesList] = useState<FileList | null>(null);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const {
@@ -41,6 +43,8 @@ const NewPostForm: React.FC<Props> = props => {
       subject: props.subjects ? props.subjects[0] : '',
     },
   });
+  const lightTextColor = useColorModeValue('gray.500', 'gray.300');
+
   const onFileUploadChange = (e: ChangeEvent<HTMLInputElement>) => {
     const fileInput = e.target;
 
@@ -105,14 +109,24 @@ const NewPostForm: React.FC<Props> = props => {
           <Heading as="h1" size="lg" textAlign="center">
             Create a Post
           </Heading>
-          <Text my="3" fontWeight="light" textAlign="center" color="gray.500">
+          <Text
+            my="3"
+            fontWeight="light"
+            textAlign="center"
+            color={lightTextColor}
+          >
             Find answer to specific questions or have homework reviewed.
           </Text>
           <Heading as="h2" size="md" textAlign="center">
             Price: €{props.tutor?.pricePerPost || 20}
           </Heading>
           {query.tutorId === 'global' && (
-            <Text my="3" fontWeight="light" textAlign="center" color="gray.500">
+            <Text
+              my="3"
+              fontWeight="light"
+              textAlign="center"
+              color={lightTextColor}
+            >
               Be answered by a qualified Tutor.
             </Text>
           )}
@@ -122,11 +136,14 @@ const NewPostForm: React.FC<Props> = props => {
           >
             {(validationError || !!Object.keys(errors).length) && (
               <Alert status="error" mb="3" fontWeight="bold">
+                <AlertIcon />
                 {validationError || `Provide your ${Object.keys(errors)[0]}`}
               </Alert>
             )}
             <FormControl mb="4">
-              <FormLabel htmlFor="post-subject">Subject</FormLabel>
+              <FormLabel htmlFor="post-subject" fontWeight="bold">
+                Subject
+              </FormLabel>
               <Select id="post-subject" {...register('subject')}>
                 {props.subjects.map(s => (
                   <option key={s} value={s}>
@@ -136,7 +153,9 @@ const NewPostForm: React.FC<Props> = props => {
               </Select>
             </FormControl>
             <FormControl mb="4">
-              <FormLabel htmlFor="post-description">Description</FormLabel>
+              <FormLabel htmlFor="post-description" fontWeight="bold">
+                Description
+              </FormLabel>
               <Textarea
                 id="post-description"
                 {...register('description', { required: true })}
@@ -145,10 +164,11 @@ const NewPostForm: React.FC<Props> = props => {
             <FormControl mb="4">
               {filesList && filesList.length! > 4 && (
                 <Alert status="error" fontWeight="bold" my="3">
+                  <AlertIcon />
                   Maximum 4 attachments
                 </Alert>
               )}
-              <FormLabel htmlFor="attachments-input">
+              <FormLabel htmlFor="attachments-input" fontWeight="bold">
                 Optional, any attachments to share?
               </FormLabel>
               <Input
@@ -157,7 +177,7 @@ const NewPostForm: React.FC<Props> = props => {
                 id="attachments-input"
                 onChange={onFileUploadChange}
               />
-              <Text fontWeight="light" my="2" color="gray.500">
+              <Text fontWeight="light" my="2" color={lightTextColor}>
                 Only images, PDFs and office format files
               </Text>
             </FormControl>

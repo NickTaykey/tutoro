@@ -1,6 +1,7 @@
 import { useState, useContext } from 'react';
 import {
   Alert,
+  AlertIcon,
   Box,
   Button,
   Flex,
@@ -86,6 +87,7 @@ const UpdateAvatarForm: React.FC = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         {(!!Object.keys(errors).length || errorAlert) && (
           <Alert status="error" my={3}>
+            <AlertIcon />
             {!!Object.keys(errors).length
               ? Object.keys(errors)[0] === 'bio'
                 ? 'Provide some words sbout you'

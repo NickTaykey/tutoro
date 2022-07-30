@@ -15,13 +15,17 @@ import {
   Button,
   VStack,
   HStack,
+  useColorMode,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import { ClientSafeProvider, signIn, signOut } from 'next-auth/react';
 import {
   FaListUl,
+  FaMoon,
   FaRegTimesCircle,
   FaRegUserCircle,
   FaSignOutAlt,
+  FaSun,
 } from 'react-icons/fa';
 import React, { useContext, useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -41,6 +45,11 @@ const Navbar: React.FC = () => {
     onClose: onDrawerClose,
   } = useDisclosure();
   const [providersList, setProvidersList] = useState<ClientSafeProvider[]>([]);
+  const { colorMode, toggleColorMode } = useColorMode();
+  const toogleColorModeBtnColor = useColorModeValue('gray.50', 'gray.700');
+  const toogleColorModeBtnBgColor = useColorModeValue('gray.700', 'gray.100');
+  const toogleColorModeBtnBgColorHover = useColorModeValue('gray.800', 'white');
+  const toogleColorModeBtnColorHover = useColorModeValue('white', 'black');
 
   useEffect(() => {
     getProvidersList().then(list => setProvidersList(list));
@@ -61,12 +70,14 @@ const Navbar: React.FC = () => {
 
   return (
     <Box
+      as="nav"
       boxShadow="lg"
       rounded="md"
-      bg="white"
       position="sticky"
       top="0"
       p="2"
+      borderRadius="none"
+      backgroundColor={colorMode === 'dark' ? 'gray.700' : 'white'}
       zIndex="200"
       width="100%"
     >
@@ -81,7 +92,7 @@ const Navbar: React.FC = () => {
           >
             <Flex alignItems="center">
               <Logo width={60} height={60} />
-              <Text textTransform="capitalize" ml={2}>
+              <Text textTransform="capitalize" ml={2} letterSpacing="1px">
                 tutoro
               </Text>
             </Flex>
@@ -93,7 +104,7 @@ const Navbar: React.FC = () => {
             boxShadow="none"
             onClick={onDrawerOpen}
             size="lg"
-            backgroundColor="white"
+            backgroundColor="transparent"
             fontSize="48"
             mr={3}
             color="gray.500"
@@ -219,6 +230,24 @@ const Navbar: React.FC = () => {
                           aria-label="Sign out button"
                           mt="2"
                         />
+                        <IconButton
+                          width="100%"
+                          aria-label="toggle website color mode"
+                          backgroundColor={toogleColorModeBtnBgColor}
+                          onClick={() => toggleColorMode()}
+                          color={toogleColorModeBtnColor}
+                          _hover={{
+                            color: toogleColorModeBtnColorHover,
+                            backgroundColor: toogleColorModeBtnBgColorHover,
+                          }}
+                          icon={
+                            colorMode === 'dark' ? (
+                              <FaSun size="25" />
+                            ) : (
+                              <FaMoon size="25" />
+                            )
+                          }
+                        />
                       </VStack>
                     )}
                   </Flex>
@@ -228,50 +257,71 @@ const Navbar: React.FC = () => {
           </Drawer>
         </Show>
         <Show breakpoint="(min-width: 768px)">
-          {!user && (
-            <Flex alignItems="center" mr="4">
-              <Button
-                variant="link"
-                size="lg"
-                onClick={openSignInMenu}
-                _hover={{ textDecoration: 'none', color: 'blackAlpha.800' }}
-              >
-                Sign In
-              </Button>
-            </Flex>
-          )}
-          {user && (
-            <HStack spacing="3" mr="3">
-              <Link href="/users">
-                <Avatar name={user.fullname} src={user.avatar?.url || ''} />
-              </Link>
-              <IconButton
-                icon={<FaRegUserCircle size="25" />}
-                variant="cyan"
-                color="white"
-                onClick={openUpdateAvatarMenu}
-                aria-label="Update avatar"
-                mr={2}
-              />
-              {user.isTutor && (
+          <HStack spacing="3" mr="3">
+            {user ? (
+              <>
+                <Link href="/users">
+                  <Avatar name={user.fullname} src={user.avatar?.url || ''} />
+                </Link>
                 <IconButton
-                  width="100%"
-                  icon={<FaListUl size="25" />}
-                  variant="warning"
-                  onClick={openUpdateTutorMenu}
+                  icon={<FaRegUserCircle size="25" />}
+                  variant="cyan"
+                  color="white"
+                  onClick={openUpdateAvatarMenu}
                   aria-label="Update avatar"
                   mr={2}
                 />
-              )}
-              <IconButton
-                icon={<FaSignOutAlt size="25" />}
-                colorScheme="gray"
-                onClick={() => signOut()}
-                aria-label="Sign out button"
-                mr={4}
-              />
-            </HStack>
-          )}
+                {user.isTutor && (
+                  <IconButton
+                    width="100%"
+                    icon={<FaListUl size="25" />}
+                    variant="warning"
+                    onClick={openUpdateTutorMenu}
+                    aria-label="Update avatar"
+                    mr={2}
+                  />
+                )}
+                <IconButton
+                  icon={<FaSignOutAlt size="25" />}
+                  colorScheme="gray"
+                  onClick={() => signOut()}
+                  aria-label="Sign out button"
+                  mr={2}
+                />
+              </>
+            ) : (
+              <Button
+                variant="link"
+                size="lg"
+                mr="2"
+                onClick={openSignInMenu}
+                _hover={{
+                  textDecoration: 'none',
+                  color: colorMode === 'dark' ? 'white' : 'blackAlpha.800',
+                }}
+              >
+                Sign In
+              </Button>
+            )}
+            <IconButton
+              backgroundColor={toogleColorModeBtnBgColor}
+              color={toogleColorModeBtnColor}
+              _hover={{
+                boxShadow: '-2.5px 2.5px 2.5px 1px rgba(0, 0, 0, 0.125)',
+                color: toogleColorModeBtnColorHover,
+                backgroundColor: toogleColorModeBtnBgColorHover,
+              }}
+              icon={
+                colorMode === 'dark' ? (
+                  <FaSun size="25" />
+                ) : (
+                  <FaMoon size="25" />
+                )
+              }
+              onClick={() => toggleColorMode()}
+              aria-label="toggle website color mode"
+            />
+          </HStack>
         </Show>
       </Flex>
     </Box>

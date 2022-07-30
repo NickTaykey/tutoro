@@ -27,6 +27,7 @@ import {
   AccordionIcon,
   Flex,
   Alert,
+  AlertIcon,
   FormControl,
   FormLabel,
   Switch,
@@ -44,6 +45,9 @@ const ProfilePage: NextPage<Props> = ({
   const { query } = useRouter();
   const [successAlert, setSuccessAlert] = useState<string | null>(
     query.successAlert ? query.successAlert.toString() : null
+  );
+  const [errorAlert, setErrorAlert] = useState<string | null>(
+    query.errorAlert ? query.errorAlert.toString() : null
   );
   const [globalPostsEnabled, setGlobalPostsEnabled] = useState<boolean>(
     currentUser.globalPostsEnabled
@@ -84,12 +88,25 @@ const ProfilePage: NextPage<Props> = ({
       {successAlert && (
         <Alert
           mb="5"
-          variant="success"
+          status="success"
           mx="auto"
           fontWeight="bold"
           width={['90%', null, '100%']}
         >
+          <AlertIcon />
           {successAlert}
+        </Alert>
+      )}
+      {errorAlert && (
+        <Alert
+          mb="5"
+          status="error"
+          mx="auto"
+          fontWeight="bold"
+          width={['90%', null, '100%']}
+        >
+          <AlertIcon />
+          {errorAlert}
         </Alert>
       )}
       {currentUser.isTutor ? (
@@ -107,20 +124,35 @@ const ProfilePage: NextPage<Props> = ({
               </AccordionButton>
             </h2>
             <AccordionPanel pb={4}>
-              <UserProfileView currentUser={currentUser} />
+              <UserProfileView
+                currentUser={currentUser}
+                setSuccessAlert={setSuccessAlert}
+                setErrorAlert={setErrorAlert}
+                errorAlert={errorAlert}
+                successAlert={successAlert}
+              />
             </AccordionPanel>
           </AccordionItem>
           {currentUser.isTutor && (
             <TutorProfileView
               globalPostsEnabled={globalPostsEnabled}
               setSuccessAlert={setSuccessAlert}
+              setErrorAlert={setErrorAlert}
+              errorAlert={errorAlert}
+              successAlert={successAlert}
               currentUser={currentUser}
               pertinentGlobalPosts={pertinentGlobalPosts}
             />
           )}
         </Accordion>
       ) : (
-        <UserProfileView currentUser={currentUser} />
+        <UserProfileView
+          currentUser={currentUser}
+          setSuccessAlert={setSuccessAlert}
+          setErrorAlert={setErrorAlert}
+          errorAlert={errorAlert}
+          successAlert={successAlert}
+        />
       )}
     </Box>
   );

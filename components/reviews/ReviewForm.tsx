@@ -16,6 +16,7 @@ import {
   Button,
   Alert,
   IconButton,
+  AlertIcon,
 } from '@chakra-ui/react';
 import { FaPen, FaRegTimesCircle } from 'react-icons/fa';
 
@@ -92,6 +93,7 @@ const ReviewForm: React.FC<
     <form onSubmit={formSubmitHandler}>
       {errorAlert && (
         <Alert status="error" my="3">
+          <AlertIcon />
           {errorAlert}
         </Alert>
       )}

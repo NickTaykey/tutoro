@@ -27,6 +27,7 @@ import {
   Textarea,
   IconButton,
   VStack,
+  AlertIcon,
 } from '@chakra-ui/react';
 import { FaHandsHelping, FaPlus, FaTrashAlt } from 'react-icons/fa';
 import { useSession } from 'next-auth/react';
@@ -88,10 +89,11 @@ const BecomeTutorPage: NextPage = () => {
         mb={!!Object.keys(errors).length ? 0 : 4}
         textAlign="center"
       >
-        Would you like to become a Tutor?
+        Become a Tutor
       </Heading>
       {!!Object.keys(errors).length && (
         <Alert status="error" my={3}>
+          <AlertIcon />
           {Object.keys(errors)[0] === 'bio'
             ? 'Provide some words sbout you'
             : Object.keys(errors)[0] === 'location'
@@ -101,11 +103,13 @@ const BecomeTutorPage: NextPage = () => {
       )}
       <form onSubmit={handleSubmit(onSubmit)}>
         <FormControl mb="3">
-          <FormLabel htmlFor="bio">Some words about you</FormLabel>
+          <FormLabel htmlFor="bio" fontWeight="bold">
+            Some words about you
+          </FormLabel>
           <Textarea id="bio" {...register('bio', { required: true })} />
         </FormControl>
         <FormControl mb="3">
-          <FormLabel htmlFor="location">
+          <FormLabel htmlFor="location" fontWeight="bold">
             Where will you host your sessions?
           </FormLabel>
           <Input
@@ -115,10 +119,14 @@ const BecomeTutorPage: NextPage = () => {
           />
         </FormControl>
         <FormControl mb="3">
-          <FormLabel htmlFor="post-price-input" id="post-price-label">
-            How much are you going to charge for your posts?
+          <FormLabel
+            htmlFor="post-price-input"
+            id="post-price-label"
+            fontWeight="bold"
+          >
+            How much will you charge per post?
           </FormLabel>
-          <Heading as="h3" size="md">
+          <Heading as="h3" size="lg">
             ${watch('pricePerPost')}
           </Heading>
           <Slider
@@ -139,10 +147,11 @@ const BecomeTutorPage: NextPage = () => {
           <FormLabel
             htmlFor="session-price-input"
             id="session-price-hour-label"
+            fontWeight="bold"
           >
-            How much are you charging per hour for your sessions?
+            How much will you charge per hour of session?
           </FormLabel>
-          <Heading as="h3" size="md">
+          <Heading as="h3" size="lg">
             ${watch('sessionPricePerHour')}
           </Heading>
           <Slider
@@ -160,7 +169,9 @@ const BecomeTutorPage: NextPage = () => {
           </Slider>
         </FormControl>
         <FormControl mb="3">
-          <FormLabel id="subjects-label">What are you subjects?</FormLabel>
+          <FormLabel id="subjects-label" fontWeight="bold">
+            What are you subjects?
+          </FormLabel>
           <VStack spacing="3">
             {subjects.map((subject, index, subjects) => (
               <Flex key={subject.id} width="100%">

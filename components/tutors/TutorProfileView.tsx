@@ -25,6 +25,7 @@ import {
   TabPanels,
   Tabs,
   Text,
+  useColorModeValue,
   useMediaQuery,
   VStack,
 } from '@chakra-ui/react';
@@ -43,7 +44,10 @@ interface Props {
   pertinentGlobalPosts: PostDocumentObject[];
   globalPostsEnabled: boolean;
   currentUser: UserDocumentObject;
-  setSuccessAlert(alertContent: string): void;
+  errorAlert: string | null;
+  successAlert: string | null;
+  setSuccessAlert(alertContent: string | null): void;
+  setErrorAlert(alertContent: string | null): void;
 }
 
 const TutorProfileView: React.FC<Props> = ({
@@ -125,6 +129,7 @@ const TutorProfileView: React.FC<Props> = ({
 
   const [lowerThan690] = useMediaQuery('(max-height: 690px)');
   const [higherThan840] = useMediaQuery('(min-height: 840px)');
+  const unSelectedTabColor = useColorModeValue('gray.600', 'white');
 
   return (
     <>
@@ -150,14 +155,14 @@ const TutorProfileView: React.FC<Props> = ({
             >
               <Tab fontSize="sm">({currentUser.posts.length}) Posts</Tab>
               {globalPostsEnabled && (
-                <Tab fontSize="sm">
+                <Tab fontSize="sm" color={unSelectedTabColor}>
                   ({pertinentGlobalPosts.length}) Global Posts
                 </Tab>
               )}
-              <Tab mx="1" fontSize="sm">
+              <Tab mx="1" fontSize="sm" color={unSelectedTabColor}>
                 ({currentUser.requestedSessions.length}) Sessions
               </Tab>
-              <Tab fontSize="sm">
+              <Tab fontSize="sm" color={unSelectedTabColor}>
                 <Flex>({currentUser.reviews.length}) Reviews</Flex>
               </Tab>
             </TabList>

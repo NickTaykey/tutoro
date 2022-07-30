@@ -18,11 +18,13 @@ import {
   Center,
   Button,
   Avatar,
+  useColorMode,
 } from '@chakra-ui/react';
 import { FaPen, FaPersonBooth, FaStar } from 'react-icons/fa';
 import { useContext, useState } from 'react';
 import { useRouter } from 'next/router';
 import AuthenticatedUserContext from '../../store/authenticated-user-context';
+import colors from '../../theme/colors';
 
 interface Props {
   tutor?: UserDocumentObject;
@@ -49,6 +51,8 @@ const TutorPage: React.FC<Props> = ({
   const addUserCreateReviewId = (reviewId: string) => {
     setUserCreatedReviews(prevState => [...prevState, reviewId]);
   };
+
+  const { colorMode, toggleColorMode } = useColorMode();
 
   return tutor ? (
     <Box width="90%" mx="auto">
@@ -127,14 +131,14 @@ const TutorPage: React.FC<Props> = ({
               pitch: 0,
             }}
             style={{ height: '50vh', maxHeight: '500px' }}
-            mapStyle="mapbox://styles/mapbox/streets-v10"
+            mapStyle={`mapbox://styles/mapbox/${colorMode}-v10`}
             mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
             testMode={true}
           >
             <Marker
               longitude={currentTutor.geometry!.coordinates[0]}
               latitude={currentTutor.geometry!.coordinates[1]}
-              color="#11b4da"
+              color={colors.primaryV3}
             />
           </Map>
         </GridItem>
@@ -176,7 +180,7 @@ const TutorPage: React.FC<Props> = ({
                       </Flex>
                     )}
                     <VStack
-                      overflowY="scroll"
+                      overflowY="auto"
                       mt="3"
                       height={'400px'}
                       justify={reviewsCtx.reviews.length ? 'start' : 'center'}
@@ -186,29 +190,11 @@ const TutorPage: React.FC<Props> = ({
                     >
                       {reviewsCtx.reviews.length ? (
                         reviewsCtx.reviews.map((r: ReviewDocumentObject) => (
-                          <>
-                            <Review
-                              key={r._id}
-                              review={r}
-                              deleteUserCreateReviewId={
-                                deleteUserCreateReviewId
-                              }
-                            />
-                            <Review
-                              key={r._id}
-                              review={r}
-                              deleteUserCreateReviewId={
-                                deleteUserCreateReviewId
-                              }
-                            />
-                            <Review
-                              key={r._id}
-                              review={r}
-                              deleteUserCreateReviewId={
-                                deleteUserCreateReviewId
-                              }
-                            />
-                          </>
+                          <Review
+                            key={r._id}
+                            review={r}
+                            deleteUserCreateReviewId={deleteUserCreateReviewId}
+                          />
                         ))
                       ) : (
                         <Heading
