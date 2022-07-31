@@ -96,7 +96,7 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
             ) : (
               <Flex justify="center" align="center" height="100%">
                 <Heading as="h2" size="md" textAlign="center">
-                  You dont't have any posts for now!
+                  You no posts for now!
                 </Heading>
               </Flex>
             )}
@@ -124,7 +124,7 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
             ) : (
               <Flex justify="center" align="center" height="100%">
                 <Heading as="h2" size="md" textAlign="center">
-                  You dont't have any booked sessions for now!
+                  You have no booked sessions for now!
                 </Heading>
               </Flex>
             )}

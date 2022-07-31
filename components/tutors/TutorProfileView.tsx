@@ -630,7 +630,7 @@ const TutorProfileView: React.FC<Props> = ({
                         ) : (
                           <Flex justify="center" align="center" height="100%">
                             <Heading as="h2" size="md" textAlign="center">
-                              You haven't been reviewed yet!
+                              You have no reviews yet!
                             </Heading>
                           </Flex>
                         )}

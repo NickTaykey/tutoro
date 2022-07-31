@@ -166,7 +166,7 @@ const AnswerPostModal = React.forwardRef<
                           )
                         }
                       >
-                        <a href={f.url} target="_blank">
+                        <a href={f.url} target="_blank" rel="noreferrer">
                           <>Attachment {i + 1}</>
                         </a>
                       </Button>

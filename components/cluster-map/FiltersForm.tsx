@@ -68,7 +68,7 @@ const FiltersForm: React.FC<Props> = props => {
           Filters
         </Heading>
         <FormControl my="4">
-          <FormLabel htmlFor="tutor-name">Tutor's name</FormLabel>
+          <FormLabel htmlFor="tutor-name">Tutor name</FormLabel>
           <Input
             id="tutor-name"
             type="text"
@@ -207,7 +207,7 @@ const FiltersForm: React.FC<Props> = props => {
           </RangeSlider>
         </FormControl>
         <FormControl my="4">
-          <FormLabel htmlFor="select-subject">Tutor's subject</FormLabel>
+          <FormLabel htmlFor="select-subject">Tutor subject</FormLabel>
           <Select
             placeholder="Select a subject"
             id="select-subject"

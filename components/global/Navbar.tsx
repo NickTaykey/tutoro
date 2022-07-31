@@ -59,7 +59,7 @@ const Navbar: React.FC = () => {
 
   useEffect(() => {
     getProvidersList().then(list => setProvidersList(list));
-  }, [getProvidersList]);
+  }, []);
 
   const {
     user,

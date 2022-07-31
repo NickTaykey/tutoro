@@ -164,7 +164,7 @@ const UpdateAvatarForm: React.FC = () => {
                     aria-label="delete subject"
                     ml="2"
                     onClick={() => subjects.length > 1 && remove(index)}
-                    children={<FaTrashAlt />}
+                    icon={<FaTrashAlt />}
                     variant="danger"
                   />
                 )}

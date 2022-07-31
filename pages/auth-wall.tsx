@@ -14,11 +14,11 @@ const AuthWallPage: NextPage = () => {
 
   useEffect(() => {
     getProvidersList().then(list => setProvidersList(list));
-  }, [getProvidersList]);
+  }, []);
 
   useEffect(() => {
     if (user) replace('/users/user-profile');
-  }, [user]);
+  }, [user, replace]);
 
   return (
     <Flex
