@@ -4,7 +4,10 @@ import ensureHttpMethod from '../../../../../../middleware/ensure-http-method';
 import connectDB from '../../../../../../middleware/mongo-connect';
 import requireAuth from '../../../../../../middleware/require-auth';
 
-import type { SessionDocumentObject } from '../../../../../../models/Session';
+import type {
+  SessionDocument,
+  SessionDocumentObject,
+} from '../../../../../../models/Session';
 import type { HTTPError } from '../../../../../../types';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { SessionStatus } from '../../../../../../types';
@@ -92,6 +95,7 @@ export default async function handler(
               const sessionRegisteredOnTutor = tutor.requestedSessions.find(
                 (id: ObjectId) => id.toString() === req.query.sessionId
               );
+
               if (sessionRegisteredOnTutor) {
                 session.status = sanitize(req.body).newStatus;
                 const promises: Promise<unknown>[] = [session.save()];
@@ -121,14 +125,28 @@ export default async function handler(
                     ),
                   };
                   // promises.push(sgMail.send(emailMessage));
+                  if (
+                    session.status === SessionStatus.APPROVED &&
+                    tutor.requestedSessions.length
+                  ) {
+                    await tutor.populate('requestedSessions');
+                    tutor.sessionEarnings = (
+                      tutor.requestedSessions as SessionDocument[]
+                    ).reduce(
+                      (acm: number, session: SessionDocument) =>
+                        (acm += session.price),
+                      0
+                    );
+                    promises.push(tutor.save());
+                  }
                 }
                 await Promise.all(promises);
                 return res.status(200).json(session.toObject());
               }
-              return res.status(403).json({
-                errorMessage: 'You are not authorized to update this Session.',
-              });
             }
+            return res.status(403).json({
+              errorMessage: 'You are not authorized to update this Session.',
+            });
           });
         }
       );

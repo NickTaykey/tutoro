@@ -79,7 +79,7 @@ const BecomeTutorPage: NextPage = () => {
           : e[1].toString();
     }
     becomeTutor(formData);
-    return router.replace('/users');
+    return router.replace('/users/tutor-profile');
   };
 
   return (
@@ -223,36 +223,17 @@ const BecomeTutorPage: NextPage = () => {
 export const getServerSideProps: GetServerSideProps = async context => {
   await connectDB();
 
-  // === PRODUCTION VERSION
   const session = await getServerSession(context, authOptions);
   let query: QueryObject = {};
   if (session?.user?.email) query = { email: session.user.email };
-  // ===
-
-  // === REMOVE IN PRODUCTION, ONLY FOR TESTING PORPOSE ===
-  /* const {
-    tutor: { tutor, fakeId: tutorFakeId },
-    user: { user: normalUser, fakeId: userFakeId },
-  } = await findTestingUsers();
-  if (
-    context.req.url?.includes(tutorFakeId) ||
-    context.req.url?.includes(userFakeId)
-  ) {
-    query = { _id: normalUser._id, isTutor: false };
-    if (context.req.url?.includes(tutorFakeId)) {
-      query._id = tutor._id;
-      query.isTutor = true;
-    }
-  } */
-  // ===
 
   const user = await User.findOne(query);
   if (user) {
-    /* if (user.isTutor)
+    if (user.isTutor)
       return {
         props: {},
-        redirect: { permanent: false, destination: '/users' },
-      }; */
+        redirect: { permanent: false, destination: '/users/tutor-profile' },
+      };
     return {
       props: {},
     };

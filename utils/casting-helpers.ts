@@ -11,6 +11,8 @@ export const getUserDocumentObject = (
   const userObject: UserDocumentObject = {
     _id: user._id.toString(),
     email: user.email,
+    sessionEarnings: user.sessionEarnings,
+    postEarnings: user.postEarnings,
     fullname: user.fullname,
     isTutor: user.isTutor,
     bio: user.bio || '',
@@ -62,6 +64,7 @@ export const getSessionDocumentObject = (s: SessionDocument) => ({
   _id: s._id.toString(),
   subject: s.subject,
   topic: s.topic,
+  price: s.price,
   hours: s.hours,
   status: s.status,
   date: new Date(s.date).toLocaleString(),
@@ -78,6 +81,7 @@ export const getPostDocumentObject = (p: PostDocument) => {
     subject: p.subject,
     description: p.description,
     status: p.status,
+    price: p.price,
     answer: p.answer,
     attachments: p.attachments.map(a => ({
       url: a.url,

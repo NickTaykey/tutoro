@@ -22,13 +22,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
               const queryString = new URLSearchParams({
                 successAlert: 'Checkout successfully completed!',
               });
-              return res.redirect('/users?' + queryString);
+              return res.redirect('/users/user-profile?' + queryString);
             })
             .catch(() => {
               const queryString = new URLSearchParams({
                 errorAlert: 'Checkout process failed, contact us.',
               });
-              res.redirect('/tutors?' + queryString);
+              return res.redirect('/tutors?' + queryString);
             });
         }
       });

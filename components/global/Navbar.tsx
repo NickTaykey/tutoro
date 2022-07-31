@@ -26,6 +26,8 @@ import {
   FaRegUserCircle,
   FaSignOutAlt,
   FaSun,
+  FaDollarSign,
+  FaHandsHelping,
 } from 'react-icons/fa';
 import React, { useContext, useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -37,6 +39,8 @@ import UpdateAvatarForm from '../users/UpdateAvatarForm';
 import UpdateTutorForm from '../tutors/UpdateTutorForm';
 import AuthenticatedUserContext from '../../store/authenticated-user-context';
 import getProvidersList from '../../utils/get-providers';
+import { useRouter } from 'next/router';
+import EarningsMenu from '../users/EarningsMenu';
 
 const Navbar: React.FC = () => {
   const {
@@ -51,6 +55,8 @@ const Navbar: React.FC = () => {
   const toogleColorModeBtnBgColorHover = useColorModeValue('gray.800', 'white');
   const toogleColorModeBtnColorHover = useColorModeValue('white', 'black');
 
+  const { pathname, push } = useRouter();
+
   useEffect(() => {
     getProvidersList().then(list => setProvidersList(list));
   }, [getProvidersList]);
@@ -64,6 +70,9 @@ const Navbar: React.FC = () => {
     showUpdateTutorMenu,
     openUpdateTutorMenu,
     closeUpdateTutorMenu,
+    openEarningsMenu,
+    showEarningsMenu,
+    closeEarningsMenu,
   } = useContext(AuthenticatedUserContext);
 
   const btnRef = React.useRef(null);
@@ -99,168 +108,230 @@ const Navbar: React.FC = () => {
           </Heading>
         </Link>
         <Show breakpoint="(max-width: 767px)">
-          <IconButton
-            ref={btnRef}
-            boxShadow="none"
-            onClick={onDrawerOpen}
-            size="lg"
-            backgroundColor="transparent"
-            fontSize="48"
-            mr={3}
-            color="gray.500"
-            aria-label="navbar-hamburger"
-            icon={<GoThreeBars />}
-          />
-          <Drawer
-            isOpen={isDrawerOpen}
-            placement="right"
-            onClose={onDrawerClose}
-            size="full"
-            finalFocusRef={btnRef}
-          >
-            <DrawerOverlay />
-            <DrawerContent>
-              {!showUpdateAvatarMenu && !showUpdateTutorMenu && (
-                <DrawerCloseButton />
-              )}
-              <DrawerBody>
-                {!user && providersList && (
-                  <Flex height="100%" direction="column" justify="center">
-                    <Heading as="h1" size="md" textAlign="center" my="4">
-                      Sign In
-                    </Heading>
-                    {providersList.map(provider => (
-                      <Button
-                        width="100%"
-                        key={provider.name}
-                        leftIcon={<FcGoogle size="30" />}
-                        aria-label="Google OAuth Icon"
-                        onClick={() => signIn(provider.id)}
-                      >
-                        Google
-                      </Button>
-                    ))}
-                  </Flex>
+          <Flex>
+            {pathname !== '/auth-wall' && (
+              <IconButton
+                ref={btnRef}
+                boxShadow="none"
+                onClick={onDrawerOpen}
+                size="lg"
+                backgroundColor="transparent"
+                fontSize="48"
+                mr={3}
+                color="gray.500"
+                aria-label="navbar-hamburger"
+                icon={<GoThreeBars />}
+              />
+            )}
+            <Drawer
+              isOpen={isDrawerOpen}
+              placement="right"
+              onClose={onDrawerClose}
+              size="full"
+              finalFocusRef={btnRef}
+            >
+              <DrawerOverlay />
+              <DrawerContent>
+                {!showUpdateAvatarMenu && !showUpdateTutorMenu && (
+                  <DrawerCloseButton />
                 )}
-                {user && (
-                  <Flex
-                    alignItems="center"
-                    justify="center"
-                    direction="column"
-                    height="100%"
-                  >
-                    {!showUpdateAvatarMenu && !showUpdateTutorMenu && (
-                      <Link href="/users">
-                        <Avatar
-                          size="xl"
-                          name={user.fullname}
-                          src={user.avatar?.url || ''}
-                          _hover={{ cursor: 'pointer' }}
-                          mb="2"
-                        />
-                      </Link>
-                    )}
-                    {showUpdateAvatarMenu ? (
-                      <Flex
-                        direction="column"
-                        shadow="md"
-                        borderWidth="1px"
-                        borderRadius="md"
-                        p="6"
-                        width="100%"
-                        mt={[2, 0]}
-                      >
-                        <Box
-                          color="gray.500"
-                          onClick={closeUpdateAvatarMenu}
-                          alignSelf="end"
-                        >
-                          <FaRegTimesCircle size="25" />
-                        </Box>
-                        <Box my="3">
-                          <UpdateAvatarForm />
-                        </Box>
-                      </Flex>
-                    ) : showUpdateTutorMenu && user ? (
-                      <Flex
-                        direction="column"
-                        shadow="md"
-                        borderWidth="1px"
-                        borderRadius="md"
-                        p="6"
-                        width="100%"
-                        mt={[2, 0]}
-                      >
-                        <Box color="gray.500" alignSelf="end">
-                          <FaRegTimesCircle
-                            size="25"
-                            onClick={closeUpdateTutorMenu}
-                          />
-                        </Box>
-                        <Box my="3">
-                          <UpdateTutorForm />
-                        </Box>
-                      </Flex>
-                    ) : (
-                      <VStack width="100%" spacing="4">
-                        <IconButton
+                <DrawerBody>
+                  {!user && providersList && (
+                    <Flex height="100%" direction="column" justify="center">
+                      <Heading as="h1" size="md" textAlign="center" my="4">
+                        Sign In
+                      </Heading>
+                      {providersList.map(provider => (
+                        <Button
                           width="100%"
-                          icon={<FaRegUserCircle size="25" />}
-                          variant="cyan"
-                          color="white"
-                          onClick={openUpdateAvatarMenu}
-                          aria-label="Update avatar"
-                          mt="2"
-                        />
-                        {user.isTutor && (
+                          key={provider.name}
+                          leftIcon={<FcGoogle size="30" />}
+                          aria-label="Google OAuth Icon"
+                          onClick={() => signIn(provider.id)}
+                        >
+                          Google
+                        </Button>
+                      ))}
+                    </Flex>
+                  )}
+                  {user && (
+                    <Flex
+                      alignItems="center"
+                      justify="center"
+                      direction="column"
+                      height="100%"
+                    >
+                      {!showUpdateAvatarMenu && !showUpdateTutorMenu && (
+                        <Link href="/users/user-profile">
+                          <Avatar
+                            size="xl"
+                            name={user.fullname}
+                            src={user.avatar?.url || ''}
+                            _hover={{ cursor: 'pointer' }}
+                            mb="2"
+                          />
+                        </Link>
+                      )}
+                      {showUpdateAvatarMenu ? (
+                        <Flex
+                          direction="column"
+                          shadow="md"
+                          borderWidth="1px"
+                          borderRadius="md"
+                          p="6"
+                          width="100%"
+                          mt={[2, 0]}
+                        >
+                          <Box
+                            color="gray.500"
+                            onClick={closeUpdateAvatarMenu}
+                            alignSelf="end"
+                          >
+                            <FaRegTimesCircle size="25" />
+                          </Box>
+                          <Box my="3">
+                            <UpdateAvatarForm />
+                          </Box>
+                        </Flex>
+                      ) : showUpdateTutorMenu && user ? (
+                        <Flex
+                          direction="column"
+                          shadow="md"
+                          borderWidth="1px"
+                          borderRadius="md"
+                          p="6"
+                          width="100%"
+                          mt={[2, 0]}
+                        >
+                          <Box color="gray.500" alignSelf="end">
+                            <FaRegTimesCircle
+                              size="25"
+                              onClick={closeUpdateTutorMenu}
+                            />
+                          </Box>
+                          <Box my="3">
+                            <UpdateTutorForm />
+                          </Box>
+                        </Flex>
+                      ) : showEarningsMenu && user.isTutor ? (
+                        <Flex
+                          direction="column"
+                          shadow="md"
+                          borderWidth="1px"
+                          borderRadius="md"
+                          p="6"
+                          width="100%"
+                          mt={[2, 0]}
+                        >
+                          <Box color="gray.500" alignSelf="end">
+                            <FaRegTimesCircle
+                              size="25"
+                              onClick={closeEarningsMenu}
+                            />
+                          </Box>
+                          <Box my="3">
+                            <EarningsMenu />
+                          </Box>
+                        </Flex>
+                      ) : (
+                        <VStack width="100%" spacing="4">
                           <IconButton
                             width="100%"
-                            icon={<FaListUl size="25" />}
-                            variant="warning"
-                            onClick={openUpdateTutorMenu}
+                            icon={<FaRegUserCircle size="25" />}
+                            variant="cyan"
+                            color="white"
+                            onClick={openUpdateAvatarMenu}
                             aria-label="Update avatar"
                             mt="2"
                           />
-                        )}
-                        <IconButton
-                          width="100%"
-                          icon={<FaSignOutAlt size="25" />}
-                          colorScheme="gray"
-                          onClick={() => signOut()}
-                          aria-label="Sign out button"
-                          mt="2"
-                        />
-                        <IconButton
-                          width="100%"
-                          aria-label="toggle website color mode"
-                          backgroundColor={toogleColorModeBtnBgColor}
-                          onClick={() => toggleColorMode()}
-                          color={toogleColorModeBtnColor}
-                          _hover={{
-                            color: toogleColorModeBtnColorHover,
-                            backgroundColor: toogleColorModeBtnBgColorHover,
-                          }}
-                          icon={
-                            colorMode === 'dark' ? (
-                              <FaSun size="25" />
-                            ) : (
-                              <FaMoon size="25" />
-                            )
-                          }
-                        />
-                      </VStack>
-                    )}
-                  </Flex>
-                )}
-              </DrawerBody>
-            </DrawerContent>
-          </Drawer>
+                          {user.isTutor && (
+                            <IconButton
+                              width="100%"
+                              icon={<FaListUl size="25" />}
+                              variant="warning"
+                              onClick={openUpdateTutorMenu}
+                              aria-label="Update avatar"
+                              mt="2"
+                            />
+                          )}
+                          <IconButton
+                            width="100%"
+                            icon={<FaSignOutAlt size="25" />}
+                            colorScheme="gray"
+                            onClick={() => signOut()}
+                            aria-label="Sign out button"
+                            mt="2"
+                          />
+                          <IconButton
+                            width="100%"
+                            variant="special"
+                            onClick={() => openEarningsMenu()}
+                            aria-label="Tutor profile page link"
+                            icon={<FaDollarSign size={25} />}
+                            color="white"
+                            mt="2"
+                          />
+                          <IconButton
+                            width="100%"
+                            bgGradient="linear(to-l, #7928CA, #f03291)"
+                            onClick={() => push('/users/tutor-profile')}
+                            aria-label="Tutor profile page link"
+                            icon={<FaHandsHelping size={25} />}
+                            color="white"
+                            mt="2"
+                          />
+                          <IconButton
+                            width="100%"
+                            aria-label="toggle website color mode"
+                            backgroundColor={toogleColorModeBtnBgColor}
+                            onClick={() => toggleColorMode()}
+                            color={toogleColorModeBtnColor}
+                            _hover={{
+                              color: toogleColorModeBtnColorHover,
+                              backgroundColor: toogleColorModeBtnBgColorHover,
+                            }}
+                            icon={
+                              colorMode === 'dark' ? (
+                                <FaSun size="25" />
+                              ) : (
+                                <FaMoon size="25" />
+                              )
+                            }
+                          />
+                        </VStack>
+                      )}
+                    </Flex>
+                  )}
+                </DrawerBody>
+              </DrawerContent>
+            </Drawer>
+            {pathname === '/auth-wall' && (
+              <IconButton
+                width="100%"
+                aria-label="toggle website color mode"
+                backgroundColor={toogleColorModeBtnBgColor}
+                onClick={() => toggleColorMode()}
+                color={toogleColorModeBtnColor}
+                _hover={{
+                  color: toogleColorModeBtnColorHover,
+                  backgroundColor: toogleColorModeBtnBgColorHover,
+                }}
+                icon={
+                  colorMode === 'dark' ? (
+                    <FaSun size="25" />
+                  ) : (
+                    <FaMoon size="25" />
+                  )
+                }
+              />
+            )}
+          </Flex>
         </Show>
         <Show breakpoint="(min-width: 768px)">
           <HStack spacing="3" mr="3">
-            {user ? (
+            {user && (
               <>
-                <Link href="/users">
+                <Link href="/users/user-profile">
                   <Avatar name={user.fullname} src={user.avatar?.url || ''} />
                 </Link>
                 <IconButton
@@ -273,13 +344,38 @@ const Navbar: React.FC = () => {
                 />
                 {user.isTutor && (
                   <IconButton
-                    width="100%"
-                    icon={<FaListUl size="25" />}
-                    variant="warning"
-                    onClick={openUpdateTutorMenu}
-                    aria-label="Update avatar"
+                    variant="special"
+                    icon={<FaDollarSign size="25" />}
+                    onClick={() => openEarningsMenu()}
+                    aria-label="Tutor profile page link"
                     mr={2}
                   />
+                )}
+                {user.isTutor && (
+                  <>
+                    <IconButton
+                      variant="special"
+                      width="100%"
+                      icon={<FaHandsHelping size={25} />}
+                      bgGradient="linear(to-l, #7928CA, #f03291)"
+                      onClick={() => push('/users/tutor-profile')}
+                      aria-label="Tutor profile page link"
+                      _hover={{
+                        boxShadow:
+                          '-2.5px 2.5px 2.5px 1px rgba(0, 0, 0, 0.125)',
+                        bgGradient: 'linear(to-l, #7928CA, #FF0080, )',
+                      }}
+                      mt="2"
+                    />
+                    <IconButton
+                      width="100%"
+                      icon={<FaListUl size="25" />}
+                      variant="warning"
+                      onClick={openUpdateTutorMenu}
+                      aria-label="Update tutor profile"
+                      mr={2}
+                    />
+                  </>
                 )}
                 <IconButton
                   icon={<FaSignOutAlt size="25" />}
@@ -289,7 +385,8 @@ const Navbar: React.FC = () => {
                   mr={2}
                 />
               </>
-            ) : (
+            )}
+            {!user && pathname !== '/auth-wall' && (
               <Button
                 variant="link"
                 size="lg"

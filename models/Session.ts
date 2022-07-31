@@ -9,6 +9,7 @@ interface Session {
   topic: string;
   hours: number;
   status: SessionStatus;
+  price: number;
   date: Date | string;
   tutor: ObjectId | UserDocument | UserDocumentObject | string;
   user: ObjectId | UserDocument | UserDocumentObject | string;
@@ -27,6 +28,7 @@ const sessionSchema = new Schema<SessionDocument, SessionModel>({
   subject: { type: String, required: true },
   topic: { type: String, required: true },
   hours: { type: Number, required: true, default: 1 },
+  price: { type: Number, required: true },
   status: { type: String, default: SessionStatus.NOT_APPROVED },
   tutor: { type: Schema.Types.ObjectId, ref: 'User' },
   user: { type: Schema.Types.ObjectId, ref: 'User' },

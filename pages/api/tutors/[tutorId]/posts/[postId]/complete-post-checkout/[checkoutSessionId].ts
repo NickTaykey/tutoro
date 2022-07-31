@@ -19,10 +19,16 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
               const post = await Post.findById(postId);
               post.checkoutCompleted = true;
               post.save();
-              return res.redirect('/users');
+              const queryString = new URLSearchParams({
+                successAlert: 'Checkout successfully completed!',
+              });
+              return res.redirect('/users/user-profile?' + queryString);
             })
             .catch(() => {
-              res.redirect('/tutors');
+              const queryString = new URLSearchParams({
+                errorAlert: 'Checkout process failed, contact us.',
+              });
+              return res.redirect('/tutors?' + queryString);
             });
         }
       });

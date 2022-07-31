@@ -14,6 +14,7 @@ import { FaArchive, FaArrowUp, FaCheck, FaStar } from 'react-icons/fa';
 import { MdError } from 'react-icons/md';
 import type { SessionDocumentObject } from '../../models/Session';
 import type { UserDocumentObject } from '../../models/User';
+import AuthenticatedUserContext from '../../store/authenticated-user-context';
 import SessionsContext from '../../store/sessions-context';
 import colors from '../../theme/colors';
 import { SessionStatus } from '../../types';
@@ -30,9 +31,10 @@ const Session: React.FC<Props> = ({
   isLatestCreated,
 }) => {
   const ctx = useContext(SessionsContext);
+  const { updateTutorProfile } = useContext(AuthenticatedUserContext);
   const [showFullTopic, setShowFullTopic] = useState<boolean>(false);
   let { tutor, user } = session;
-  const { _id: tutorId } = tutor as UserDocumentObject;
+  const { _id: tutorId, sessionEarnings } = tutor as UserDocumentObject;
   tutor = tutor as UserDocumentObject;
   user = user as UserDocumentObject;
 
@@ -42,6 +44,10 @@ const Session: React.FC<Props> = ({
       tutorId.toString(),
       SessionStatus.APPROVED
     );
+    debugger;
+    updateTutorProfile({
+      sessionEarnings: sessionEarnings + session.price,
+    });
   };
 
   const rejectSessionHandler = () => {

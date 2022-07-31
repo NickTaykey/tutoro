@@ -38,6 +38,7 @@ import AnswerPostModal from './AnswerPostModal';
 import type { AnswerPostModalHandler } from './AnswerPostModal';
 import Link from 'next/link';
 import colors from '../../theme/colors';
+import AuthenticatedUserContext from '../../store/authenticated-user-context';
 
 interface Props {
   post: PostDocumentObject;
@@ -54,7 +55,8 @@ const Post: React.FC<Props> = ({
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const ctx = useContext(PostsContext);
-  const { status, data } = useSession();
+  const { updateTutorProfile, user } = useContext(AuthenticatedUserContext);
+  const { data } = useSession();
   const updatePostStatusHandler = () => {
     ctx.updatedPostStatus(
       post._id,
@@ -67,6 +69,10 @@ const Post: React.FC<Props> = ({
       imperativeHandlingRef.current?.setValidationError(
         (res as APIError).errorMessage
       );
+    } else {
+      updateTutorProfile({
+        postEarnings: user?.postEarnings! + (res as PostDocumentObject).price,
+      });
     }
     if (setSuccessAlert) setSuccessAlert('Post successfully answered!');
     imperativeHandlingRef.current?.onClose();
@@ -106,7 +112,7 @@ const Post: React.FC<Props> = ({
                     </Flex>
                   </Heading>
                   <Flex direction="column">
-                    {post.attachments.map((f: CloudFile, i: number) => (
+                    {post.answerAttachments.map((f: CloudFile, i: number) => (
                       <Link href={f.url} key={f.public_id} passHref>
                         <Button
                           mb="3"
@@ -278,14 +284,14 @@ const Post: React.FC<Props> = ({
           <Flex mb="1">
             <MdOutlineAttachment size={25} fontWeight="light" />
             <Text ml="2" fontWeight="bold">
-              {post.attachments.length} Post attachments
+              {post.attachments.length} given attachments
             </Text>
           </Flex>
           {post.status === PostStatus.ANSWERED && (
             <Flex mb="1">
               <MdOutlineAttachment size={25} fontWeight="light" />
               <Text ml="2" fontWeight="bold">
-                {post.attachments.length} Answer attachments
+                {post.answerAttachments.length} answer attachments
               </Text>
             </Flex>
           )}
@@ -303,20 +309,6 @@ const Post: React.FC<Props> = ({
           />
         </Show>
       )}
-      {/* {status !== 'loading' && post.status === PostStatus.ANSWERED && (
-        <>
-          <div>Answer:</div>
-          <div>{post.answer}</div>
-          <div>Answered by: {answeredBy.fullname}</div>
-        </>
-      )} */}
-      {/* {!viewAsTutor &&
-          status !== 'loading' &&
-          post.status === PostStatus.CLOSED && (
-            <div>
-              Closed by {post.type === PostType.GLOBAL ? 'a' : 'the'} Tutor.
-            </div>
-          )} */}
       {post.status !== PostStatus.ANSWERED && (
         <>
           <Flex mt="3" direction={['column', 'row']}>

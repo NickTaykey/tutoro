@@ -45,6 +45,7 @@ export default async function handler(
                 date: new Date(sanitizedBody.date),
                 tutor: tutor,
                 user: sessionUser,
+                price: tutor.sessionPricePerHour * +sanitizedBody.hours,
                 status: SessionStatus.NOT_APPROVED,
               });
               tutor.requestedSessions.push(createdSession._id);
@@ -75,7 +76,6 @@ export default async function handler(
                 req,
                 res
               );
-              // return res.status(201).json(createdSession.toObject());
             }
             return res.status(400).json({ errorMessage: 'Invalid subject' });
           }

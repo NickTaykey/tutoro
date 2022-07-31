@@ -157,6 +157,7 @@ const AnswerPostModal = React.forwardRef<
                         width="100%"
                         mb="3"
                         key={f.public_id}
+                        textTransform="capitalize"
                         leftIcon={
                           f.url.includes('raw') ? (
                             <FaFile size={18} />

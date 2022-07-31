@@ -36,6 +36,8 @@ interface UserCoreObject {
   avatar?: CloudFile;
   avgRating: number;
   globalPostsEnabled: boolean;
+  sessionEarnings: number;
+  postEarnings: number;
   geometry?: {
     type: 'Point';
     coordinates: [number, number];
@@ -108,6 +110,8 @@ const userSchema = new Schema<UserDocument, UserModel, {}, InstanceMethods>({
   },
   avgRating: { type: Number, default: 0 },
   globalPostsEnabled: { type: Boolean, default: true },
+  sessionEarnings: { type: Number, default: 0 },
+  postEarnings: { type: Number, default: 0 },
 });
 
 userSchema.pre('save', function (next) {

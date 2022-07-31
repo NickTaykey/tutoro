@@ -17,6 +17,10 @@ const buttonOverrides: ComponentStyleConfig = {
       color: 'white',
       backgroundColor: brandColors.dangerV1,
     },
+    special: {
+      color: 'white',
+      backgroundColor: brandColors.special,
+    },
     link: {
       boxShadow: 'none',
       textTransform: 'Capitalize',

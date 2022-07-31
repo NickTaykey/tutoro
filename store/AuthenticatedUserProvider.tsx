@@ -20,6 +20,7 @@ import { ClientSafeProvider, signIn } from 'next-auth/react';
 import { FcGoogle } from 'react-icons/fc';
 import UpdateTutorForm from '../components/tutors/UpdateTutorForm';
 import UpdateAvatarForm from '../components/users/UpdateAvatarForm';
+import EarningsMenu from '../components/users/EarningsMenu';
 
 enum AuthenticatedUserActionTypes {
   UPDATE_AVATAR,
@@ -88,6 +89,11 @@ const AuthenticatedUserProvider: React.FC<{
     onOpen: openUpdateTutorMenu,
     onClose: closeUpdateTutorMenu,
   } = useDisclosure();
+  const {
+    isOpen: showEarningsMenu,
+    onOpen: openEarningsMenu,
+    onClose: closeEarningsMenu,
+  } = useDisclosure();
   const [providersList, setProvidersList] = useState<ClientSafeProvider[]>([]);
 
   useEffect(() => {
@@ -100,6 +106,9 @@ const AuthenticatedUserProvider: React.FC<{
         showSignInMenu,
         openSignInMenu,
         closeSignInMenu,
+        showEarningsMenu,
+        openEarningsMenu,
+        closeEarningsMenu,
         showUpdateAvatarMenu,
         openUpdateAvatarMenu,
         closeUpdateAvatarMenu,
@@ -184,7 +193,14 @@ const AuthenticatedUserProvider: React.FC<{
         },
         updateTutorProfile(newTutor: UpdateTutorObject) {
           return new Promise(async (resolve, reject) => {
-            if (authenticatedUserState) {
+            if (
+              authenticatedUserState &&
+              newTutor.bio &&
+              newTutor.location &&
+              newTutor.pricePerPost &&
+              newTutor.sessionPricePerHour &&
+              newTutor.subjects?.length
+            ) {
               const res = await ApiHelper(
                 `/api/tutors/${authenticatedUserState._id}`,
                 newTutor,
@@ -201,6 +217,18 @@ const AuthenticatedUserProvider: React.FC<{
               });
               return resolve(null);
             }
+            dispatchAuthenticatedUserAction({
+              type: AuthenticatedUserActionTypes.UPDATE_TUTOR,
+              payload: {
+                ...authenticatedUserState,
+                postEarnings: newTutor.postEarnings
+                  ? newTutor.postEarnings
+                  : authenticatedUserState?.postEarnings,
+                sessionEarnings: newTutor.sessionEarnings
+                  ? newTutor.sessionEarnings
+                  : authenticatedUserState?.sessionEarnings,
+              },
+            });
           });
         },
       }}
@@ -245,20 +273,36 @@ const AuthenticatedUserProvider: React.FC<{
           </Modal>
         )}
         {user && user.isTutor && (
-          <Modal
-            blockScrollOnMount={false}
-            isOpen={showUpdateTutorMenu}
-            onClose={closeUpdateTutorMenu}
-          >
-            <ModalOverlay />
-            <ModalContent>
-              <ModalHeader>Update your tutor profile</ModalHeader>
-              <ModalCloseButton />
-              <ModalBody>
-                <UpdateTutorForm />
-              </ModalBody>
-            </ModalContent>
-          </Modal>
+          <>
+            <Modal
+              blockScrollOnMount={false}
+              isOpen={showUpdateTutorMenu}
+              onClose={closeUpdateTutorMenu}
+            >
+              <ModalOverlay />
+              <ModalContent>
+                <ModalHeader>Update your tutor profile</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody>
+                  <UpdateTutorForm />
+                </ModalBody>
+              </ModalContent>
+            </Modal>
+            <Modal
+              blockScrollOnMount={false}
+              isOpen={showEarningsMenu}
+              onClose={closeEarningsMenu}
+            >
+              <ModalOverlay />
+              <ModalContent>
+                <ModalHeader>Your earnings as a Tutor</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody>
+                  <EarningsMenu />
+                </ModalBody>
+              </ModalContent>
+            </Modal>
+          </>
         )}
       </Show>
       {children}

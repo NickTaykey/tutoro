@@ -8,6 +8,7 @@ interface Post {
   checkoutCompleted: boolean;
   subject: string;
   description: string;
+  price: number;
   status: PostStatus;
   answer: string;
   type: PostType;
@@ -30,6 +31,7 @@ const PostSchema = new Schema<PostDocument, PostModel>(
   {
     checkoutCompleted: { type: Boolean, default: false },
     subject: { type: String, required: true },
+    price: { type: Number, default: 20 },
     description: { type: String, required: true },
     status: {
       type: String,

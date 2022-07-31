@@ -166,6 +166,7 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
           <Link href="/users/become-tutor">
             <Button
               boxShadow="dark-lg"
+              borderRadius="md"
               colorScheme="pink"
               bgGradient="linear(to-l, #7928CA, #FF0080)"
               width={['calc(90% + 4px)', '95%', '80%']}

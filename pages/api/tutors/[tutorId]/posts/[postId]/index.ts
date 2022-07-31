@@ -16,6 +16,8 @@ import type {
   PostDocument,
   PostDocumentObject,
 } from '../../../../../../models/Post';
+import TutorPage from '../../../../../../components/tutors/TutorPage';
+import { UserDocument } from '../../../../../../models/User';
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -53,6 +55,11 @@ export default async function handler(
           }
           if (req.method === 'PUT') {
             const { files, fields } = await parseForm(req, filesUploadConfig);
+            if (!userSession.isTutor) {
+              return res.status(403).json({
+                errorMessage: 'Only a Tutor can answer a Post',
+              });
+            }
             if (Object.keys(files).length > 4) {
               deleteFiles(files);
               return res.status(400).json({
@@ -94,6 +101,15 @@ export default async function handler(
               post.answeredBy = userSession._id;
               post.type = PostType.SPECIFIC;
               userSession.posts.push(post._id);
+            }
+            if (userSession.posts.length) {
+              await userSession.populate('posts');
+              userSession.postEarnings = (
+                userSession.posts as PostDocument[]
+              ).reduce(
+                (acm: number, post: PostDocument) => (acm += post.price),
+                0
+              );
             }
             await Promise.all([post.save(), userSession.save()]);
             return res.status(200).json(post.toObject());

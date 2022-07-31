@@ -2,11 +2,13 @@ import React from 'react';
 import type { UserDocumentObject } from '../models/User';
 
 export interface UpdateTutorObject {
-  location: string;
-  subjects: string[];
-  bio: string;
-  pricePerPost: number;
-  sessionPricePerHour: number;
+  location?: string;
+  subjects?: string[];
+  bio?: string;
+  pricePerPost?: number;
+  sessionPricePerHour?: number;
+  sessionEarnings?: number;
+  postEarnings?: number;
 }
 
 type UserUpdateError = { errorMessage: string };
@@ -22,6 +24,9 @@ interface AuthenticatedUserContextObject {
   showUpdateTutorMenu: boolean;
   openUpdateTutorMenu(): void;
   closeUpdateTutorMenu(): void;
+  showEarningsMenu: boolean;
+  openEarningsMenu(): void;
+  closeEarningsMenu(): void;
   updateAvatar(formData: FormData): Promise<null | UserUpdateError>;
   resetAvatar(): Promise<null | UserUpdateError>;
   becomeTutor(
@@ -37,6 +42,9 @@ const AuthenticatedUserContext =
     user: null,
     showSignInMenu: false,
     openSignInMenu() {},
+    openEarningsMenu() {},
+    closeEarningsMenu() {},
+    showEarningsMenu: false,
     closeSignInMenu() {},
     showUpdateAvatarMenu: false,
     openUpdateAvatarMenu() {},

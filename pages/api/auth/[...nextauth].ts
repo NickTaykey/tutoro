@@ -12,7 +12,7 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   pages: {
-    signIn: '/tutors',
+    signIn: '/auth-wall',
   },
   secret: process.env.NEXT_PUBLIC_SECRET,
   callbacks: {

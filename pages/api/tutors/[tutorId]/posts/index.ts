@@ -110,10 +110,10 @@ export default async function handler(
                 .status(403)
                 .json({ errorMessage: 'You cannot create a Post to yourself' });
             post.answeredBy = tutor as UserDocument;
+            post.price = tutor.pricePerPost;
             tutor.posts.push(post._id);
             await tutor.save();
           }
-
           await Promise.all([post.save(), userSession.save()]);
           return createCheckoutSession(
             getPostDocumentObject(post as PostDocument),
