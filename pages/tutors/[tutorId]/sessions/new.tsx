@@ -1,6 +1,6 @@
 import type { NextPage, GetServerSideProps } from 'next';
 import type { UserDocument, UserDocumentObject } from '../../../../models/User';
-
+import Banner404 from '../../../../components/global/404';
 import { FormEvent, useState } from 'react';
 import { getUserDocumentObject } from '../../../../utils/casting-helpers';
 import ApiHelper from '../../../../utils/api-helper';
@@ -25,7 +25,6 @@ import {
   Heading,
   Flex,
   Alert,
-  useColorMode,
   useColorModeValue,
   AlertIcon,
 } from '@chakra-ui/react';
@@ -267,11 +266,7 @@ const Page: NextPage<Props> = ({ tutor }) => {
           </form>
         </Flex>
       ) : (
-        <Flex justifyContent="center" alignItems="center" height="80vh">
-          <Heading as="h1" size="xl">
-            404 Tutor not found
-          </Heading>
-        </Flex>
+        <Banner404 message="Tutor not found" />
       )}
     </>
   );
@@ -281,7 +276,6 @@ import { getServerSession } from 'next-auth';
 import connectDB from '../../../../middleware/mongo-connect';
 import { authOptions } from '../../../api/auth/[...nextauth]';
 import { useRouter } from 'next/router';
-import Layout from '../../../../components/global/Layout';
 import { FaArrowRight, FaBroom } from 'react-icons/fa';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
@@ -309,14 +303,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
           redirect: { permanent: false, destination: '/tutoro' },
         };
       }
-      if (tutor) {
-        return {
-          props: tutor ? { tutor: getUserDocumentObject(tutor) } : {},
-        };
-      }
       return {
-        props: {},
-        redirect: { permanent: false, destination: '/tutoro' },
+        props: tutor ? { tutor: getUserDocumentObject(tutor) } : {},
       };
     }
     return {
@@ -326,7 +314,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
   } catch (e) {
     return {
       props: {},
-      redirect: { permanent: false, destination: '/tutoro' },
     };
   }
 };

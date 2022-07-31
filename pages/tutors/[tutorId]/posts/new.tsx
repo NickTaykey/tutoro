@@ -21,10 +21,12 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
       try {
         const tutor = await User.findById(context.query.tutorId as string);
         return {
-          props: {
-            subjects: tutor.subjects,
-            tutor: getUserDocumentObject(tutor),
-          },
+          props: tutor
+            ? {
+                subjects: tutor ? tutor.subjects : [],
+                tutor: tutor ? getUserDocumentObject(tutor) : undefined,
+              }
+            : {},
         };
       } catch {
         return { props: {} };

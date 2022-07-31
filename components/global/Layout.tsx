@@ -3,6 +3,7 @@ import { Box, Flex, Heading, Spinner } from '@chakra-ui/react';
 import AuthenticatedUserProvider from '../../store/AuthenticatedUserProvider';
 import { useSession } from 'next-auth/react';
 import type { UserDocumentObject } from '../../models/User';
+import Footer from './Footer';
 
 const Layout: React.FC<{ children: React.ReactNode[] | React.ReactNode }> = ({
   children,
@@ -17,6 +18,7 @@ const Layout: React.FC<{ children: React.ReactNode[] | React.ReactNode }> = ({
     >
       <Navbar />
       <Box mt="5">{children}</Box>
+      <Footer />
     </AuthenticatedUserProvider>
   ) : (
     <Flex

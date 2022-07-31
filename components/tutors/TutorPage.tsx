@@ -3,7 +3,7 @@ import ReviewsContextProvider from '../../store/ReviewsProvider';
 import ReviewContext from '../../store/reviews-context';
 import Review from '../reviews/Review';
 import Map, { Marker } from 'react-map-gl';
-
+import Banner404 from '../global/404';
 import type { ReviewDocumentObject } from '../../models/Review';
 import type { UserDocumentObject } from '../../models/User';
 import {
@@ -15,7 +15,6 @@ import {
   Grid,
   GridItem,
   Box,
-  Center,
   Button,
   Avatar,
   useColorMode,
@@ -217,13 +216,7 @@ const TutorPage: React.FC<Props> = ({
       </Grid>
     </Box>
   ) : (
-    <Flex height="50vh" justify="center">
-      <Center>
-        <Heading as="h1" size="xl">
-          404 Tutor not found
-        </Heading>
-      </Center>
-    </Flex>
+    <Banner404 message="Tutor not found" />
   );
 };
 

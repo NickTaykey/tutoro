@@ -1,6 +1,6 @@
 import type { NewPostFormFields } from '../../types';
 import type { UserDocumentObject } from '../../models/User';
-
+import Banner404 from '../global/404';
 import { ChangeEvent, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/router';
@@ -222,11 +222,7 @@ const NewPostForm: React.FC<Props> = props => {
           </form>
         </Flex>
       ) : (
-        <Flex justifyContent="center" alignItems="center" height="80vh">
-          <Heading as="h1" size="xl">
-            404 Tutor not found
-          </Heading>
-        </Flex>
+        <Banner404 message="Tutor not found" />
       )}
     </>
   );
