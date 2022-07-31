@@ -50,11 +50,11 @@ const SessionContextProvider: React.FC<{
         async setSessionStatus(
           sessionId: string,
           tutorId: string,
-          approve: boolean
+          newStatus: SessionStatus
         ): Promise<SessionDocumentObject | APIError> {
           const apiResponse = await ApiHelper(
             `/api/tutors/${tutorId}/sessions/${sessionId}`,
-            { approve },
+            { newStatus },
             'PUT'
           );
           if (!apiResponse.errorMessage) {
@@ -62,9 +62,7 @@ const SessionContextProvider: React.FC<{
               type: SessionActionTypes.UPDATE,
               payload: {
                 sessionId,
-                sessionStatus: approve
-                  ? SessionStatus.APPROVED
-                  : SessionStatus.REJECTED,
+                sessionStatus: newStatus,
               },
             });
           }

@@ -9,15 +9,27 @@ export enum ReviewFormTypes {
   Edit,
 }
 
+import {
+  FormControl,
+  FormLabel,
+  Textarea,
+  Button,
+  Alert,
+  IconButton,
+  AlertIcon,
+} from '@chakra-ui/react';
+import { FaPen, FaRegTimesCircle } from 'react-icons/fa';
+
 type CreateReviewFormProps = {
   type: ReviewFormTypes.Create;
   tutorId: string;
+  addUserCreateReviewId(reviewId: string): void;
 };
 
 type EditReviewFormProps = {
   type: ReviewFormTypes.Edit;
   review: ReviewDocumentObject;
-  hideForm: () => void;
+  hideForm(): void;
 };
 
 const ReviewForm: React.FC<
@@ -26,7 +38,7 @@ const ReviewForm: React.FC<
   const ctx = useContext(ReviewContext);
   const isEdit = props.type === ReviewFormTypes.Edit;
   const imperativeHandlingRef = useRef<StarRatingHandle>(null);
-  const [errorAlert, setErrorAlert] = useState<string>('');
+  const [errorAlert, setErrorAlert] = useState<string | null>(null);
   const [stars, setStars] = useState<number>(isEdit ? props.review.stars : 0);
   const [text, setText] = useState<string>(
     isEdit && props.review?.text ? props.review.text : ''
@@ -42,7 +54,8 @@ const ReviewForm: React.FC<
       else {
         setStars(0);
         setText('');
-        setErrorAlert('');
+        setErrorAlert(null);
+        props.addUserCreateReviewId(apiResponse._id);
         imperativeHandlingRef.current!.reset();
       }
     }
@@ -67,42 +80,61 @@ const ReviewForm: React.FC<
     }
   };
 
-  const formSubmitHandler = async (e: FormEvent) => {
+  const formSubmitHandler = (e: FormEvent) => {
     e.preventDefault();
-    if (props.type === ReviewFormTypes.Create && !stars) {
-      const r = confirm('Are you sure you want to give 0 stars?');
-      if (r) createReviewHandler();
-    } else if (props.type === ReviewFormTypes.Create && stars) {
+    if (props.type === ReviewFormTypes.Create) {
       createReviewHandler();
-    } else if (props.type === ReviewFormTypes.Edit && !stars) {
-      updateReviewHandler();
-    } else if (props.type === ReviewFormTypes.Edit && stars) {
+    } else {
       updateReviewHandler();
     }
   };
 
   return (
     <form onSubmit={formSubmitHandler}>
-      {errorAlert && <div>{errorAlert}</div>}
-      <fieldset>
+      {errorAlert && (
+        <Alert status="error" my="3">
+          <AlertIcon />
+          {errorAlert}
+        </Alert>
+      )}
+      <FormControl my="2">
         <StarRating
           ref={imperativeHandlingRef}
           stars={stars}
           setStars={setStars}
         />
-      </fieldset>
-      <fieldset>
-        <label>
-          (optional) your review
-          <textarea
-            cols={30}
-            rows={10}
-            onChange={e => setText(e.target.value)}
-            value={text}
-          ></textarea>
-        </label>
-      </fieldset>
-      <button type="submit">{isEdit ? 'Update' : 'Post'} review</button>
+      </FormControl>
+      <FormControl>
+        <FormLabel htmlFor="email">
+          Describe your experience (optional)
+        </FormLabel>
+        <Textarea
+          id="text"
+          name="text"
+          value={text}
+          cols={100}
+          rows={5}
+          onChange={e => setText(e.target.value)}
+        />
+      </FormControl>
+      <Button
+        type="submit"
+        variant="primary"
+        my="3"
+        width={['100%', 'auto']}
+        leftIcon={<FaPen size="15" />}
+      >
+        {isEdit ? 'Update' : 'Post'} review
+      </Button>
+      {isEdit && (
+        <IconButton
+          width={['100%', 'auto']}
+          ml={[0, 2]}
+          icon={<FaRegTimesCircle size="25" />}
+          aria-label="close edit Review form"
+          onClick={() => props.hideForm()}
+        />
+      )}
     </form>
   );
 };

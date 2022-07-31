@@ -1,4 +1,4 @@
-export default function sanitize(v: any) {
+function sanitize(v: any) {
   if (v instanceof Object) {
     for (var key in v) {
       if (/^\$/.test(key)) {
@@ -10,4 +10,5 @@ export default function sanitize(v: any) {
   }
   return { ...v };
 }
-module.exports = sanitize;
+
+export default sanitize;

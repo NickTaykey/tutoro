@@ -7,6 +7,8 @@ export interface Review {
   tutor: ObjectId | UserDocument | UserDocumentObject | string;
   user: ObjectId | UserDocument | UserDocumentObject | string;
   text?: string;
+  createdAt?: Date | string | null;
+  updatedAt?: Date | string | null;
 }
 
 export interface ReviewDocumentObject extends Review {
@@ -18,17 +20,20 @@ export type ReviewDocument = Review & Document;
 
 type ReviewModel = Model<ReviewDocument>;
 
-const reviewSchema = new Schema<ReviewDocument, ReviewModel>({
-  stars: {
-    type: Number,
-    required: true,
-    min: [0, 'You must give at the least {MIN} stars'],
-    max: [5, 'You can give at the most {MAX} stars'],
+const reviewSchema = new Schema<ReviewDocument, ReviewModel>(
+  {
+    stars: {
+      type: Number,
+      required: true,
+      min: [0, 'You must give at the least {MIN} stars'],
+      max: [5, 'You can give at the most {MAX} stars'],
+    },
+    text: String,
+    tutor: { type: Schema.Types.ObjectId, ref: 'User' },
+    user: { type: Schema.Types.ObjectId, ref: 'User' },
   },
-  text: String,
-  tutor: { type: Schema.Types.ObjectId, ref: 'User' },
-  user: { type: Schema.Types.ObjectId, ref: 'User' },
-});
+  { timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' } }
+);
 
 export default models.Review ||
   model<ReviewDocument, ReviewModel>('Review', reviewSchema);

@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useContext, useEffect } from 'react';
 import Map, {
   GeolocateControl,
   FullscreenControl,
@@ -15,18 +15,15 @@ import {
   clusterLayer,
 } from './layers';
 import TutorPopup from './TutorPopup';
+import ClusterMapContext from '../../store/cluster-map-context';
 
 import type { MapRef, GeoJSONSource } from 'react-map-gl';
 import type { MapLayerMouseEvent } from 'mapbox-gl';
-import type { FeatureCollection, GeoJsonProperties, Geometry } from 'geojson';
 import type { TutorObjectGeoJSON } from '../../types';
+import colors from '../../theme/colors';
+import { useColorMode, useColorModeValue } from '@chakra-ui/react';
 
-interface Props {
-  tutors: FeatureCollection<Geometry, GeoJsonProperties>;
-  authenticatedTutor: TutorObjectGeoJSON | null;
-}
-
-const ClusterMap: React.FC<Props> = ({ tutors, authenticatedTutor }) => {
+const ClusterMap: React.FC = () => {
   const [popupInfo, setPopupInfo] = useState<TutorObjectGeoJSON | null>(null);
   const mapRef = useRef<MapRef | null>(null);
 
@@ -47,6 +44,7 @@ const ClusterMap: React.FC<Props> = ({ tutors, authenticatedTutor }) => {
   };
 
   const onMapLoad = () => {
+    mapRef!.current!.resize();
     mapRef!.current!.on('click', 'unclustered-point', e => {
       const { properties } = e.features![0];
       setPopupInfo({
@@ -56,76 +54,117 @@ const ClusterMap: React.FC<Props> = ({ tutors, authenticatedTutor }) => {
           reviews: JSON.parse(properties!.reviews),
           createdReviews: JSON.parse(properties!.createdReviews),
         },
-        geometry: {
-          type: 'Point',
-          coordinates: JSON.parse(properties!.coordinates),
-        },
+        geometry: JSON.parse(properties!.geometry),
       } as TutorObjectGeoJSON);
     });
   };
 
+  const { colorMode } = useColorMode();
+  const popupBgColor = useColorModeValue('gray-50', 'gray-700');
+
+  const { points, filteredPoints, authenticatedTutor } =
+    useContext(ClusterMapContext);
+
+  useEffect(() => {
+    mapRef?.current?.resize();
+  }, [points, filteredPoints]);
+
   return (
-    <Map
-      initialViewState={{
-        latitude: 45.46,
-        longitude: 9.19,
-        zoom: 7,
-        bearing: 0,
-        pitch: 0,
-      }}
-      interactiveLayerIds={[clusterLayer.id!]}
-      onClick={onMapClick}
-      onLoad={onMapLoad}
-      ref={mapRef}
-      style={{ width: '80vw', height: '80vh', margin: '0 auto' }}
-      mapStyle="mapbox://styles/mapbox/dark-v9"
-      mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
-      testMode={true}
-    >
-      <Source
-        id="tutors"
-        type="geojson"
-        data={tutors}
-        cluster={true}
-        clusterMaxZoom={14}
-        clusterRadius={50}
-      >
-        <Layer {...clusterLayer} />
-        <Layer {...clusterCountLayer} />
-        <Layer {...unclusteredPointLayer} />
-      </Source>
-      {authenticatedTutor && (
-        <Marker
-          longitude={authenticatedTutor.geometry.coordinates[0]}
-          latitude={authenticatedTutor.geometry.coordinates[1]}
-          anchor="top"
-          color="orange"
-          onClick={() => {
-            setPopupInfo(authenticatedTutor);
-          }}
-        />
-      )}
-      {popupInfo && (
-        <Popup
-          closeOnClick={false}
-          anchor="top"
-          longitude={+popupInfo.geometry.coordinates[0]}
-          latitude={+popupInfo.geometry.coordinates[1]}
-          onClose={() => setPopupInfo(null)}
-        >
-          <TutorPopup
-            popupInfo={popupInfo}
-            authenticatedTutor={
-              popupInfo.properties._id === authenticatedTutor?.properties._id
+    <>
+      <style jsx>{`
+        *:global(.mapboxgl-popup-anchor-top .mapboxgl-popup-tip) {
+          border-bottom-color: var(--chakra-colors-${popupBgColor}) !important;
+        }
+        *:global(.mapboxgl-popup-anchor-left .mapboxgl-popup-tip) {
+          border-right-color: var(--chakra-colors-${popupBgColor}) !important;
+        }
+        *:global(.mapboxgl-popup-content) {
+          background-color: var(--chakra-colors-${popupBgColor}) !important;
+        }
+      `}</style>
+      <Map
+        initialViewState={{
+          latitude: 45.46,
+          longitude: 9.19,
+          zoom: 7,
+          bearing: 0,
+          pitch: 0,
+        }}
+        onZoom={() => {
+          const unClusteredPoints = mapRef.current?.querySourceFeatures(
+            'tutors',
+            {
+              sourceLayer: 'unclustered-point',
             }
+          );
+          const isNotClustered = unClusteredPoints?.find(
+            p => p.properties!._id === popupInfo?.properties._id
+          );
+          if (!isNotClustered) setPopupInfo(null);
+        }}
+        interactiveLayerIds={[clusterLayer.id!]}
+        onClick={onMapClick}
+        onLoad={onMapLoad}
+        ref={mapRef}
+        style={{ minHeight: '100%', height: '100%' }}
+        mapStyle={`mapbox://styles/mapbox/${colorMode}-v10`}
+        mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
+        testMode={true}
+      >
+        <Source
+          id="tutors"
+          type="geojson"
+          data={filteredPoints ? filteredPoints : points}
+          cluster={true}
+          clusterMaxZoom={14}
+          clusterRadius={50}
+        >
+          <Layer {...clusterLayer} />
+          <Layer {...clusterCountLayer} />
+          <Layer {...unclusteredPointLayer} />
+        </Source>
+        {authenticatedTutor && (
+          <Marker
+            longitude={authenticatedTutor.geometry.coordinates[0]}
+            latitude={authenticatedTutor.geometry.coordinates[1]}
+            anchor="top"
+            color={colors.dangerV1}
+            onClick={() => setPopupInfo(authenticatedTutor)}
           />
-        </Popup>
-      )}
-      <GeolocateControl position="top-left" />
-      <FullscreenControl position="top-left" />
-      <NavigationControl position="top-left" />
-      <ScaleControl />
-    </Map>
+        )}
+        {popupInfo && (
+          <Popup
+            closeOnClick={false}
+            style={
+              authenticatedTutor?.properties._id === popupInfo.properties._id
+                ? {
+                    marginLeft: '15px',
+                  }
+                : {}
+            }
+            anchor={
+              authenticatedTutor?.properties._id === popupInfo.properties._id
+                ? 'left'
+                : 'top'
+            }
+            longitude={+popupInfo.geometry.coordinates[0]}
+            latitude={+popupInfo.geometry.coordinates[1]}
+            onClose={() => setPopupInfo(null)}
+          >
+            <TutorPopup
+              popupInfo={popupInfo}
+              authenticatedTutor={
+                popupInfo.properties._id === authenticatedTutor?.properties._id
+              }
+            />
+          </Popup>
+        )}
+        <GeolocateControl position="top-left" />
+        <FullscreenControl position="top-left" />
+        <NavigationControl position="top-left" />
+        <ScaleControl />
+      </Map>
+    </>
   );
 };
 

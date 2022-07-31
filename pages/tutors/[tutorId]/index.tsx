@@ -1,55 +1,45 @@
 import type { GetServerSideProps, NextPage } from 'next';
 import type { UserDocument, UserDocumentObject } from '../../../models/User';
 
+import { getReviewDocumentObject } from '../../../utils/casting-helpers';
 import TutorPage from '../../../components/tutors/TutorPage';
 import User from '../../../models/User';
-import Review from '../../../models/Review';
-import type { ReviewDocument } from '../../../models/Review';
+import Review, {
+  ReviewDocument,
+  ReviewDocumentObject,
+} from '../../../models/Review';
 
 interface Props {
-  host: string;
+  isUserAllowedToReview: boolean;
   userCreatedReviews: string[];
-  tutor: UserDocumentObject | null;
+  tutor?: UserDocumentObject;
 }
 
-const Page: NextPage<Props> = ({ tutor, userCreatedReviews, host }) => {
-  let markup = <h1>404 Tutor not found!</h1>;
-  if (tutor && tutor.reviews) {
-    markup = (
-      <TutorPage
-        tutor={tutor}
-        userCreatedReviews={userCreatedReviews}
-        host={host}
-      />
-    );
-  }
-  return markup;
-};
+const Page: NextPage<Props> = ({
+  isUserAllowedToReview,
+  userCreatedReviews,
+  tutor,
+}) => (
+  <TutorPage
+    tutor={tutor}
+    isUserAllowedToReview={isUserAllowedToReview}
+    userCreatedReviews={userCreatedReviews}
+  />
+);
 
-import { getUserDocumentObject } from '../../../utils/user-casting-helpers';
+import { getUserDocumentObject } from '../../../utils/casting-helpers';
 import { authOptions } from '../../api/auth/[...nextauth]';
 import connectDB from '../../../middleware/mongo-connect';
 import { getServerSession } from 'next-auth';
-import mongoose from 'mongoose';
+import mongoose, { ObjectId } from 'mongoose';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
-  const { host } = context.req.headers;
-  const [, session] = await Promise.all([
-    connectDB(),
+  const [session] = await Promise.all([
     getServerSession(context, authOptions),
+    connectDB(),
   ]);
-
-  const getReviewDocumentObject = (r: ReviewDocument) => {
-    return {
-      stars: r.stars,
-      _id: r._id.toString(),
-      text: r.text,
-      user: getUserDocumentObject(r.user as UserDocument),
-      tutor: getUserDocumentObject(r.tutor as UserDocument),
-    };
-  };
   try {
-    const [user, userTutor] = await Promise.all([
+    const [user, userTutor]: UserDocument[] = await Promise.all([
       User.findOne({ email: session?.user?.email }),
       User.findById(context.query.tutorId)
         .populate({
@@ -66,26 +56,49 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
         .exec(),
     ]);
     const tutor = getUserDocumentObject(userTutor as UserDocument);
-    tutor.reviews = userTutor.reviews.map(getReviewDocumentObject);
-
+    tutor.reviews = userTutor.reviews.map(r =>
+      getReviewDocumentObject(r as ReviewDocument)
+    );
     if (user) {
-      const userCreatedReviews: string[] = user.createdReviews.map(
-        (r: mongoose.ObjectId) => r.toString()
+      const hasUserCreatedPost =
+        new Set([
+          ...userTutor.posts.map(id => (id as ObjectId).toString()),
+          ...user.createdPosts.map(id => (id as ObjectId).toString()),
+        ]).size !==
+        userTutor.posts.length + user.createdPosts.length;
+      const hasUserCreatedSession =
+        new Set([
+          ...userTutor.requestedSessions.map(id => (id as ObjectId).toString()),
+          ...user.bookedSessions.map(id => (id as ObjectId).toString()),
+        ]).size !==
+        userTutor.requestedSessions.length + user.bookedSessions.length;
+      const userCreatedReviews: string[] = user
+        .toObject()
+        .createdReviews.map((r: mongoose.ObjectId) => r.toString());
+      tutor.reviews.sort((a: ReviewDocumentObject, b: ReviewDocumentObject) =>
+        userCreatedReviews.includes(a._id) ? -1 : 1
       );
       return {
         props: {
           userCreatedReviews,
-          host: host!,
           tutor,
+          isUserAllowedToReview: hasUserCreatedPost || hasUserCreatedSession,
         },
       };
     }
     return {
-      props: { userCreatedReviews: [], host: host!, tutor },
+      props: {
+        userCreatedReviews: [],
+        tutor,
+        isUserAllowedToReview: false,
+      },
     };
   } catch (e) {
     return {
-      props: { userCreatedReviews: [], host: host!, tutor: null },
+      props: {
+        userCreatedReviews: [],
+        isUserAllowedToReview: false,
+      },
     };
   }
 };

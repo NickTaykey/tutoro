@@ -1,7 +1,8 @@
 import connectDB from '../../../middleware/mongo-connect';
 import GoogleProvider from 'next-auth/providers/google';
 import NextAuth, { NextAuthOptions } from 'next-auth';
-import User from '../../../models/User';
+import User, { UserDocument } from '../../../models/User';
+import { getUserDocumentObject } from '../../../utils/casting-helpers';
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -10,6 +11,9 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_SECRET!,
     }),
   ],
+  pages: {
+    signIn: '/auth-wall',
+  },
   secret: process.env.NEXT_PUBLIC_SECRET,
   callbacks: {
     async signIn({ user }) {
@@ -17,9 +21,8 @@ export const authOptions: NextAuthOptions = {
       const userFound = await User.findOne({ email: user.email });
       if (!userFound) {
         await User.create({
-          fullname: user.name,
-          email: user.email,
-          avatar: user.image,
+          fullname: user.name?.trim(),
+          email: user.email?.trim(),
           location: '',
           bio: '',
           subjects: [],
@@ -35,14 +38,7 @@ export const authOptions: NextAuthOptions = {
       if (!user) return { ...session, user: {} };
       return {
         ...session,
-        user: {
-          _id: user._id.toString(),
-          fullname: user.fullname,
-          email: user.email,
-          avatar: user.avatar,
-          isTutor: user.isTutor,
-          coordinates: user.coordinates,
-        },
+        user: getUserDocumentObject(user as UserDocument),
       };
     },
   },

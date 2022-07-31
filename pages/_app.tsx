@@ -1,12 +1,26 @@
 import '../styles/globals.css';
 import type { AppProps } from 'next/app';
 import { SessionProvider } from 'next-auth/react';
+import { ChakraProvider } from '@chakra-ui/react';
+import Head from 'next/head';
+import '../styles/react-datepicker.css';
+import Layout from '../components/global/Layout';
+import theme from '../theme';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <SessionProvider session={pageProps.session} refetchInterval={0}>
-      <Component {...pageProps} />
-    </SessionProvider>
+    <>
+      <Head>
+        <title>Tutoro</title>
+      </Head>
+      <ChakraProvider theme={theme}>
+        <SessionProvider session={pageProps.session} refetchInterval={0}>
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </SessionProvider>
+      </ChakraProvider>
+    </>
   );
 }
 

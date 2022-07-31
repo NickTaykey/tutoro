@@ -10,6 +10,7 @@ async function mongoErrorHandler(
   try {
     await cb();
   } catch (e) {
+    console.log(e);
     if (e instanceof Error.CastError) {
       return res.status(400).json({
         errorMessage:

@@ -1,101 +1,144 @@
-import type { TutorObjectGeoJSON } from '../types';
+import type { PointsCollection } from '../types';
 import type { UserDocument, UserDocumentObject } from '../models/User';
-import type { FeatureCollection, GeoJsonProperties, Geometry } from 'geojson';
 import type { GetServerSideProps, NextPage } from 'next';
+
+import {
+  getReviewDocumentObject,
+  getUserDocumentObject,
+  getTutorGeoJSON,
+  getUsersPointsCollection,
+} from '../utils/casting-helpers';
 import ClusterMap from '../components/cluster-map/ClusterMap';
-import { getReviewDocumentObject } from '../utils/user-casting-helpers';
-import { signIn, signOut } from 'next-auth/react';
-import Link from 'next/link';
+import {
+  Grid,
+  GridItem,
+  Box,
+  Alert,
+  AlertIcon,
+  Heading,
+  Button,
+  Tooltip,
+} from '@chakra-ui/react';
+import React, { useContext } from 'react';
 
 interface Props {
-  points: FeatureCollection<Geometry, GeoJsonProperties> | null;
-  currentUser: UserDocumentObject | null;
+  points: PointsCollection;
+  allSubjects: string[];
 }
 
-const Home: NextPage<Props> = ({ currentUser, points }) => {
-  return points ? (
-    <>
-      <h1 style={{ textAlign: 'center' }}>HomePage</h1>
-      {/* === ONLY FOR TO SAVE ON MAPBOX LOADS IN DEVELOPMENT */}
-      <ClusterMap
-        authenticatedTutor={
-          currentUser?.isTutor
-            ? ({
-                type: 'Feature',
-                properties: currentUser,
-                geometry: {
-                  type: 'Point',
-                  coordinates: currentUser.coordinates,
-                },
-              } as TutorObjectGeoJSON)
-            : null
-        }
-        tutors={points}
-      />
-      <ul>
-        {points.features.map(f => (
-          <li key={f.properties?._id}>
-            <div>{f.properties?.email}</div>
-            <div>{f.properties?._id}</div>
-            <div>
-              <Link href={`/tutors/${f.properties!._id}`}>Learn more</Link>
-              <br />
-              <Link href={`/tutors/${f.properties!._id}/sessions/new`}>
-                Book session
-              </Link>
-            </div>
-          </li>
-        ))}
-      </ul>
-      {/* === */}
-      {!currentUser && <button onClick={() => signIn()}>Sign in</button>}
-      {currentUser && (
-        <>
-          <div>{currentUser?.email}</div>
-          <div>{currentUser?.fullname}</div>
-          <div>
-            <Link href="/users">Your profile page</Link>
-          </div>
-          <button onClick={() => signOut()}>Sign out</button>
-        </>
-      )}
-      <div>
-        {/* TEMPORARY LINKS ONLY FOR DEVELOPMENT PORPOSE */}
-        <Link href={`/users/?q=USER-TESTING`}>User profile page</Link>
-        <br />
-        <Link href={`/users/?q=TUTOR-TESTING`}>Tutor profile page</Link>
-      </div>
-    </>
-  ) : (
-    <h1>Loading map</h1>
+const Home: NextPage<Props> = ({ points, allSubjects }) => {
+  const { user, openSignInMenu } = useContext(AuthenticatedUserContext);
+  const { push, query } = useRouter();
+  return (
+    <ClusterMapContextProvider
+      points={points}
+      authenticatedTutor={user?.isTutor ? getTutorGeoJSON(user) : null}
+    >
+      <ClusterMapContext.Consumer>
+        {clusterMapCtx => (
+          <>
+            <Box width="90%" mx="auto">
+              {query.errorAlert && (
+                <Alert status="error">
+                  <AlertIcon />
+                  {query.errorAlert}
+                </Alert>
+              )}
+              {clusterMapCtx.filteredPoints && (
+                <Alert
+                  status={
+                    clusterMapCtx.filteredPoints.features.length
+                      ? 'success'
+                      : 'error'
+                  }
+                  mt="4"
+                >
+                  <AlertIcon />
+                  Found {clusterMapCtx.filteredPoints.features.length} tutors
+                </Alert>
+              )}
+              <Grid
+                templateColumns="repeat(12, 1fr)"
+                templateRows="repeat(11, 1fr)"
+                gap={[4, null, null, 6]}
+                my={4}
+              >
+                <GridItem
+                  colSpan={[12, null, null, 8, 9]}
+                  rowSpan={[5, null, 12]}
+                >
+                  <Grid
+                    templateColumns="1fr"
+                    templateRows="10fr 2fr"
+                    alignItems={[null, null, null, 'center']}
+                    justifyContent={[null, null, null, 'center']}
+                    width="100%"
+                    height="100%"
+                    gap="0"
+                  >
+                    <GridItem
+                      height="100%"
+                      boxShadow={'-5px 5px 5px 1px rgba(0, 0, 0, 0.25)'}
+                    >
+                      <ClusterMap />
+                    </GridItem>
+                    <GridItem>
+                      <Box>
+                        <Heading as="h2" size="lg" my="3" letterSpacing="1px">
+                          Not sure who to ask?
+                        </Heading>
+                        <Tooltip
+                          hasArrow
+                          label="Our first Tutor available will answer your Post"
+                          bg="gray.300"
+                          color="black"
+                          placement="right"
+                        >
+                          <Button
+                            width={['100%', null, 'auto']}
+                            onClick={() =>
+                              user
+                                ? push('/tutors/global/posts/new')
+                                : openSignInMenu()
+                            }
+                            leftIcon={<FaGlobe />}
+                          >
+                            New global post
+                          </Button>
+                        </Tooltip>
+                      </Box>
+                    </GridItem>
+                  </Grid>
+                </GridItem>
+                <GridItem
+                  colSpan={[12, null, null, 4, 3]}
+                  rowSpan={[7, null, 12]}
+                >
+                  <FiltersForm allSubjects={allSubjects} />
+                </GridItem>
+              </Grid>
+            </Box>
+          </>
+        )}
+      </ClusterMapContext.Consumer>
+    </ClusterMapContextProvider>
   );
 };
 
-import { getUserDocumentObject } from '../utils/user-casting-helpers';
 import { authOptions } from './api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth';
 import connectDB from '../middleware/mongo-connect';
 import Review from '../models/Review';
 import User from '../models/User';
-import type { ReviewDocument } from '../models/Review';
+import FiltersForm from '../components/cluster-map/FiltersForm';
+import ClusterMapContextProvider from '../store/ClusterMapProvider';
+import ClusterMapContext from '../store/cluster-map-context';
+import type { ReviewDocument, ReviewDocumentObject } from '../models/Review';
+import { useRouter } from 'next/router';
+import { FaGlobe } from 'react-icons/fa';
+import AuthenticatedUserContext from '../store/authenticated-user-context';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
-  const getPoints = (
-    tutors: UserDocumentObject[]
-  ): FeatureCollection<Geometry, GeoJsonProperties> => ({
-    type: 'FeatureCollection',
-    features: tutors.map(
-      (tutor): TutorObjectGeoJSON => ({
-        type: 'Feature',
-        properties: {
-          cluster: false,
-          ...tutor,
-        },
-        geometry: { type: 'Point', coordinates: tutor.coordinates },
-      })
-    ),
-  });
-
   const populateReviewConfig = {
     path: 'reviews',
     options: {
@@ -113,42 +156,38 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
     connectDB(),
   ]);
 
-  const tutors = await User.find({ isTutor: true })
+  const tutors = await User.find({
+    isTutor: true,
+    email: { $ne: session?.user?.email },
+  })
     .populate(populateReviewConfig)
     .exec();
 
   const populatedTutorObjects = tutors.map(t => {
     const userObject = getUserDocumentObject(t as UserDocument);
     const reviewDocuments = t.reviews as ReviewDocument[];
-    userObject.reviews = reviewDocuments.map(r => getReviewDocumentObject(r));
+    userObject.reviews = reviewDocuments.map(r =>
+      getReviewDocumentObject(r)
+    ) as ReviewDocumentObject[];
     return userObject;
   });
-
+  const allSubjects = Array.from(
+    new Set(
+      populatedTutorObjects.flatMap((t: UserDocumentObject) => t.subjects)
+    )
+  );
   if (session && session?.user?.email) {
-    const currentUser = await User.findOne({
-      email: session.user.email,
-    })
-      .populate(populateReviewConfig)
-      .exec();
-
-    const currentUserObject = getUserDocumentObject(
-      currentUser as UserDocument
-    );
-    currentUserObject.reviews = currentUser.reviews.map(
-      getReviewDocumentObject
-    );
-
     return {
       props: {
-        currentUser: currentUserObject,
-        points: getPoints(populatedTutorObjects),
+        allSubjects,
+        points: getUsersPointsCollection(populatedTutorObjects),
       },
     };
   }
   return {
     props: {
-      points: getPoints(populatedTutorObjects),
-      currentUser: null,
+      allSubjects,
+      points: getUsersPointsCollection(populatedTutorObjects),
     },
   };
 };
