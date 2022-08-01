@@ -8,17 +8,11 @@ import {
   getTutorGeoJSON,
   getUsersPointsCollection,
 } from '../utils/casting-helpers';
+
 import ClusterMap from '../components/cluster-map/ClusterMap';
-import {
-  Grid,
-  GridItem,
-  Box,
-  Alert,
-  AlertIcon,
-  Heading,
-  Button,
-  Tooltip,
-} from '@chakra-ui/react';
+
+import * as c from '@chakra-ui/react';
+
 import React, { useContext } from 'react';
 
 interface Props {
@@ -37,15 +31,15 @@ const Home: NextPage<Props> = ({ points, allSubjects }) => {
       <ClusterMapContext.Consumer>
         {clusterMapCtx => (
           <>
-            <Box width="90%" mx="auto">
+            <c.Box width="90%" mx="auto">
               {query.errorAlert && (
-                <Alert status="error">
-                  <AlertIcon />
+                <c.Alert status="error">
+                  <c.AlertIcon />
                   {query.errorAlert}
-                </Alert>
+                </c.Alert>
               )}
               {clusterMapCtx.filteredPoints && (
-                <Alert
+                <c.Alert
                   status={
                     clusterMapCtx.filteredPoints.features.length
                       ? 'success'
@@ -53,21 +47,21 @@ const Home: NextPage<Props> = ({ points, allSubjects }) => {
                   }
                   mt="4"
                 >
-                  <AlertIcon />
+                  <c.AlertIcon />
                   Found {clusterMapCtx.filteredPoints.features.length} tutors
-                </Alert>
+                </c.Alert>
               )}
-              <Grid
+              <c.Grid
                 templateColumns="repeat(12, 1fr)"
                 templateRows="repeat(11, 1fr)"
                 gap={[4, null, null, 6]}
                 my={4}
               >
-                <GridItem
+                <c.GridItem
                   colSpan={[12, null, null, 8, 9]}
                   rowSpan={[5, null, 12]}
                 >
-                  <Grid
+                  <c.Grid
                     templateColumns="1fr"
                     templateRows="10fr 2fr"
                     alignItems={[null, null, null, 'center']}
@@ -76,25 +70,25 @@ const Home: NextPage<Props> = ({ points, allSubjects }) => {
                     height="100%"
                     gap="0"
                   >
-                    <GridItem
+                    <c.GridItem
                       height="100%"
                       boxShadow={'-5px 5px 5px 1px rgba(0, 0, 0, 0.25)'}
                     >
                       <ClusterMap />
-                    </GridItem>
-                    <GridItem>
-                      <Box>
-                        <Heading as="h2" size="lg" my="3" letterSpacing="1px">
+                    </c.GridItem>
+                    <c.GridItem>
+                      <c.Box>
+                        <c.Heading as="h2" size="lg" my="3" letterSpacing="1px">
                           Not sure who to ask?
-                        </Heading>
-                        <Tooltip
+                        </c.Heading>
+                        <c.Tooltip
                           hasArrow
                           label="Our first Tutor available will answer your Post"
                           bg="gray.300"
                           color="black"
                           placement="right"
                         >
-                          <Button
+                          <c.Button
                             width={['100%', null, 'auto']}
                             onClick={() =>
                               user
@@ -104,20 +98,20 @@ const Home: NextPage<Props> = ({ points, allSubjects }) => {
                             leftIcon={<FaGlobe />}
                           >
                             New global post
-                          </Button>
-                        </Tooltip>
-                      </Box>
-                    </GridItem>
-                  </Grid>
-                </GridItem>
-                <GridItem
+                          </c.Button>
+                        </c.Tooltip>
+                      </c.Box>
+                    </c.GridItem>
+                  </c.Grid>
+                </c.GridItem>
+                <c.GridItem
                   colSpan={[12, null, null, 4, 3]}
                   rowSpan={[7, null, 12]}
                 >
                   <FiltersForm allSubjects={allSubjects} />
-                </GridItem>
-              </Grid>
-            </Box>
+                </c.GridItem>
+              </c.Grid>
+            </c.Box>
           </>
         )}
       </ClusterMapContext.Consumer>
@@ -171,11 +165,13 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
     ) as ReviewDocumentObject[];
     return userObject;
   });
+
   const allSubjects = Array.from(
     new Set(
       populatedTutorObjects.flatMap((t: UserDocumentObject) => t.subjects)
     )
   );
+
   if (session && session?.user?.email) {
     return {
       props: {
@@ -184,6 +180,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
       },
     };
   }
+
   return {
     props: {
       allSubjects,

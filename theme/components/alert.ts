@@ -9,19 +9,19 @@ const alertOverrides: ComponentStyleConfig = {
       fontWeight: '600',
       boxShadow: '-5px 5px 5px 1px rgba(0, 0, 0, 0.25)',
       backgroundColor:
-        props.status === 'error'
-          ? `${
-              props.colorMode === 'dark' ? colors.dangerV2 : 'auto'
-            }!important;`
-          : `${
-              props.colorMode === 'dark' ? colors.successV2 : 'auto'
-            }!important;`,
+        (props.status === 'error'
+          ? props.colorMode === 'dark'
+            ? colors.dangerV2
+            : 'auto'
+          : props.colorMode === 'dark'
+          ? colors.successV2
+          : 'auto') + ' !important;',
       color:
-        props.colorMode === 'dark'
+        (props.colorMode === 'dark'
           ? 'white'
           : props.status === 'error'
-          ? `${colors.dangerV1}!important;`
-          : `${colors.successV1}!important;`,
+          ? colors.dangerV1
+          : colors.successV1) + ' !important;',
     },
   }),
 };

@@ -1,40 +1,11 @@
-import {
-  Alert,
-  Button,
-  Flex,
-  Text,
-  FormControl,
-  FormLabel,
-  Heading,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalOverlay,
-  Textarea,
-  useDisclosure,
-  Box,
-  Tooltip,
-  Input,
-  Spinner,
-  Kbd,
-  Show,
-  AlertIcon,
-} from '@chakra-ui/react';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
-import React, {
-  useState,
-  useImperativeHandle,
-  Dispatch,
-  SetStateAction,
-  ChangeEvent,
-} from 'react';
+import * as c from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { FaArrowRight, FaBroom, FaFile, FaImage } from 'react-icons/fa';
 import { MdOutlineAttachment } from 'react-icons/md';
-import { PostDocumentObject } from '../../models/Post';
-import { AnswerFormFields, CloudFile } from '../../types';
+import React, { useState, useImperativeHandle } from 'react';
+import type { Dispatch, SetStateAction, ChangeEvent } from 'react';
+import type { PostDocumentObject } from '../../models/Post';
+import type { AnswerFormFields, CloudFile } from '../../types';
 
 export type AnswerPostModalHandler = {
   onClose: () => void;
@@ -52,8 +23,7 @@ const AnswerPostModal = React.forwardRef<
   const [filesList, setFilesList] = useState<FileList | null>(null);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [validationError, setValidationError] = useState<string | null>(null);
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const router = useRouter();
+  const { isOpen, onOpen, onClose } = c.useDisclosure();
 
   const {
     register,
@@ -66,19 +36,7 @@ const AnswerPostModal = React.forwardRef<
   });
 
   const onFileUploadChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const fileInput = e.target;
-
-    if (!fileInput.files) {
-      alert('No file was chosen');
-      return;
-    }
-
-    if (!fileInput.files || fileInput.files.length === 0) {
-      alert('Files list is empty');
-      return;
-    }
-
-    setFilesList(fileInput.files);
+    setFilesList(e.target.files);
   };
 
   const formSubmitHandler = async (data: AnswerFormFields) => {
@@ -110,17 +68,17 @@ const AnswerPostModal = React.forwardRef<
   }));
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="full">
-      <ModalOverlay />
-      <ModalContent>
-        <Show above="md">
-          <Kbd float="right" position="absolute" right="50px" top="15px">
+    <c.Modal isOpen={isOpen} onClose={onClose} size="full">
+      <c.ModalOverlay />
+      <c.ModalContent>
+        <c.Show above="md">
+          <c.Kbd float="right" position="absolute" right="50px" top="15px">
             esc
-          </Kbd>
-        </Show>
-        <ModalCloseButton />
-        <ModalBody mt="3" overflowY="auto">
-          <Flex
+          </c.Kbd>
+        </c.Show>
+        <c.ModalCloseButton />
+        <c.ModalBody mt="3" overflowY="auto">
+          <c.Flex
             width="90%"
             direction={['column', 'column', 'row']}
             mx="auto"
@@ -128,8 +86,8 @@ const AnswerPostModal = React.forwardRef<
             height={[null, null, '80vh', '80vh']}
             alignItems="center"
           >
-            <Box width={['100%', '100%', '50%']} mx={['0', '0', '2']} my="2">
-              <Flex
+            <c.Box width={['100%', '100%', '50%']} mx={['0', '0', '2']} my="2">
+              <c.Flex
                 direction="column"
                 shadow="md"
                 borderWidth="1px"
@@ -137,23 +95,23 @@ const AnswerPostModal = React.forwardRef<
                 width="100%"
                 borderRadius="md"
               >
-                <Heading as="h2" size="lg">
+                <c.Heading as="h2" size="lg">
                   Post content
-                </Heading>
-                <Heading as="h3" size="md" my="4">
+                </c.Heading>
+                <c.Heading as="h3" size="md" my="4">
                   Description
-                </Heading>
-                <Text>{props.post?.description}</Text>
+                </c.Heading>
+                <c.Text>{props.post?.description}</c.Text>
                 {!!props.post.attachments.length && (
                   <>
-                    <Flex my="4">
+                    <c.Flex my="4">
                       <MdOutlineAttachment size={25} />
-                      <Heading as="h3" size="md" ml="1">
+                      <c.Heading as="h3" size="md" ml="1">
                         Attachments
-                      </Heading>
-                    </Flex>
+                      </c.Heading>
+                    </c.Flex>
                     {props.post.attachments.map((f: CloudFile, i: number) => (
-                      <Button
+                      <c.Button
                         width="100%"
                         mb="3"
                         key={f.public_id}
@@ -169,88 +127,88 @@ const AnswerPostModal = React.forwardRef<
                         <a href={f.url} target="_blank" rel="noreferrer">
                           <>Attachment {i + 1}</>
                         </a>
-                      </Button>
+                      </c.Button>
                     ))}
                   </>
                 )}
-              </Flex>
-            </Box>
-            <Box width={['100%', '100%', '50%']} mx={['0', '0', '2']} my="2">
-              <Heading as="h1" size="lg">
+              </c.Flex>
+            </c.Box>
+            <c.Box width={['100%', '100%', '50%']} mx={['0', '0', '2']} my="2">
+              <c.Heading as="h1" size="lg">
                 Your answer
-              </Heading>
+              </c.Heading>
               {validationError && (
-                <Alert status="error" my="4">
-                  <AlertIcon />
+                <c.Alert status="error" my="4">
+                  <c.AlertIcon />
                   {validationError}
-                </Alert>
+                </c.Alert>
               )}
               {!!Object.keys(errors).length && (
-                <Alert status="error" my="4">
-                  <AlertIcon />
+                <c.Alert status="error" my="4">
+                  <c.AlertIcon />
                   {Object.keys(errors)[0].includes('text')
                     ? 'Provide the description of your answer'
                     : ` Provide your ${Object.keys(errors)[0]}}`}
-                </Alert>
+                </c.Alert>
               )}
               <form onSubmit={handleSubmit(formSubmitHandler)}>
-                <FormControl>
-                  <FormLabel htmlFor="answer-text" fontWeight="bold" my="3">
+                <c.FormControl>
+                  <c.FormLabel htmlFor="answer-text" fontWeight="bold" my="3">
                     Answer description
-                  </FormLabel>
-                  <Textarea
+                  </c.FormLabel>
+                  <c.Textarea
                     mb="4"
                     id="answer-text"
                     {...register('text', { minLength: 10, required: true })}
                   />
-                </FormControl>
-                <FormControl mb="4">
+                </c.FormControl>
+                <c.FormControl mb="4">
                   {filesList && filesList.length! > 4 && (
-                    <Alert status="error" fontWeight="bold" my="3">
-                      <AlertIcon />
+                    <c.Alert status="error" fontWeight="bold" my="3">
+                      <c.AlertIcon />
                       Maximum 4 attachments
-                    </Alert>
+                    </c.Alert>
                   )}
-                  <FormLabel htmlFor="attachments-input" fontWeight="bold">
+                  <c.FormLabel htmlFor="attachments-input" fontWeight="bold">
                     Optional, any attachments to share?
-                  </FormLabel>
-                  <Input
+                  </c.FormLabel>
+                  <c.Input
                     type="file"
                     multiple
                     id="attachments-input"
                     onChange={onFileUploadChange}
                   />
-                  <Text fontWeight="bold" my="2">
+                  <c.Text fontWeight="bold" my="2">
                     Only images, PDFs and office format files
-                  </Text>
-                </FormControl>
+                  </c.Text>
+                </c.FormControl>
 
                 {isUploading ? (
-                  <Flex alignItems="center">
-                    <Spinner
+                  <c.Flex alignItems="center">
+                    <c.Spinner
                       thickness="4px"
                       speed="0.65s"
                       emptyColor="gray.200"
                       color="blue.500"
                       size="xl"
                     />
-                    <Heading as="h3" size="md" ml="3">
+                    <c.Heading as="h3" size="md" ml="3">
                       Saving Post
-                    </Heading>
-                  </Flex>
+                    </c.Heading>
+                  </c.Flex>
                 ) : (
-                  <Flex
+                  <c.Flex
                     width="100%"
                     direction={['column', 'column', 'row', null, null]}
                   >
-                    <Tooltip
+                    <c.Tooltip
                       hasArrow
                       p="3"
                       bg="gray.300"
                       color="black"
                       label="You will not be able to modify the answer!"
                     >
-                      <Button
+                      <c.Button
                         disabled={
                           filesList && filesList.length > 4 ? true : false
                         }
@@ -262,9 +220,9 @@ const AnswerPostModal = React.forwardRef<
                         rightIcon={<FaArrowRight />}
                       >
                         Answer Post
-                      </Button>
-                    </Tooltip>
-                    <Button
+                      </c.Button>
+                    </c.Tooltip>
+                    <c.Button
                       variant="danger"
                       type="reset"
                       rightIcon={<FaBroom />}
@@ -273,15 +231,15 @@ const AnswerPostModal = React.forwardRef<
                       mr={[0, 0, 3, 3, 3]}
                     >
                       Reset
-                    </Button>
-                  </Flex>
+                    </c.Button>
+                  </c.Flex>
                 )}
               </form>
-            </Box>
-          </Flex>
-        </ModalBody>
-      </ModalContent>
-    </Modal>
+            </c.Box>
+          </c.Flex>
+        </c.ModalBody>
+      </c.ModalContent>
+    </c.Modal>
   );
 });
 

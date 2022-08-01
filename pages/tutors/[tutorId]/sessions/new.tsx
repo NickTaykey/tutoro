@@ -8,26 +8,7 @@ import User from '../../../../models/User';
 import Review from '../../../../models/Review';
 import ReactDatePicker from 'react-datepicker';
 
-import {
-  FormControl,
-  FormLabel,
-  Button,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
-  Textarea,
-  Box,
-  Select,
-  Input,
-  Text,
-  Heading,
-  Flex,
-  Alert,
-  useColorModeValue,
-  AlertIcon,
-} from '@chakra-ui/react';
+import * as c from '@chakra-ui/react';
 
 interface Props {
   tutor?: UserDocumentObject;
@@ -138,7 +119,7 @@ const Page: NextPage<Props> = ({ tutor }) => {
       ? '0' + formFields.date.getMinutes().toString()
       : formFields.date.getMinutes().toString();
 
-  const dateInputBgColor = useColorModeValue('gray-50', 'gray-600');
+  const dateInputBgColor = c.useColorModeValue('gray-50', 'gray-600');
 
   return (
     <>
@@ -148,7 +129,7 @@ const Page: NextPage<Props> = ({ tutor }) => {
         }
       `}</style>
       {tutor ? (
-        <Flex
+        <c.Flex
           width={['90%', null, null, '60%', '40%']}
           mx="auto"
           mb={3}
@@ -157,24 +138,24 @@ const Page: NextPage<Props> = ({ tutor }) => {
           display="flex"
           direction="column"
         >
-          <Heading as="h1" size="lg" textAlign="center">
+          <c.Heading as="h1" size="lg" textAlign="center">
             Book a session with {tutor.fullname}
-          </Heading>
-          <Heading as="h3" size="md" my={3}>
+          </c.Heading>
+          <c.Heading as="h3" size="md" my={3}>
             Price: €{tutor.sessionPricePerHour * formFields.hours}
-          </Heading>
+          </c.Heading>
           <form onSubmit={formSubmitHandler} style={{ width: '100%' }}>
             {validationError && (
-              <Alert status="error" mb="5" fontWeight="bold">
-                <AlertIcon />
+              <c.Alert status="error" mb="5" fontWeight="bold">
+                <c.AlertIcon />
                 {validationError}
-              </Alert>
+              </c.Alert>
             )}
-            <FormControl mb="4">
-              <FormLabel htmlFor="session-subject" fontWeight="bold">
+            <c.FormControl mb="4">
+              <c.FormLabel htmlFor="session-subject" fontWeight="bold">
                 Subject
-              </FormLabel>
-              <Select
+              </c.FormLabel>
+              <c.Select
                 id="session-subject"
                 name="subject"
                 onChange={formFieldUpdater}
@@ -184,64 +165,64 @@ const Page: NextPage<Props> = ({ tutor }) => {
                     {s}
                   </option>
                 ))}
-              </Select>
-            </FormControl>
-            <FormControl mb="4">
-              <FormLabel htmlFor="session-topic" fontWeight="bold">
+              </c.Select>
+            </c.FormControl>
+            <c.FormControl mb="4">
+              <c.FormLabel htmlFor="session-topic" fontWeight="bold">
                 Topic of the session
-              </FormLabel>
-              <Textarea
+              </c.FormLabel>
+              <c.Textarea
                 id="session-topic"
                 onChange={formFieldUpdater}
                 value={formFields.topic}
                 name="topic"
               />
-            </FormControl>
-            <FormControl mb="4">
-              <FormLabel htmlFor="session-hours" fontWeight="bold">
+            </c.FormControl>
+            <c.FormControl mb="4">
+              <c.FormLabel htmlFor="session-hours" fontWeight="bold">
                 How many hours do you need?
-              </FormLabel>
-              <NumberInput
+              </c.FormLabel>
+              <c.NumberInput
                 min={1}
                 max={6}
                 onChange={hoursChangeHandler}
                 value={formFields.hours}
               >
-                <NumberInputField id="session-hours" />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput>
-            </FormControl>
-            <Text mb="3" fontWeight="bold">
+                <c.NumberInputField id="session-hours" />
+                <c.NumberInputStepper>
+                  <c.NumberIncrementStepper />
+                  <c.NumberDecrementStepper />
+                </c.NumberInputStepper>
+              </c.NumberInput>
+            </c.FormControl>
+            <c.Text mb="3" fontWeight="bold">
               When would you like to have this session?
-            </Text>
-            <FormControl>
-              <Text fontWeight="light" mb="2">
+            </c.Text>
+            <c.FormControl>
+              <c.Text fontWeight="light" mb="2">
                 Date
-              </Text>
-              <Box mb="4" className="datepicker-container">
+              </c.Text>
+              <c.Box mb="4" className="datepicker-container">
                 <ReactDatePicker
                   id="date"
                   selected={formFields.date}
                   onChange={dateChangeHandler}
                   minDate={new Date(Date.now())}
                 />
-              </Box>
-              <FormLabel htmlFor="time" fontWeight="light">
+              </c.Box>
+              <c.FormLabel htmlFor="time" fontWeight="light">
                 Time
-              </FormLabel>
-              <Input
+              </c.FormLabel>
+              <c.Input
                 type="time"
                 name="time"
                 id="time"
                 onChange={timeChangeHandler}
                 value={`${currentHour}:${currentMinutes}`}
               />
-            </FormControl>
-            <Box mt="3">
-              <Button
+            </c.FormControl>
+            <c.Box mt="3">
+              <c.Button
                 variant="primary"
                 rightIcon={<FaArrowRight />}
                 type="submit"
@@ -250,8 +231,8 @@ const Page: NextPage<Props> = ({ tutor }) => {
                 mr={[0, 2]}
               >
                 Book session
-              </Button>
-              <Button
+              </c.Button>
+              <c.Button
                 width={['100%', null, 'auto']}
                 variant="danger"
                 type="reset"
@@ -261,10 +242,10 @@ const Page: NextPage<Props> = ({ tutor }) => {
                 mr={[0, 2]}
               >
                 Clear form
-              </Button>
-            </Box>
+              </c.Button>
+            </c.Box>
           </form>
-        </Flex>
+        </c.Flex>
       ) : (
         <Banner404 message="Tutor not found" />
       )}

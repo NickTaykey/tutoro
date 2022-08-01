@@ -1,6 +1,5 @@
 import type { StyleFunctionProps } from '@chakra-ui/theme-tools';
 import { extendTheme } from '@chakra-ui/react';
-import Heading from './components/heading';
 import Button from './components/button';
 import Alert from './components/alert';
 import Avatar from './components/avatar';
@@ -16,7 +15,6 @@ const theme = extendTheme({
     useSystemColorMode: true,
   },
   components: {
-    Heading,
     Button,
     Alert,
     Avatar,

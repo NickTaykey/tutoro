@@ -5,32 +5,12 @@ import type { QueryObject } from '../../types';
 import { authOptions } from '../api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth';
 import connectDB from '../../middleware/mongo-connect';
-import findTestingUsers from '../../utils/dev-testing-users';
 import User from '../../models/User';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { useContext } from 'react';
 import { useRouter } from 'next/router';
-import {
-  Alert,
-  Box,
-  Button,
-  FormControl,
-  FormLabel,
-  Heading,
-  Input,
-  Flex,
-  Text,
-  Slider,
-  SliderFilledTrack,
-  SliderThumb,
-  SliderTrack,
-  Textarea,
-  IconButton,
-  VStack,
-  AlertIcon,
-} from '@chakra-ui/react';
+import * as c from '@chakra-ui/react';
 import { FaHandsHelping, FaPlus, FaTrashAlt } from 'react-icons/fa';
-import { useSession } from 'next-auth/react';
 import AuthenticatedUserContext from '../../store/authenticated-user-context';
 
 type FormValues = {
@@ -53,8 +33,8 @@ const BecomeTutorPage: NextPage = () => {
     defaultValues: {
       location: '',
       bio: '',
-      sessionPricePerHour: 20,
-      pricePerPost: 10,
+      sessionPricePerHour: 25,
+      pricePerPost: +process.env.NEXT_PUBLIC_GLOBAL_POST_PRICE!,
       subjects: [{ subject: '' }],
     },
   });
@@ -67,7 +47,6 @@ const BecomeTutorPage: NextPage = () => {
     name: 'subjects',
   });
   const { becomeTutor } = useContext(AuthenticatedUserContext);
-
   const router = useRouter();
 
   const onSubmit: SubmitHandler<FormValues> = async data => {
@@ -83,53 +62,53 @@ const BecomeTutorPage: NextPage = () => {
   };
 
   return (
-    <Box width={['90%', null, null, '80%', '40%']} mx="auto" my={[4, 4, 2]}>
-      <Heading
+    <c.Box width={['90%', null, null, '80%', '40%']} mx="auto" my={[4, 4, 2]}>
+      <c.Heading
         as="h1"
         mb={!!Object.keys(errors).length ? 0 : 4}
         textAlign="center"
       >
         Become a Tutor
-      </Heading>
+      </c.Heading>
       {!!Object.keys(errors).length && (
-        <Alert status="error" my={3}>
-          <AlertIcon />
+        <c.Alert status="error" my={3}>
+          <c.AlertIcon />
           {Object.keys(errors)[0] === 'bio'
             ? 'Provide some words sbout you'
             : Object.keys(errors)[0] === 'location'
             ? 'Specify a place where you will host sessions'
             : `Provide your ${Object.keys(errors)[0]}`}
-        </Alert>
+        </c.Alert>
       )}
       <form onSubmit={handleSubmit(onSubmit)}>
-        <FormControl mb="3">
-          <FormLabel htmlFor="bio" fontWeight="bold">
+        <c.FormControl mb="3">
+          <c.FormLabel htmlFor="bio" fontWeight="bold">
             Some words about you
-          </FormLabel>
-          <Textarea id="bio" {...register('bio', { required: true })} />
-        </FormControl>
-        <FormControl mb="3">
-          <FormLabel htmlFor="location" fontWeight="bold">
+          </c.FormLabel>
+          <c.Textarea id="bio" {...register('bio', { required: true })} />
+        </c.FormControl>
+        <c.FormControl mb="3">
+          <c.FormLabel htmlFor="location" fontWeight="bold">
             Where will you host your sessions?
-          </FormLabel>
-          <Input
+          </c.FormLabel>
+          <c.Input
             id="location"
             type="text"
             {...register('location', { required: true, maxLength: 50 })}
           />
-        </FormControl>
-        <FormControl mb="3">
-          <FormLabel
-            htmlFor="post-price-input"
+        </c.FormControl>
+        <c.FormControl mb="3">
+          <c.FormLabel
+            htmlFor="post-price-c.input"
             id="post-price-label"
             fontWeight="bold"
           >
             How much will you charge per post?
-          </FormLabel>
-          <Heading as="h3" size="lg">
+          </c.FormLabel>
+          <c.Heading as="h3" size="lg">
             ${watch('pricePerPost')}
-          </Heading>
-          <Slider
+          </c.Heading>
+          <c.Slider
             aria-labelledby="post-price-label"
             aria-label="post price"
             defaultValue={watch('pricePerPost')}
@@ -137,24 +116,24 @@ const BecomeTutorPage: NextPage = () => {
             max={250}
             onChange={(value: number) => setValue('pricePerPost', value)}
           >
-            <SliderTrack>
-              <SliderFilledTrack />
-            </SliderTrack>
-            <SliderThumb />
-          </Slider>
-        </FormControl>
-        <FormControl mb="3">
-          <FormLabel
-            htmlFor="session-price-input"
+            <c.SliderTrack>
+              <c.SliderFilledTrack />
+            </c.SliderTrack>
+            <c.SliderThumb />
+          </c.Slider>
+        </c.FormControl>
+        <c.FormControl mb="3">
+          <c.FormLabel
+            htmlFor="session-price-c.input"
             id="session-price-hour-label"
             fontWeight="bold"
           >
             How much will you charge per hour of session?
-          </FormLabel>
-          <Heading as="h3" size="lg">
+          </c.FormLabel>
+          <c.Heading as="h3" size="lg">
             ${watch('sessionPricePerHour')}
-          </Heading>
-          <Slider
+          </c.Heading>
+          <c.Slider
             aria-labelledby="session-price-hour-label"
             aria-label="session price per hour"
             defaultValue={watch('sessionPricePerHour')}
@@ -162,27 +141,27 @@ const BecomeTutorPage: NextPage = () => {
             max={250}
             onChange={(value: number) => setValue('sessionPricePerHour', value)}
           >
-            <SliderTrack>
-              <SliderFilledTrack />
-            </SliderTrack>
-            <SliderThumb />
-          </Slider>
-        </FormControl>
-        <FormControl mb="3">
-          <FormLabel id="subjects-label" fontWeight="bold">
+            <c.SliderTrack>
+              <c.SliderFilledTrack />
+            </c.SliderTrack>
+            <c.SliderThumb />
+          </c.Slider>
+        </c.FormControl>
+        <c.FormControl mb="3">
+          <c.FormLabel id="subjects-label" fontWeight="bold">
             What are you subjects?
-          </FormLabel>
-          <VStack spacing="3">
+          </c.FormLabel>
+          <c.VStack spacing="3">
             {subjects.map((subject, index, subjects) => (
-              <Flex key={subject.id} width="100%">
-                <Input
+              <c.Flex key={subject.id} width="100%">
+                <c.Input
                   aria-labelledby="subjects-label"
                   {...register(`subjects.${index}.subject`, {
                     required: true,
                   })}
                 />
                 {!!index && (
-                  <IconButton
+                  <c.IconButton
                     aria-label="delete subject"
                     variant="danger"
                     color="white"
@@ -191,10 +170,10 @@ const BecomeTutorPage: NextPage = () => {
                     icon={<FaTrashAlt />}
                   />
                 )}
-              </Flex>
+              </c.Flex>
             ))}
-          </VStack>
-          <Button
+          </c.VStack>
+          <c.Button
             width={['100%', null, 'auto']}
             mt="3"
             type="button"
@@ -204,19 +183,19 @@ const BecomeTutorPage: NextPage = () => {
             aria-label="Add another subject"
           >
             Add a subject
-          </Button>
-        </FormControl>
-        <Button
+          </c.Button>
+        </c.FormControl>
+        <c.Button
           type="submit"
           variant="primary"
           width={['100%', null, 'auto']}
           mt="3"
         >
           <FaHandsHelping size="25" />
-          <Text ml="2">Become a Tutor!</Text>
-        </Button>
+          <c.Text ml="2">Become a Tutor!</c.Text>
+        </c.Button>
       </form>
-    </Box>
+    </c.Box>
   );
 };
 
@@ -238,6 +217,7 @@ export const getServerSideProps: GetServerSideProps = async context => {
       props: {},
     };
   }
+
   return {
     props: {},
     redirect: {

@@ -9,6 +9,7 @@ const inputOverrides: ComponentStyleConfig = {
       rounded: 'none',
       fontSize: '16',
       fontWeight: '700',
+      fontFamily: 'ubuntu',
       border: '2px solid rgba(0, 0, 0, 0.1)',
       letterSpacing: '1px',
       boxShadow: '-5px 5px 5px 1px rgba(0, 0, 0, 0.25)',

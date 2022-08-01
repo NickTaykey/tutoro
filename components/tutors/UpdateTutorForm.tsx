@@ -1,23 +1,5 @@
 import { useState, useContext } from 'react';
-import {
-  Alert,
-  AlertIcon,
-  Box,
-  Button,
-  Flex,
-  FormControl,
-  FormHelperText,
-  FormLabel,
-  Heading,
-  IconButton,
-  Input,
-  Slider,
-  SliderFilledTrack,
-  SliderThumb,
-  SliderTrack,
-  Textarea,
-  VStack,
-} from '@chakra-ui/react';
+import * as c from '@chakra-ui/react';
 import { FaCheck, FaPlus, FaTrashAlt } from 'react-icons/fa';
 import { useForm, useFieldArray, SubmitHandler } from 'react-hook-form';
 import ClusterMapContext from '../../store/cluster-map-context';
@@ -83,11 +65,11 @@ const UpdateAvatarForm: React.FC = () => {
   };
 
   return (
-    <Box height={['70vh', null, 'auto']} overflowY="auto" p="3">
+    <c.Box height={['70vh', null, 'auto']} overflowY="auto" p="3">
       <form onSubmit={handleSubmit(onSubmit)}>
         {(!!Object.keys(errors).length || errorAlert) && (
-          <Alert status="error" my={3}>
-            <AlertIcon />
+          <c.Alert status="error" my={3}>
+            <c.AlertIcon />
             {!!Object.keys(errors).length
               ? Object.keys(errors)[0] === 'bio'
                 ? 'Provide some words sbout you'
@@ -95,27 +77,27 @@ const UpdateAvatarForm: React.FC = () => {
                 ? 'Specify a place where you will host sessions'
                 : `Provide your ${Object.keys(errors)[0]}`
               : errorAlert}
-          </Alert>
+          </c.Alert>
         )}
-        <FormControl mb="3">
-          <FormLabel htmlFor="bio">Some words about you</FormLabel>
-          <Textarea id="bio" {...register('bio', { required: true })} />
-        </FormControl>
-        <FormControl mb="3">
-          <FormLabel htmlFor="tutor-location">Location</FormLabel>
-          <Input type="text" id="tutor-location" {...register('location')} />
-          <FormHelperText mt="3">
+        <c.FormControl mb="3">
+          <c.FormLabel htmlFor="bio">Some words about you</c.FormLabel>
+          <c.Textarea id="bio" {...register('bio', { required: true })} />
+        </c.FormControl>
+        <c.FormControl mb="3">
+          <c.FormLabel htmlFor="tutor-location">Location</c.FormLabel>
+          <c.Input type="text" id="tutor-location" {...register('location')} />
+          <c.FormHelperText mt="3">
             Where will you host your tutoring sessions?
-          </FormHelperText>
-        </FormControl>
-        <FormControl mb="3">
-          <FormLabel htmlFor="tutor-price-session">
+          </c.FormHelperText>
+        </c.FormControl>
+        <c.FormControl mb="3">
+          <c.FormLabel htmlFor="tutor-price-session">
             Your price per hour of session
-          </FormLabel>
-          <Heading as="h3" size="md">
+          </c.FormLabel>
+          <c.Heading as="h3" size="md">
             €{watch('sessionPricePerHour')}
-          </Heading>
-          <Slider
+          </c.Heading>
+          <c.Slider
             aria-label="tutor-price-session"
             id="tutor-price-session"
             defaultValue={watch('sessionPricePerHour')}
@@ -123,18 +105,18 @@ const UpdateAvatarForm: React.FC = () => {
             max={250}
             onChange={(value: number) => setValue('sessionPricePerHour', value)}
           >
-            <SliderTrack>
-              <SliderFilledTrack />
-            </SliderTrack>
-            <SliderThumb />
-          </Slider>
-        </FormControl>
-        <FormControl mb="3">
-          <FormLabel htmlFor="post-price">Your price per post</FormLabel>
-          <Heading as="h3" size="md">
+            <c.SliderTrack>
+              <c.SliderFilledTrack />
+            </c.SliderTrack>
+            <c.SliderThumb />
+          </c.Slider>
+        </c.FormControl>
+        <c.FormControl mb="3">
+          <c.FormLabel htmlFor="post-price">Your price per post</c.FormLabel>
+          <c.Heading as="h3" size="md">
             €{watch('pricePerPost')}
-          </Heading>
-          <Slider
+          </c.Heading>
+          <c.Slider
             aria-label="post-price"
             id="post-price"
             defaultValue={watch('pricePerPost')}
@@ -142,25 +124,25 @@ const UpdateAvatarForm: React.FC = () => {
             max={250}
             onChange={(value: number) => setValue('pricePerPost', value)}
           >
-            <SliderTrack>
-              <SliderFilledTrack />
-            </SliderTrack>
-            <SliderThumb />
-          </Slider>
-        </FormControl>
-        <FormControl>
-          <FormLabel id="subjects-label">What are you subjects?</FormLabel>
-          <VStack spacing={3}>
+            <c.SliderTrack>
+              <c.SliderFilledTrack />
+            </c.SliderTrack>
+            <c.SliderThumb />
+          </c.Slider>
+        </c.FormControl>
+        <c.FormControl>
+          <c.FormLabel id="subjects-label">What are you subjects?</c.FormLabel>
+          <c.VStack spacing={3}>
             {subjects.map((subject, index, subjects) => (
-              <Flex width="100%" key={subject.id}>
-                <Input
+              <c.Flex width="100%" key={subject.id}>
+                <c.Input
                   aria-labelledby="subjects-label"
                   {...register(`subjects.${index}.subject`, {
                     required: true,
                   })}
                 />
                 {!!index && (
-                  <IconButton
+                  <c.IconButton
                     aria-label="delete subject"
                     ml="2"
                     onClick={() => subjects.length > 1 && remove(index)}
@@ -168,10 +150,10 @@ const UpdateAvatarForm: React.FC = () => {
                     variant="danger"
                   />
                 )}
-              </Flex>
+              </c.Flex>
             ))}
-          </VStack>
-          <Button
+          </c.VStack>
+          <c.Button
             width={['100%', null, 'auto']}
             variant="success"
             type="button"
@@ -181,9 +163,9 @@ const UpdateAvatarForm: React.FC = () => {
             mt="3"
           >
             Add a subject
-          </Button>
-        </FormControl>
-        <Button
+          </c.Button>
+        </c.FormControl>
+        <c.Button
           type="submit"
           variant="primary"
           width={['100%', null, 'auto']}
@@ -191,9 +173,9 @@ const UpdateAvatarForm: React.FC = () => {
           leftIcon={<FaCheck />}
         >
           Update
-        </Button>
+        </c.Button>
       </form>
-    </Box>
+    </c.Box>
   );
 };
 

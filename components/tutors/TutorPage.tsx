@@ -6,19 +6,7 @@ import Map, { Marker } from 'react-map-gl';
 import AuthenticatedUserContext from '../../store/authenticated-user-context';
 import { useContext } from 'react';
 import { useRouter } from 'next/router';
-import {
-  Heading,
-  Flex,
-  Text,
-  VStack,
-  Badge,
-  Grid,
-  GridItem,
-  Box,
-  Button,
-  Avatar,
-  useColorMode,
-} from '@chakra-ui/react';
+import * as c from '@chakra-ui/react';
 import { FaPen, FaPersonBooth, FaStar } from 'react-icons/fa';
 import colors from '../../theme/colors';
 import Banner404 from '../global/404';
@@ -36,31 +24,31 @@ const TutorPage: React.FC<Props> = ({
 }: Props) => {
   const { user, openSignInMenu } = useContext(AuthenticatedUserContext);
   const currentTutor = user?._id === tutor?._id ? user! : tutor!;
-  const { colorMode } = useColorMode();
+  const { colorMode } = c.useColorMode();
   const { push } = useRouter();
 
   return tutor ? (
-    <Box width="90%" mx="auto">
-      <Flex alignItems="center">
-        <Avatar
+    <c.Box width="90%" mx="auto">
+      <c.Flex alignItems="center">
+        <c.Avatar
           src={currentTutor.avatar?.url ? currentTutor.avatar.url : ''}
           name={currentTutor.fullname}
         />
-        <Heading as="h1" size="xl" my="5" ml="2">
+        <c.Heading as="h1" size="xl" my="5" ml="2">
           {currentTutor.fullname}
-        </Heading>
-      </Flex>
-      <Grid templateColumns="repeat(2, 1fr)" columnGap="4" my="4">
-        <GridItem colSpan={[2, null, null, 1]}>
-          <Box>
+        </c.Heading>
+      </c.Flex>
+      <c.Grid templateColumns="repeat(2, 1fr)" columnGap="4" my="4">
+        <c.GridItem colSpan={[2, null, null, 1]}>
+          <c.Box>
             <strong>Tutor in: </strong>
             {currentTutor.subjects.map(s => (
-              <Badge mr="1" fontSize="0.8em" colorScheme="gray" key={s}>
+              <c.Badge mr="1" fontSize="0.8em" colorScheme="gray" key={s}>
                 {s}
-              </Badge>
+              </c.Badge>
             ))}
-          </Box>
-          <Flex justify="start" my="3">
+          </c.Box>
+          <c.Flex justify="start" my="3">
             {Array(currentTutor.avgRating)
               .fill(null)
               .map((_, i) => (
@@ -71,13 +59,13 @@ const TutorPage: React.FC<Props> = ({
               .map((_, i) => (
                 <FaStar key={i} size={25} color="#e5e5e5" />
               ))}
-          </Flex>
-          <Text>
+          </c.Flex>
+          <c.Text>
             <strong>Bio: </strong>
             {currentTutor.bio}
-          </Text>
-          <Flex direction="column" width="100%">
-            <Button
+          </c.Text>
+          <c.Flex direction="column" width="100%">
+            <c.Button
               mt="3"
               variant="success"
               width="100%"
@@ -89,8 +77,8 @@ const TutorPage: React.FC<Props> = ({
               }}
             >
               Book session
-            </Button>
-            <Button
+            </c.Button>
+            <c.Button
               mt="3"
               variant="primary"
               width="100%"
@@ -102,11 +90,11 @@ const TutorPage: React.FC<Props> = ({
               }}
             >
               Create a Post
-            </Button>
-          </Flex>
-          <Heading as="h2" size="md" my="3">
+            </c.Button>
+          </c.Flex>
+          <c.Heading as="h2" size="md" my="3">
             Location
-          </Heading>
+          </c.Heading>
           <Map
             initialViewState={{
               latitude: currentTutor.geometry!.coordinates[1],
@@ -125,11 +113,11 @@ const TutorPage: React.FC<Props> = ({
               color={colors.primaryV3}
             />
           </Map>
-        </GridItem>
-        <GridItem colSpan={[2, null, null, 1]}>
-          <Heading as="h2" size="md" mt={[5, null, 3, 0]}>
+        </c.GridItem>
+        <c.GridItem colSpan={[2, null, null, 1]}>
+          <c.Heading as="h2" size="md" mt={[5, null, 3, 0]}>
             Reviews
-          </Heading>
+          </c.Heading>
           <ReviewsContextProvider reviews={currentTutor.reviews}>
             <ReviewContext.Consumer>
               {reviewsCtx => {
@@ -143,14 +131,14 @@ const TutorPage: React.FC<Props> = ({
                       tutorId={currentTutor._id}
                     />
                     {!isUserAllowedToReview && user?._id !== currentTutor._id && (
-                      <Flex alignItems="center" width="100%" my="5">
+                      <c.Flex alignItems="center" width="100%" my="5">
                         <FaPen size={20} />
-                        <Heading as="h3" size="md" ml="3">
+                        <c.Heading as="h3" size="md" ml="3">
                           Have a Session or Post to review
-                        </Heading>
-                      </Flex>
+                        </c.Heading>
+                      </c.Flex>
                     )}
-                    <VStack
+                    <c.VStack
                       overflowY="auto"
                       mt="3"
                       height="400px"
@@ -162,7 +150,7 @@ const TutorPage: React.FC<Props> = ({
                           <Review key={r._id} review={r} />
                         ))
                       ) : (
-                        <Heading
+                        <c.Heading
                           as="h2"
                           size="md"
                           textAlign="center"
@@ -170,17 +158,17 @@ const TutorPage: React.FC<Props> = ({
                           color="gray.400"
                         >
                           Be the first to review!
-                        </Heading>
+                        </c.Heading>
                       )}
-                    </VStack>
+                    </c.VStack>
                   </>
                 );
               }}
             </ReviewContext.Consumer>
           </ReviewsContextProvider>
-        </GridItem>
-      </Grid>
-    </Box>
+        </c.GridItem>
+      </c.Grid>
+    </c.Box>
   ) : (
     <Banner404 message="Tutor not found" />
   );

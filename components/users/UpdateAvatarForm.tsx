@@ -1,24 +1,6 @@
 import { useState, ChangeEvent, MouseEvent, useContext } from 'react';
-import {
-  Alert,
-  AlertIcon,
-  Avatar,
-  Box,
-  Button,
-  Center,
-  FormControl,
-  FormHelperText,
-  FormLabel,
-  IconButton,
-  Input,
-  Spinner,
-} from '@chakra-ui/react';
-import {
-  FaBroom,
-  FaFileUpload,
-  FaRegTimesCircle,
-  FaTrash,
-} from 'react-icons/fa';
+import * as c from '@chakra-ui/react';
+import { FaBroom, FaFileUpload, FaTrash } from 'react-icons/fa';
 import ClusterMapContext from '../../store/cluster-map-context';
 import AuthenticatedUserContext from '../../store/authenticated-user-context';
 
@@ -33,47 +15,29 @@ const UpdateAvatarForm: React.FC = () => {
   );
 
   const onFileUploadChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const fileInput = e.target;
-
-    if (!fileInput.files) {
-      return setErrorAlert('No file was chosen');
-    }
-
-    if (!fileInput.files || fileInput.files.length === 0) {
-      return setErrorAlert('Files list is empty');
-    }
-
-    const file = fileInput.files[0];
-
+    const { files } = e.target;
+    if (!files || files.length === 0) return;
+    const file = files[0];
     if (!file.type.startsWith('image')) {
       return setErrorAlert('Please select a valide image');
     }
-
     setErrorAlert(null);
-
     setFile(file);
     setPreviewUrl(URL.createObjectURL(file));
-
     e.currentTarget.type = 'text';
     e.currentTarget.type = 'file';
   };
 
   const onCancelFile = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    if (!previewUrl && !file) {
-      return;
-    }
+    if (!previewUrl && !file) return;
     setFile(null);
     setPreviewUrl(null);
   };
 
   const onUploadFile = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-
-    if (!file) {
-      return;
-    }
-
+    if (!file) return;
     const formData = new FormData();
     formData.append('avatar', file);
     setIsUploading(true);
@@ -105,21 +69,21 @@ const UpdateAvatarForm: React.FC = () => {
   return (
     <form onSubmit={e => e.preventDefault()}>
       {errorAlert && (
-        <Alert status="error" my="2">
-          <AlertIcon />
+        <c.Alert status="error" my="2">
+          <c.AlertIcon />
           {errorAlert}
-        </Alert>
+        </c.Alert>
       )}
       {previewUrl ? (
-        <Center>
-          <Avatar name={user!.fullname} src={previewUrl} size="xl" />
-        </Center>
+        <c.Center>
+          <c.Avatar name={user!.fullname} src={previewUrl} size="xl" />
+        </c.Center>
       ) : (
-        <FormControl mb="2">
-          <FormLabel htmlFor="avatar-input">
+        <c.FormControl mb="2">
+          <c.FormLabel htmlFor="avatar-input">
             Select an image as your new Avatar
-          </FormLabel>
-          <Input
+          </c.FormLabel>
+          <c.Input
             id="avatar-input"
             type="file"
             name="avatar"
@@ -128,14 +92,16 @@ const UpdateAvatarForm: React.FC = () => {
             fontSize="14"
             onChange={onFileUploadChange}
           />
-          <FormHelperText>Allowed formats: jpg, jpeg and png</FormHelperText>
-        </FormControl>
+          <c.FormHelperText>
+            Allowed formats: jpg, jpeg and png
+          </c.FormHelperText>
+        </c.FormControl>
       )}
       {file && (
-        <Box mt="2">
+        <c.Box mt="2">
           {isUploading ? (
-            <Center>
-              <Spinner
+            <c.Center>
+              <c.Spinner
                 my="3"
                 thickness="4px"
                 speed="0.65s"
@@ -143,10 +109,10 @@ const UpdateAvatarForm: React.FC = () => {
                 color="blue.500"
                 size="xl"
               />
-            </Center>
+            </c.Center>
           ) : (
             <>
-              <IconButton
+              <c.IconButton
                 width="100%"
                 mb="2"
                 aria-label="Clear avatar input"
@@ -154,7 +120,7 @@ const UpdateAvatarForm: React.FC = () => {
                 icon={<FaBroom />}
                 onClick={onCancelFile}
               />
-              <IconButton
+              <c.IconButton
                 aria-label="Upload image"
                 width="100%"
                 mb="2"
@@ -164,10 +130,10 @@ const UpdateAvatarForm: React.FC = () => {
               />
             </>
           )}
-        </Box>
+        </c.Box>
       )}
       {user?.avatar?.url && !isUploading && (
-        <Button
+        <c.Button
           my="4"
           leftIcon={<FaTrash />}
           color="dangerV1"
@@ -176,7 +142,7 @@ const UpdateAvatarForm: React.FC = () => {
           onClick={resetDefaultAvatar}
         >
           Reset default avatar
-        </Button>
+        </c.Button>
       )}
     </form>
   );

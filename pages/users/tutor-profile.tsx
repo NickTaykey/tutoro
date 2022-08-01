@@ -82,7 +82,6 @@ import Session from '../../models/Session';
 import Post, { PostDocument, PostDocumentObject } from '../../models/Post';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { FaRegEye } from 'react-icons/fa';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
   const [session] = await Promise.all([
@@ -92,16 +91,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
 
   let query: QueryObject = {};
   if (session?.user?.email) query = { email: session.user.email };
-
-  const populateConfig = {
-    options: {
-      sort: { _id: -1 },
-    },
-    populate: [
-      { path: 'user', model: User },
-      { path: 'tutor', model: User },
-    ],
-  };
 
   const user = await User.findOne(query);
 
@@ -115,68 +104,43 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
             subject: { $in: user.subjects },
             creator: { $ne: currentUser._id },
           })
-            .populate({
-              path: 'creator',
-              model: User,
-            })
-            .populate({
-              path: 'answeredBy',
-              model: User,
-            })
+            .sort({ _id: -1 })
+            .populate({ path: 'user', model: User })
+            .populate({ path: 'tutor', model: User })
             .exec()
         : null,
       user.populate({
-        path: 'createdReviews',
-        ...populateConfig,
-        model: Review,
-        sort: { _id: -1 },
-      }),
-      user.populate({
-        path: 'bookedSessions',
-        ...populateConfig,
-        model: Session,
-        sort: { _id: -1 },
-      }),
-      user.populate({
-        path: 'createdPosts',
-        model: Post,
-        options: { sort: { _id: -1 } },
-        populate: [
-          { path: 'answeredBy', model: User },
-          { path: 'creator', model: User },
-        ],
-      }),
-      user.populate({
         path: 'reviews',
         model: Review,
-        ...populateConfig,
+        populate: [
+          { path: 'user', model: User },
+          { path: 'tutor', model: User },
+        ],
+        options: { sort: { _id: -1 } },
       }),
       user.populate({
         path: 'requestedSessions',
         model: Session,
-        ...populateConfig,
+        populate: [
+          { path: 'user', model: User },
+          { path: 'tutor', model: User },
+        ],
+        options: { sort: { _id: -1 } },
       }),
       user.populate({
         path: 'posts',
         model: Post,
-        options: { sort: { _id: -1 } },
         populate: [
-          { path: 'answeredBy', model: User },
           { path: 'creator', model: User },
+          { path: 'answeredBy', model: User },
         ],
+        options: { sort: { _id: -1 } },
       }),
     ]);
 
     currentUser.reviews = user.reviews.map(getReviewDocumentObject);
-    currentUser.requestedSessions = user.requestedSessions.map(
-      getSessionDocumentObject
-    );
     currentUser.posts = user.posts.map(getPostDocumentObject);
-    currentUser.createdPosts = user.createdPosts.map(getPostDocumentObject);
-    currentUser.createdReviews = user.createdReviews.map(
-      getReviewDocumentObject
-    );
-    currentUser.bookedSessions = user.bookedSessions.map(
+    currentUser.requestedSessions = user.requestedSessions.map(
       getSessionDocumentObject
     );
 

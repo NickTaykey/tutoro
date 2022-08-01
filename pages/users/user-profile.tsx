@@ -93,6 +93,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
       { path: 'user', model: User },
       { path: 'tutor', model: User },
     ],
+    sort: { _id: -1 },
   };
 
   if (query.email) {
@@ -103,13 +104,11 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
         path: 'createdReviews',
         ...populateConfig,
         model: Review,
-        sort: { _id: -1 },
       }),
       user.populate({
         path: 'bookedSessions',
         ...populateConfig,
         model: Session,
-        sort: { _id: -1 },
       }),
       user.populate({
         path: 'createdPosts',

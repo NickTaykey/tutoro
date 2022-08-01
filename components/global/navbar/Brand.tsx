@@ -1,4 +1,4 @@
-const Logo: React.FC<{
+const Brand: React.FC<{
   width: string | number;
   height: string | number;
 }> = props => (
@@ -235,4 +235,4 @@ const Logo: React.FC<{
   </svg>
 );
 
-export default Logo;
+export default Brand;

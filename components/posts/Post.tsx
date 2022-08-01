@@ -1,49 +1,23 @@
-import { PostDocumentObject } from '../../models/Post';
-import { PostType, PostStatus, CloudFile } from '../../types';
-import { useContext, useRef, useState } from 'react';
-import PostsContext, { APIError } from '../../store/posts-context';
+import { useContext, useRef } from 'react';
+import PostsContext from '../../store/posts-context';
 import { useSession } from 'next-auth/react';
 import { UserDocumentObject } from '../../models/User';
-import {
-  Avatar,
-  Badge,
-  Box,
-  Flex,
-  Heading,
-  IconButton,
-  Text,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalCloseButton,
-  useDisclosure,
-  Show,
-  Button,
-  Tooltip,
-} from '@chakra-ui/react';
-import {
-  FaArchive,
-  FaArrowUp,
-  FaExpandArrowsAlt,
-  FaGlobe,
-  FaPencilAlt,
-  FaFile,
-  FaImage,
-  FaStar,
-} from 'react-icons/fa';
+import * as c from '@chakra-ui/react';
+import * as fa from 'react-icons/fa';
 import { MdError, MdOutlineAttachment } from 'react-icons/md';
 import AnswerPostModal from './AnswerPostModal';
-import type { AnswerPostModalHandler } from './AnswerPostModal';
 import Link from 'next/link';
 import colors from '../../theme/colors';
 import AuthenticatedUserContext from '../../store/authenticated-user-context';
+import type { APIError } from '../../store/posts-context';
+import type { PostDocumentObject } from '../../models/Post';
+import type { AnswerPostModalHandler } from './AnswerPostModal';
+import { PostType, PostStatus, CloudFile } from '../../types';
 
 interface Props {
   post: PostDocumentObject;
   isLatestCreated: boolean;
-  viewAsTutor: boolean;
+  viewAsTutor?: boolean;
   setSuccessAlert?: (alertContent: string) => void;
 }
 
@@ -53,22 +27,23 @@ const Post: React.FC<Props> = ({
   setSuccessAlert,
   isLatestCreated,
 }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const ctx = useContext(PostsContext);
+  const { isOpen, onOpen, onClose } = c.useDisclosure();
   const { updateTutorProfile, user } = useContext(AuthenticatedUserContext);
+  const { updatedPostStatus, answerPost } = useContext(PostsContext);
   const { data } = useSession();
+
   const updatePostStatusHandler = () => {
-    ctx.updatedPostStatus(
+    updatedPostStatus(
       post._id,
       post.answeredBy ? (post.answeredBy as UserDocumentObject)._id : 'global'
     );
   };
+
   const answerPostHandler = async (formData: FormData) => {
-    const res = await ctx.answerPost(post._id, formData, currentUser._id);
-    if ((res as APIError).errorMessage) {
-      imperativeHandlingRef.current?.setValidationError(
-        (res as APIError).errorMessage
-      );
+    const res = await answerPost(post._id, formData, currentUser._id);
+    const { errorMessage } = res as APIError;
+    if (errorMessage) {
+      imperativeHandlingRef.current?.setValidationError(errorMessage);
     } else {
       updateTutorProfile({
         postEarnings: user?.postEarnings! + (res as PostDocumentObject).price,
@@ -81,61 +56,64 @@ const Post: React.FC<Props> = ({
   const currentUser = data?.user as unknown as UserDocumentObject;
   const creator = post.creator as UserDocumentObject;
   const answeredBy = post.answeredBy as UserDocumentObject;
-  const [showFullPostDescription, setShowFullPostDescription] =
-    useState<boolean>(false);
   const imperativeHandlingRef = useRef<AnswerPostModalHandler>(null);
+  const {
+    isOpen: showFullPostDescription,
+    onOpen: setShowFullPostDescription,
+  } = c.useDisclosure();
+
   return (
-    <Box shadow="md" borderWidth="1px" p="6" width="100%" borderRadius="md">
+    <c.Box shadow="md" borderWidth="1px" p="6" width="100%" borderRadius="md">
       {post.answer ? (
-        <Modal isOpen={isOpen} onClose={onClose} isCentered>
-          <ModalOverlay />
-          <ModalContent py="6" width="90%">
-            <ModalHeader>
-              <Heading as="h1">Answer</Heading>
-            </ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <Box mb="3">
-                <Heading as="h2" size="md" mb="2">
+        <c.Modal isOpen={isOpen} onClose={onClose} isCentered>
+          <c.ModalOverlay />
+          <c.ModalContent py="6" width="90%">
+            <c.ModalHeader>
+              <c.Heading as="h1">Answer</c.Heading>
+            </c.ModalHeader>
+            <c.ModalCloseButton />
+            <c.ModalBody>
+              <c.Box mb="3">
+                <c.Heading as="h2" size="md" mb="2">
                   Description
-                </Heading>
-                <Text maxHeight="40vh" pr="2" overflowY="auto">
+                </c.Heading>
+                <c.Text maxHeight="40vh" pr="2" overflowY="auto">
                   {post.answer}
-                </Text>
-              </Box>
+                </c.Text>
+              </c.Box>
               {post.answerAttachments.length > 0 && (
-                <Box mb="3">
-                  <Heading as="h2" size="md" mb="2">
-                    <Flex>
+                <c.Box mb="3">
+                  <c.Heading as="h2" size="md" mb="2">
+                    <c.Flex>
                       <MdOutlineAttachment size={25} fontWeight="light" />
-                      <Text ml="1">Attachments</Text>
-                    </Flex>
-                  </Heading>
-                  <Flex direction="column">
+                      <c.Text ml="1">Attachments</c.Text>
+                    </c.Flex>
+                  </c.Heading>
+                  <c.Flex direction="column">
                     {post.answerAttachments.map((f: CloudFile, i: number) => (
                       <Link href={f.url} key={f.public_id} passHref>
-                        <Button
+                        <c.Button
                           mb="3"
                           as="a"
                           textTransform="capitalize"
                           leftIcon={
                             f.url.includes('raw') ? (
-                              <FaFile size={18} />
+                              <fa.FaFile size={18} />
                             ) : (
-                              <FaImage size={18} />
+                              <fa.FaImage size={18} />
                             )
                           }
                         >
                           <>Attachment {i + 1}</>
-                        </Button>
+                        </c.Button>
                       </Link>
                     ))}
-                  </Flex>
-                </Box>
+                  </c.Flex>
+                </c.Box>
               )}
-            </ModalBody>
-          </ModalContent>
-        </Modal>
+            </c.ModalBody>
+          </c.ModalContent>
+        </c.Modal>
       ) : (
         <AnswerPostModal
           ref={imperativeHandlingRef}
@@ -143,26 +121,26 @@ const Post: React.FC<Props> = ({
           setAnswer={answerPostHandler}
         />
       )}
-      <Flex
+      <c.Flex
         direction={['column', 'row']}
         alignItems="center"
         justifyContent="space-between"
       >
-        <Flex
+        <c.Flex
           alignItems="center"
           direction={['column', 'row']}
           justify="space-between"
         >
-          <Flex alignItems="center">
+          <c.Flex alignItems="center">
             {!viewAsTutor && post.type === PostType.SPECIFIC && (
-              <Avatar
+              <c.Avatar
                 src={answeredBy.avatar?.url}
                 name={answeredBy.fullname}
                 mx={[0, 2]}
               />
             )}
             {viewAsTutor && (
-              <Avatar
+              <c.Avatar
                 mx={[0, 2]}
                 src={creator.avatar?.url}
                 name={creator.fullname}
@@ -171,43 +149,43 @@ const Post: React.FC<Props> = ({
             {!viewAsTutor &&
               post.type === PostType.GLOBAL &&
               post.status === PostStatus.ANSWERED && (
-                <Avatar
+                <c.Avatar
                   src={(post.answeredBy as UserDocumentObject).avatar?.url}
                   name={(post.answeredBy as UserDocumentObject).fullname}
                   mx={[0, 2]}
                 />
               )}
-            <Heading as="h3" size="md" mx="2">
+            <c.Heading as="h3" size="md" mx="2">
               {viewAsTutor ? (
                 creator.fullname
               ) : post.type === PostType.GLOBAL &&
                 post.status !== PostStatus.ANSWERED ? (
-                <Flex alignItems="center">
-                  <FaGlobe size="50" />
-                  <Text mx="2">Global</Text>
-                </Flex>
+                <c.Flex alignItems="center">
+                  <fa.FaGlobe size="50" />
+                  <c.Text mx="2">Global</c.Text>
+                </c.Flex>
               ) : (
                 answeredBy?.fullname
               )}
-            </Heading>
-            <Show below="sm">
+            </c.Heading>
+            <c.Show below="sm">
               {isLatestCreated && post.checkoutCompleted && (
-                <Box>
-                  <FaStar size="25" color={colors.dangerV1} />
-                </Box>
+                <c.Box>
+                  <fa.FaStar size="25" color={colors.dangerV1} />
+                </c.Box>
               )}
               {!post.checkoutCompleted && (
-                <Box>
+                <c.Box>
                   <MdError size="25" color={colors.dangerV1} />
-                </Box>
+                </c.Box>
               )}
-            </Show>
-          </Flex>
-          <Flex my="3" alignItems="center">
-            <Badge fontSize="0.8em" bg="purple.600" color="white" ml="3">
+            </c.Show>
+          </c.Flex>
+          <c.Flex my="3" alignItems="center">
+            <c.Badge fontSize="0.8em" bg="purple.600" color="white" ml="3">
               {post.subject}
-            </Badge>
-            <Badge
+            </c.Badge>
+            <c.Badge
               fontSize="0.8em"
               colorScheme={
                 post.status === PostStatus.ANSWERED
@@ -223,18 +201,18 @@ const Post: React.FC<Props> = ({
                 : post.status === PostStatus.CLOSED
                 ? 'Closed'
                 : 'Not answered!'}
-            </Badge>
-          </Flex>
-        </Flex>
-        <Flex alignItems="center">
-          <Show above="sm">
+            </c.Badge>
+          </c.Flex>
+        </c.Flex>
+        <c.Flex alignItems="center">
+          <c.Show above="sm">
             {isLatestCreated && post.checkoutCompleted && (
-              <Box>
-                <FaStar size="25" color={colors.dangerV1} />
-              </Box>
+              <c.Box>
+                <fa.FaStar size="25" color={colors.dangerV1} />
+              </c.Box>
             )}
             {!post.checkoutCompleted && (
-              <Tooltip
+              <c.Tooltip
                 hasArrow
                 textAlign="center"
                 p="3"
@@ -242,108 +220,106 @@ const Post: React.FC<Props> = ({
                 bg="red.100"
                 color="red.500"
               >
-                <Box>
+                <c.Box>
                   <MdError size="25" color={colors.dangerV1} />
-                </Box>
-              </Tooltip>
+                </c.Box>
+              </c.Tooltip>
             )}
-          </Show>
+          </c.Show>
           {post.answer && (
-            <Show above="sm">
-              <IconButton
+            <c.Show above="sm">
+              <c.IconButton
                 width={['100%', 'auto']}
                 ml={[0, 3]}
                 aria-label="view tutor page"
-                icon={<FaExpandArrowsAlt />}
+                icon={<fa.FaExpandArrowsAlt />}
                 onClick={onOpen}
               />
-            </Show>
+            </c.Show>
           )}
-        </Flex>
-      </Flex>
-      <Text mb="3" mt={[0, 3]} textAlign="justify">
+        </c.Flex>
+      </c.Flex>
+      <c.Text mb="3" mt={[0, 3]} textAlign="justify">
         {showFullPostDescription || post.description.length < 100 ? (
           post.description
         ) : (
           <>
             {`${post.description.slice(0, 100)} ... `}
-            <strong onClick={() => setShowFullPostDescription(true)}>
-              View more
-            </strong>
+            <strong onClick={setShowFullPostDescription}>View more</strong>
           </>
         )}
-      </Text>
-      <Flex justifyContent="space-between" direction={['column', 'row']}>
-        <Box>
+      </c.Text>
+      <c.Flex justifyContent="space-between" direction={['column', 'row']}>
+        <c.Box>
           <strong>Date: </strong>
           <time dateTime={post.createdAt!.toString()}>
             {post.createdAt!.toString()}
           </time>
-        </Box>
-        <Flex direction="column" mt={[4, 0]}>
-          <Flex mb="1">
+        </c.Box>
+        <c.Flex direction="column" mt={[4, 0]}>
+          <c.Flex mb="1">
             <MdOutlineAttachment size={25} fontWeight="light" />
-            <Text ml="2" fontWeight="bold">
+            <c.Text ml="2" fontWeight="bold">
               {post.attachments.length} given attachments
-            </Text>
-          </Flex>
+            </c.Text>
+          </c.Flex>
           {post.status === PostStatus.ANSWERED && (
-            <Flex mb="1">
+            <c.Flex mb="1">
               <MdOutlineAttachment size={25} fontWeight="light" />
-              <Text ml="2" fontWeight="bold">
+              <c.Text ml="2" fontWeight="bold">
                 {post.answerAttachments.length} answer attachments
-              </Text>
-            </Flex>
+              </c.Text>
+            </c.Flex>
           )}
-        </Flex>
-      </Flex>
+        </c.Flex>
+      </c.Flex>
       {post.answer && (
-        <Show below="sm">
-          <IconButton
+        <c.Show below="sm">
+          <c.IconButton
             width="100%"
             ml={[0, 3]}
             mt="3"
             aria-label="view tutor page"
-            icon={<FaExpandArrowsAlt />}
+            icon={<fa.FaExpandArrowsAlt />}
             onClick={onOpen}
           />
-        </Show>
+        </c.Show>
       )}
       {post.status !== PostStatus.ANSWERED && (
         <>
-          <Flex mt="3" direction={['column', 'row']}>
+          <c.Flex mt="3" direction={['column', 'row']}>
             {viewAsTutor && post.status === PostStatus.CLOSED && (
-              <IconButton
+              <c.IconButton
                 onClick={updatePostStatusHandler}
                 aria-label="re-open post"
                 variant="primary"
-                icon={<FaArrowUp />}
+                icon={<fa.FaArrowUp />}
               />
             )}
             {viewAsTutor && post.status !== PostStatus.CLOSED && (
               <>
-                <IconButton
+                <c.IconButton
                   variant="success"
                   aria-label="answer post"
-                  icon={<FaPencilAlt />}
+                  icon={<fa.FaPencilAlt />}
                   mr={[0, 3]}
                   mb={[3, 0]}
                   onClick={() => imperativeHandlingRef.current?.onOpen()}
                 />
-                <IconButton
+                <c.IconButton
                   onClick={updatePostStatusHandler}
                   aria-label="close post"
                   variant="danger"
-                  icon={<FaArchive />}
+                  icon={<fa.FaArchive />}
                   mr={[0, 3]}
                   mb={[3, 0]}
                 />
               </>
             )}
-          </Flex>
+          </c.Flex>
         </>
       )}
-    </Box>
+    </c.Box>
   );
 };
 

@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import AuthenticatedUserContext from '../../store/authenticated-user-context';
 import { PieChart } from 'react-minimal-pie-chart';
 import colors from '../../theme/colors';
-import { Box, Flex, Heading, Hide, useColorModeValue } from '@chakra-ui/react';
+import * as c from '@chakra-ui/react';
 
 const EarningsMenu: React.FC = () => {
   const { user } = useContext(AuthenticatedUserContext);
@@ -11,43 +11,43 @@ const EarningsMenu: React.FC = () => {
   const sessionsPercentage = +((100 * user!.sessionEarnings) / total).toFixed(
     1
   );
-  const labelColor = useColorModeValue(
+  const labelColor = c.useColorModeValue(
     'var(--chakra-colors-gray-800)',
     'white'
   );
   return (
-    <Box mx="auto">
-      <Heading as="h2" size="xl" textAlign={'center'} mb="5">
+    <c.Box mx="auto">
+      <c.Heading as="h2" size="xl" textAlign={'center'} mb="5">
         Total: €{total}
-      </Heading>
+      </c.Heading>
       {postsPercentage || sessionsPercentage ? (
         <>
-          <Flex justify="center">
-            <Flex alignItems="center" justify="center" mr="5">
-              <Box
+          <c.Flex justify="center">
+            <c.Flex alignItems="center" justify="center" mr="5">
+              <c.Box
                 width="25px"
                 height="25px"
                 bgColor={colors.primaryV3}
                 mr="2"
               />
-              <Heading as="h4" size="sm">
+              <c.Heading as="h4" size="sm">
                 Sessions
-              </Heading>
-            </Flex>
-            <Flex alignItems="center" justify="center" mr="3">
-              <Box
+              </c.Heading>
+            </c.Flex>
+            <c.Flex alignItems="center" justify="center" mr="3">
+              <c.Box
                 width="25px"
                 height="25px"
                 bgColor={colors.dangerV1}
                 mr="2"
               />
-              <Heading as="h4" size="sm">
+              <c.Heading as="h4" size="sm">
                 Posts
-              </Heading>
-            </Flex>
-          </Flex>
-          <Hide above="md">
-            <Heading
+              </c.Heading>
+            </c.Flex>
+          </c.Flex>
+          <c.Hide above="md">
+            <c.Heading
               as="h4"
               size="sm"
               fontWeight="normal"
@@ -55,8 +55,8 @@ const EarningsMenu: React.FC = () => {
               textAlign="center"
             >
               {sessionsPercentage}% Sessions
-            </Heading>
-            <Heading
+            </c.Heading>
+            <c.Heading
               as="h4"
               size="sm"
               fontWeight="normal"
@@ -64,8 +64,8 @@ const EarningsMenu: React.FC = () => {
               textAlign="center"
             >
               {postsPercentage}% Posts
-            </Heading>
-          </Hide>
+            </c.Heading>
+          </c.Hide>
           <PieChart
             viewBoxSize={[150, 150]}
             center={[75, 75]}
@@ -94,7 +94,7 @@ const EarningsMenu: React.FC = () => {
           />
         </>
       ) : (
-        <Heading
+        <c.Heading
           as="h4"
           size="sm"
           textAlign="center"
@@ -102,9 +102,9 @@ const EarningsMenu: React.FC = () => {
           fontWeight="normal"
         >
           No earnings for now!
-        </Heading>
+        </c.Heading>
       )}
-    </Box>
+    </c.Box>
   );
 };
 

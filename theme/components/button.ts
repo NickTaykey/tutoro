@@ -37,12 +37,23 @@ const buttonOverrides: ComponentStyleConfig = {
       backgroundColor: brandColors.successV1,
     },
     warning: {
-      color: 'white',
+      color: 'gray.600',
       backgroundColor: brandColors.warning,
     },
     cyan: {
       color: 'white',
       backgroundColor: brandColors.primaryV3,
+    },
+    cta: {
+      bgGradient: 'linear(to-l, #7928CA, #f03291)',
+      width: ['calc(90% + 4px)', '95%', '80%'],
+      mx: 'auto',
+      color: 'white',
+      textTransform: 'uppercase',
+      _hover: {
+        boxShadow: '-2.5px 2.5px 2.5px 1px rgba(0, 0, 0, 0.125)',
+        bgGradient: 'linear(to-l, #7928CA, #FF0080, )',
+      },
     },
   },
 };

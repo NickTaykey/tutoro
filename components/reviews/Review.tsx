@@ -16,35 +16,20 @@ import {
   FaPencilAlt,
   FaExpandArrowsAlt,
 } from 'react-icons/fa';
-import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalCloseButton,
-  Avatar,
-  Flex,
-  Text,
-  Heading,
-  Box,
-  IconButton,
-  useDisclosure,
-  Button,
-} from '@chakra-ui/react';
+import * as c from '@chakra-ui/react';
 import Link from 'next/link';
 import AuthenticatedUserContext from '../../store/authenticated-user-context';
 
 const Review: React.FC<Props> = ({ review, staticView }) => {
   const reviewCtx = useContext(ReviewContext);
   const { user: currentUser } = useContext(AuthenticatedUserContext);
-  const { isOpen: showFullText, onOpen: setShowFullText } = useDisclosure();
+  const { isOpen: showFullText, onOpen: setShowFullText } = c.useDisclosure();
   const {
     isOpen: showUpdateForm,
     onClose: closeUpdateForm,
     onToggle: toggleUpdateForm,
-  } = useDisclosure();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  } = c.useDisclosure();
+  const { isOpen, onOpen, onClose } = c.useDisclosure();
   const { tutor, user } = review;
   const { _id: tutorId, fullname: tutorFullname } = tutor as UserDocumentObject;
   const {
@@ -65,7 +50,7 @@ const Review: React.FC<Props> = ({ review, staticView }) => {
   );
 
   return (
-    <Box shadow="md" borderWidth="1px" p="6" width="100%" borderRadius="md">
+    <c.Box shadow="md" borderWidth="1px" p="6" width="100%" borderRadius="md">
       {showUpdateForm ? (
         <ReviewForm
           type={ReviewFormTypes.Edit}
@@ -74,38 +59,38 @@ const Review: React.FC<Props> = ({ review, staticView }) => {
         />
       ) : (
         <>
-          <Modal isOpen={isOpen} onClose={onClose}>
-            <ModalOverlay />
-            <ModalContent width="90%">
-              <ModalHeader>This action is irreversibile</ModalHeader>
-              <ModalCloseButton />
-              <ModalFooter>
-                <Button colorScheme="gray" mr={3} onClick={onClose}>
+          <c.Modal isOpen={isOpen} onClose={onClose}>
+            <c.ModalOverlay />
+            <c.ModalContent width="90%">
+              <c.ModalHeader>This action is irreversibile</c.ModalHeader>
+              <c.ModalCloseButton />
+              <c.ModalFooter>
+                <c.Button colorScheme="gray" mr={3} onClick={onClose}>
                   Close
-                </Button>
-                <Button colorScheme="red" onClick={deleteReviewClickHandler}>
+                </c.Button>
+                <c.Button colorScheme="red" onClick={deleteReviewClickHandler}>
                   Delete review
-                </Button>
-              </ModalFooter>
-            </ModalContent>
-          </Modal>
+                </c.Button>
+              </c.ModalFooter>
+            </c.ModalContent>
+          </c.Modal>
           {staticView ? (
-            <Heading as="h3" size="sm">
+            <c.Heading as="h3" size="sm">
               {tutorFullname}
-            </Heading>
+            </c.Heading>
           ) : (
-            <Flex
+            <c.Flex
               justify={staticView ? 'space-between' : 'start'}
               alignItems="center"
             >
-              <Avatar name={userFullname} src={avatar?.url} />
-              <Heading as="h3" size="sm" mx="3">
+              <c.Avatar name={userFullname} src={avatar?.url} />
+              <c.Heading as="h3" size="sm" mx="3">
                 {userFullname}
-              </Heading>
-            </Flex>
+              </c.Heading>
+            </c.Flex>
           )}
-          <Flex justify="space-between" align="center">
-            <Flex justify="start" my="3">
+          <c.Flex justify="space-between" align="center">
+            <c.Flex justify="start" my="3">
               {Array(review.stars)
                 .fill(null)
                 .map((_, i) => (
@@ -116,24 +101,24 @@ const Review: React.FC<Props> = ({ review, staticView }) => {
                 .map((_, i) => (
                   <FaStar key={i} color="#e5e5e5" />
                 ))}
-            </Flex>
-            <Flex alignItems="center">
+            </c.Flex>
+            <c.Flex alignItems="center">
               <time dateTime={datetime} style={{ float: 'right' }}>
                 {readableDatetime}
               </time>
               {staticView && (
                 <Link href={`/tutors/${tutorId}`} style={{ float: 'left' }}>
-                  <IconButton
+                  <c.IconButton
                     ml="3"
                     aria-label="view tutor page"
                     icon={<FaExpandArrowsAlt />}
                   />
                 </Link>
               )}
-            </Flex>
-          </Flex>
+            </c.Flex>
+          </c.Flex>
           {review.text && (
-            <Text mb="3">
+            <c.Text mb="3">
               {showFullText || review.text.length < 100 ? (
                 review.text
               ) : (
@@ -142,28 +127,28 @@ const Review: React.FC<Props> = ({ review, staticView }) => {
                   <strong onClick={setShowFullText}>View more</strong>
                 </>
               )}
-            </Text>
+            </c.Text>
           )}
           {currentUser && currentUser._id === creatorId && (
-            <Box mt="2">
-              <IconButton
-                colorScheme="red"
+            <c.Box mt="2">
+              <c.IconButton
+                variant="danger"
                 onClick={onOpen}
                 aria-label="delete review"
                 icon={<FaTrashAlt />}
-                mr="1"
+                mr="3"
               />
-              <IconButton
+              <c.IconButton
                 onClick={toggleUpdateForm}
-                colorScheme="yellow"
+                variant="warning"
                 aria-label="update review"
                 icon={<FaPencilAlt />}
               />
-            </Box>
+            </c.Box>
           )}
         </>
       )}
-    </Box>
+    </c.Box>
   );
 };
 

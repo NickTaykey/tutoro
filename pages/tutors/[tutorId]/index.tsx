@@ -44,10 +44,12 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
         })
         .exec(),
     ]);
+
     const tutor = getUserDocumentObject(userTutor as UserDocument);
     tutor.reviews = userTutor.reviews.map(r =>
       getReviewDocumentObject(r as ReviewDocument)
     );
+
     if (user) {
       const hasUserCreatedPost =
         new Set([
@@ -68,6 +70,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
         },
       };
     }
+
     return {
       props: {
         tutor,

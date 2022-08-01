@@ -12,20 +12,7 @@ import type { PostDocumentObject } from '../../models/Post';
 
 import Link from 'next/link';
 import Post from '../posts/Post';
-import {
-  Tabs,
-  TabList,
-  Tab,
-  TabPanels,
-  TabPanel,
-  Heading,
-  Flex,
-  Box,
-  Button,
-  VStack,
-  useMediaQuery,
-  useColorModeValue,
-} from '@chakra-ui/react';
+import * as c from '@chakra-ui/react';
 import { FaHandsHelping } from 'react-icons/fa';
 
 interface Props {
@@ -37,34 +24,34 @@ interface Props {
 }
 
 const UserProfileView: React.FC<Props> = (props: Props) => {
-  const [lowerThan690] = useMediaQuery('(max-height: 690px)');
-  const [higherThan840] = useMediaQuery('(min-height: 840px)');
-  const [isLandscapeWidth] = useMediaQuery('(max-width: 930px)');
-  const [isLandscapeHeight] = useMediaQuery('(max-height: 500px)');
-
-  const unSelectedTabColor = useColorModeValue('gray.600', 'white');
-
+  const [lowerThan690] = c.useMediaQuery('(max-height: 690px)');
+  const [higherThan840] = c.useMediaQuery('(min-height: 840px)');
+  const [isLandscapeWidth] = c.useMediaQuery('(max-width: 930px)');
+  const [isLandscapeHeight] = c.useMediaQuery('(max-height: 500px)');
   const isXSLandscape = isLandscapeWidth && isLandscapeHeight;
+
+  const unSelectedTabColor = c.useColorModeValue('gray.600', 'white');
+
   return (
-    <Box width="100%" mx="auto">
-      <Tabs isFitted variant="soft-rounded" colorScheme="blue">
-        <TabList
+    <c.Box width="100%" mx="auto">
+      <c.Tabs isFitted variant="soft-rounded" colorScheme="blue">
+        <c.TabList
           my="1em"
           width={['95%', null, '100%']}
           mx="auto"
           flexDirection={['column', 'row']}
         >
-          <Tab fontSize="sm" color={unSelectedTabColor}>
+          <c.Tab fontSize="sm" color={unSelectedTabColor}>
             ({props.currentUser.createdPosts.length}) Posts
-          </Tab>
-          <Tab mx="1" fontSize="sm" color={unSelectedTabColor}>
+          </c.Tab>
+          <c.Tab mx="1" fontSize="sm" color={unSelectedTabColor}>
             ({props.currentUser.bookedSessions.length}) Sessions
-          </Tab>
-          <Tab fontSize="sm" color={unSelectedTabColor}>
+          </c.Tab>
+          <c.Tab fontSize="sm" color={unSelectedTabColor}>
             ({props.currentUser.createdReviews.length}) Reviews
-          </Tab>
-        </TabList>
-        <TabPanels
+          </c.Tab>
+        </c.TabList>
+        <c.TabPanels
           height={
             higherThan840
               ? props.errorAlert || props.successAlert
@@ -75,12 +62,12 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
               : '400px'
           }
         >
-          <TabPanel height="100%" overflowY="auto">
+          <c.TabPanel height="100%" overflowY="auto">
             {props.currentUser.createdPosts.length ? (
               <PostsContextProvider posts={props.currentUser.createdPosts}>
                 <PostsContext.Consumer>
                   {ctx => (
-                    <VStack>
+                    <c.VStack>
                       {ctx.posts.map((p: PostDocumentObject, i) => (
                         <Post
                           key={p._id}
@@ -89,26 +76,26 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
                           isLatestCreated={i === 0}
                         />
                       ))}
-                    </VStack>
+                    </c.VStack>
                   )}
                 </PostsContext.Consumer>
               </PostsContextProvider>
             ) : (
-              <Flex justify="center" align="center" height="100%">
-                <Heading as="h2" size="md" textAlign="center">
+              <c.Flex justify="center" align="center" height="100%">
+                <c.Heading as="h2" size="md" textAlign="center">
                   You no posts for now!
-                </Heading>
-              </Flex>
+                </c.Heading>
+              </c.Flex>
             )}
-          </TabPanel>
-          <TabPanel height="100%" overflowY="auto">
+          </c.TabPanel>
+          <c.TabPanel height="100%" overflowY="auto">
             {props.currentUser.bookedSessions.length ? (
               <SessionsContextProvider
                 sessions={props.currentUser.bookedSessions}
               >
                 <SessionsContext.Consumer>
                   {ctx => (
-                    <VStack>
+                    <c.VStack>
                       {ctx.sessions.map((s: SessionDocumentObject, i) => (
                         <Session
                           isLatestCreated={i === 0}
@@ -117,41 +104,41 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
                           viewAsTutor={false}
                         />
                       ))}
-                    </VStack>
+                    </c.VStack>
                   )}
                 </SessionsContext.Consumer>
               </SessionsContextProvider>
             ) : (
-              <Flex justify="center" align="center" height="100%">
-                <Heading as="h2" size="md" textAlign="center">
+              <c.Flex justify="center" align="center" height="100%">
+                <c.Heading as="h2" size="md" textAlign="center">
                   You have no booked sessions for now!
-                </Heading>
-              </Flex>
+                </c.Heading>
+              </c.Flex>
             )}
-          </TabPanel>
-          <TabPanel height="100%" overflowY="auto">
+          </c.TabPanel>
+          <c.TabPanel height="100%" overflowY="auto">
             {props.currentUser.createdReviews.length ? (
-              <VStack>
+              <c.VStack>
                 {props.currentUser.createdReviews.map(
                   (r: ReviewDocumentObject) => (
-                    <Box key={r._id} width="100%">
+                    <c.Box key={r._id} width="100%">
                       <Review review={r} staticView />
-                    </Box>
+                    </c.Box>
                   )
                 )}
-              </VStack>
+              </c.VStack>
             ) : (
-              <Flex justify="center" align="center" height="100%">
-                <Heading as="h2" size="md" textAlign="center">
+              <c.Flex justify="center" align="center" height="100%">
+                <c.Heading as="h2" size="md" textAlign="center">
                   You have written no reviews yet!
-                </Heading>
-              </Flex>
+                </c.Heading>
+              </c.Flex>
             )}
-          </TabPanel>
-        </TabPanels>
-      </Tabs>
+          </c.TabPanel>
+        </c.TabPanels>
+      </c.Tabs>
       {!props.currentUser.isTutor && !isXSLandscape && (
-        <Box
+        <c.Box
           my="5"
           display="flex"
           width="100%"
@@ -160,23 +147,13 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
           left="0px"
         >
           <Link href="/users/become-tutor">
-            <Button
-              boxShadow="dark-lg"
-              borderRadius="md"
-              colorScheme="pink"
-              bgGradient="linear(to-l, #7928CA, #FF0080)"
-              width={['calc(90% + 4px)', '95%', '80%']}
-              mx="auto"
-              color="white"
-              leftIcon={<FaHandsHelping size={25} />}
-              textTransform="uppercase"
-            >
+            <c.Button variant="cta" leftIcon={<FaHandsHelping size={25} />}>
               Become a tutor
-            </Button>
+            </c.Button>
           </Link>
-        </Box>
+        </c.Box>
       )}
-    </Box>
+    </c.Box>
   );
 };
 

@@ -22,8 +22,8 @@ export const getUserDocumentObject = (
     sessionPricePerHour: user.sessionPricePerHour,
     pricePerPost: user.pricePerPost,
     avatar: {
-      public_id: user.avatar!.public_id ? user.avatar!.public_id : '',
-      url: user.avatar!.url ? user.avatar!.url : '',
+      public_id: user.avatar?.public_id ? user.avatar.public_id : '',
+      url: user.avatar?.url ? user.avatar.url : '',
     },
     reviews: [],
     posts: [],
@@ -59,18 +59,20 @@ export const getReviewDocumentObject = (r: ReviewDocument) => {
   };
 };
 
-export const getSessionDocumentObject = (s: SessionDocument) => ({
-  checkoutCompleted: s.checkoutCompleted,
-  _id: s._id.toString(),
-  subject: s.subject,
-  topic: s.topic,
-  price: s.price,
-  hours: s.hours,
-  status: s.status,
-  date: new Date(s.date).toLocaleString(),
-  user: getUserDocumentObject(s.user as UserDocument),
-  tutor: getUserDocumentObject(s.tutor as UserDocument),
-});
+export const getSessionDocumentObject = (s: SessionDocument) => {
+  return {
+    checkoutCompleted: s.checkoutCompleted,
+    _id: s._id.toString(),
+    subject: s.subject,
+    topic: s.topic,
+    price: s.price,
+    hours: s.hours,
+    status: s.status,
+    date: new Date(s.date).toLocaleString(),
+    user: getUserDocumentObject(s.user as UserDocument),
+    tutor: getUserDocumentObject(s.tutor as UserDocument),
+  };
+};
 
 export const getPostDocumentObject = (p: PostDocument) => {
   const createdAt = new Date(p.createdAt!);
@@ -95,7 +97,7 @@ export const getPostDocumentObject = (p: PostDocument) => {
     createdAt: createdAt ? createdAt.toLocaleDateString() : null,
     updatedAt: updatedAt ? updatedAt.toLocaleDateString() : null,
     creator: getUserDocumentObject(p.creator as UserDocument),
-    answeredBy: p.answeredBy
+    answeredBy: (p.answeredBy as UserDocument).email
       ? getUserDocumentObject(p.answeredBy as UserDocument)
       : null,
   };

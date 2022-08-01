@@ -3,15 +3,7 @@ import React, { FormEvent, useContext, useRef, useState } from 'react';
 import { UserDocumentObject } from '../../models/User';
 import ReviewContext from '../../store/reviews-context';
 import StarRating, { StarRatingHandle } from './StarRating';
-import {
-  FormControl,
-  FormLabel,
-  Textarea,
-  Button,
-  Alert,
-  IconButton,
-  AlertIcon,
-} from '@chakra-ui/react';
+import * as c from '@chakra-ui/react';
 import { FaPen, FaRegTimesCircle } from 'react-icons/fa';
 
 export enum ReviewFormTypes {
@@ -86,23 +78,23 @@ const ReviewForm: React.FC<
   return (
     <form onSubmit={formSubmitHandler}>
       {errorAlert && (
-        <Alert status="error" my="3">
-          <AlertIcon />
+        <c.Alert status="error" my="3">
+          <c.AlertIcon />
           {errorAlert}
-        </Alert>
+        </c.Alert>
       )}
-      <FormControl my="2">
+      <c.FormControl my="2">
         <StarRating
           ref={imperativeHandlingRef}
           stars={stars}
           setStars={setStars}
         />
-      </FormControl>
-      <FormControl>
-        <FormLabel htmlFor="email">
+      </c.FormControl>
+      <c.FormControl>
+        <c.FormLabel htmlFor="email">
           Describe your experience (optional)
-        </FormLabel>
-        <Textarea
+        </c.FormLabel>
+        <c.Textarea
           id="text"
           name="text"
           value={text}
@@ -110,8 +102,8 @@ const ReviewForm: React.FC<
           rows={5}
           onChange={e => setText(e.target.value)}
         />
-      </FormControl>
-      <Button
+      </c.FormControl>
+      <c.Button
         type="submit"
         variant="primary"
         my="3"
@@ -119,9 +111,9 @@ const ReviewForm: React.FC<
         leftIcon={<FaPen size="15" />}
       >
         {isEdit ? 'Update' : 'Post'} review
-      </Button>
+      </c.Button>
       {isEdit && (
-        <IconButton
+        <c.IconButton
           width={['100%', 'auto']}
           ml={[0, 2]}
           icon={<FaRegTimesCircle size="25" />}
