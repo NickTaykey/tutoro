@@ -3,9 +3,9 @@ import ReviewsContextProvider from '../../store/ReviewsProvider';
 import ReviewContext from '../../store/reviews-context';
 import Review from '../reviews/Review';
 import Map, { Marker } from 'react-map-gl';
-import Banner404 from '../global/404';
-import type { ReviewDocumentObject } from '../../models/Review';
-import type { UserDocumentObject } from '../../models/User';
+import AuthenticatedUserContext from '../../store/authenticated-user-context';
+import { useContext } from 'react';
+import { useRouter } from 'next/router';
 import {
   Heading,
   Flex,
@@ -20,44 +20,30 @@ import {
   useColorMode,
 } from '@chakra-ui/react';
 import { FaPen, FaPersonBooth, FaStar } from 'react-icons/fa';
-import { useContext, useState } from 'react';
-import { useRouter } from 'next/router';
-import AuthenticatedUserContext from '../../store/authenticated-user-context';
 import colors from '../../theme/colors';
+import Banner404 from '../global/404';
+import type { ReviewDocumentObject } from '../../models/Review';
+import type { UserDocumentObject } from '../../models/User';
 
 interface Props {
   tutor?: UserDocumentObject;
-  userCreatedReviews: string[];
   isUserAllowedToReview: boolean;
 }
 
 const TutorPage: React.FC<Props> = ({
   tutor,
-  userCreatedReviews: userCreatedReviewsProp,
   isUserAllowedToReview,
 }: Props) => {
   const { user, openSignInMenu } = useContext(AuthenticatedUserContext);
   const currentTutor = user?._id === tutor?._id ? user! : tutor!;
+  const { colorMode } = useColorMode();
   const { push } = useRouter();
-  const [userCreatedReviews, setUserCreatedReviews] = useState<string[]>(
-    userCreatedReviewsProp
-  );
-  const deleteUserCreateReviewId = (reviewId: string) => {
-    setUserCreatedReviews(prevState => {
-      return prevState.filter(rid => rid !== reviewId);
-    });
-  };
-  const addUserCreateReviewId = (reviewId: string) => {
-    setUserCreatedReviews(prevState => [...prevState, reviewId]);
-  };
-
-  const { colorMode, toggleColorMode } = useColorMode();
 
   return tutor ? (
     <Box width="90%" mx="auto">
       <Flex alignItems="center">
         <Avatar
-          src={currentTutor.avatar?.url ? currentTutor.avatar?.url : ''}
+          src={currentTutor.avatar?.url ? currentTutor.avatar.url : ''}
           name={currentTutor.fullname}
         />
         <Heading as="h1" size="xl" my="5" ml="2">
@@ -123,8 +109,8 @@ const TutorPage: React.FC<Props> = ({
           </Heading>
           <Map
             initialViewState={{
-              latitude: currentTutor.geometry?.coordinates[1],
-              longitude: currentTutor.geometry?.coordinates[0],
+              latitude: currentTutor.geometry!.coordinates[1],
+              longitude: currentTutor.geometry!.coordinates[0],
               zoom: 7,
               bearing: 0,
               pitch: 0,
@@ -132,7 +118,6 @@ const TutorPage: React.FC<Props> = ({
             style={{ height: '50vh', maxHeight: '500px' }}
             mapStyle={`mapbox://styles/mapbox/${colorMode}-v10`}
             mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
-            testMode={true}
           >
             <Marker
               longitude={currentTutor.geometry!.coordinates[0]}
@@ -145,32 +130,19 @@ const TutorPage: React.FC<Props> = ({
           <Heading as="h2" size="md" mt={[5, null, 3, 0]}>
             Reviews
           </Heading>
-
-          <ReviewsContextProvider
-            reviews={currentTutor.reviews.map(r => ({
-              ...r,
-              ownerAuthenticated: userCreatedReviews.indexOf(r._id) !== -1,
-            }))}
-          >
+          <ReviewsContextProvider reviews={currentTutor.reviews}>
             <ReviewContext.Consumer>
               {reviewsCtx => {
-                const isNotTutor = user?._id !== currentTutor._id;
-                const hasNotAlreadyReviewed = !reviewsCtx.reviews.some(r =>
-                  userCreatedReviews.includes(r._id)
-                );
+                const reviewsStackAlignment = reviewsCtx.reviews.length
+                  ? 'start'
+                  : 'center';
                 return (
                   <>
-                    {user &&
-                      hasNotAlreadyReviewed &&
-                      isNotTutor &&
-                      isUserAllowedToReview && (
-                        <ReviewForm
-                          type={ReviewFormTypes.Create}
-                          tutorId={currentTutor._id}
-                          addUserCreateReviewId={addUserCreateReviewId}
-                        />
-                      )}
-                    {!isUserAllowedToReview && isNotTutor && (
+                    <ReviewForm
+                      type={ReviewFormTypes.Create}
+                      tutorId={currentTutor._id}
+                    />
+                    {!isUserAllowedToReview && user?._id !== currentTutor._id && (
                       <Flex alignItems="center" width="100%" my="5">
                         <FaPen size={20} />
                         <Heading as="h3" size="md" ml="3">
@@ -181,19 +153,13 @@ const TutorPage: React.FC<Props> = ({
                     <VStack
                       overflowY="auto"
                       mt="3"
-                      height={'400px'}
-                      justify={reviewsCtx.reviews.length ? 'start' : 'center'}
-                      alignItems={
-                        reviewsCtx.reviews.length ? 'start' : 'center'
-                      }
+                      height="400px"
+                      justify={reviewsStackAlignment}
+                      alignItems={reviewsStackAlignment}
                     >
                       {reviewsCtx.reviews.length ? (
                         reviewsCtx.reviews.map((r: ReviewDocumentObject) => (
-                          <Review
-                            key={r._id}
-                            review={r}
-                            deleteUserCreateReviewId={deleteUserCreateReviewId}
-                          />
+                          <Review key={r._id} review={r} />
                         ))
                       ) : (
                         <Heading

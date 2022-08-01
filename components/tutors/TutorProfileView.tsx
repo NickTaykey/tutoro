@@ -619,11 +619,7 @@ const TutorProfileView: React.FC<Props> = ({
                           >
                             {currentUser.reviews.map(
                               (r: ReviewDocumentObject) => (
-                                <Review
-                                  key={r._id}
-                                  review={r}
-                                  deleteUserCreateReviewId={null}
-                                />
+                                <Review key={r._id} review={r} />
                               )
                             )}
                           </VStack>

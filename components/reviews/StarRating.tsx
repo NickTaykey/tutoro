@@ -20,7 +20,7 @@ const StarRating = React.forwardRef<
   return (
     <Flex className="star-rating" alignItems="center">
       {[...Array(5)].map((_, idx) => {
-        idx += 1;
+        idx++;
         return (
           <button
             type="button"

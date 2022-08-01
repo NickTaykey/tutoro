@@ -1,37 +1,26 @@
 import type { GetServerSideProps, NextPage } from 'next';
 import type { UserDocument, UserDocumentObject } from '../../../models/User';
+import type { ReviewDocument } from '../../../models/Review';
+import type { ObjectId } from 'mongoose';
 
 import { getReviewDocumentObject } from '../../../utils/casting-helpers';
 import TutorPage from '../../../components/tutors/TutorPage';
 import User from '../../../models/User';
-import Review, {
-  ReviewDocument,
-  ReviewDocumentObject,
-} from '../../../models/Review';
+import Review from '../../../models/Review';
 
 interface Props {
   isUserAllowedToReview: boolean;
-  userCreatedReviews: string[];
   tutor?: UserDocumentObject;
 }
 
-const Page: NextPage<Props> = ({
-  isUserAllowedToReview,
-  userCreatedReviews,
-  tutor,
-}) => (
-  <TutorPage
-    tutor={tutor}
-    isUserAllowedToReview={isUserAllowedToReview}
-    userCreatedReviews={userCreatedReviews}
-  />
+const Page: NextPage<Props> = ({ isUserAllowedToReview, tutor }) => (
+  <TutorPage tutor={tutor} isUserAllowedToReview={isUserAllowedToReview} />
 );
 
 import { getUserDocumentObject } from '../../../utils/casting-helpers';
 import { authOptions } from '../../api/auth/[...nextauth]';
-import connectDB from '../../../middleware/mongo-connect';
 import { getServerSession } from 'next-auth';
-import mongoose, { ObjectId } from 'mongoose';
+import connectDB from '../../../middleware/mongo-connect';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
   const [session] = await Promise.all([
@@ -72,15 +61,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
           ...user.bookedSessions.map(id => (id as ObjectId).toString()),
         ]).size !==
         userTutor.requestedSessions.length + user.bookedSessions.length;
-      const userCreatedReviews: string[] = user
-        .toObject()
-        .createdReviews.map((r: mongoose.ObjectId) => r.toString());
-      tutor.reviews.sort((a: ReviewDocumentObject, b: ReviewDocumentObject) =>
-        userCreatedReviews.includes(a._id) ? -1 : 1
-      );
       return {
         props: {
-          userCreatedReviews,
           tutor,
           isUserAllowedToReview: hasUserCreatedPost || hasUserCreatedSession,
         },
@@ -88,7 +70,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
     }
     return {
       props: {
-        userCreatedReviews: [],
         tutor,
         isUserAllowedToReview: false,
       },
@@ -96,7 +77,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
   } catch (e) {
     return {
       props: {
-        userCreatedReviews: [],
         isUserAllowedToReview: false,
       },
     };

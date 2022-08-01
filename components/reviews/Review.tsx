@@ -1,14 +1,12 @@
-import { useContext, useState } from 'react';
-import { ReviewFormTypes } from './ReviewForm';
-import { useSession } from 'next-auth/react';
+import { useContext } from 'react';
 import ReviewContext from '../../store/reviews-context';
 import ReviewForm from './ReviewForm';
-import { UserDocumentObject } from '../../models/User';
+import type { UserDocumentObject } from '../../models/User';
 import type { ReviewDocumentObject } from '../../models/Review';
+import { ReviewFormTypes } from './ReviewForm';
 
 interface Props {
   review: ReviewDocumentObject;
-  deleteUserCreateReviewId: ((rid: string) => void) | null;
   staticView?: boolean;
 }
 
@@ -16,7 +14,6 @@ import {
   FaStar,
   FaTrashAlt,
   FaPencilAlt,
-  FaRegTimesCircle,
   FaExpandArrowsAlt,
 } from 'react-icons/fa';
 import {
@@ -36,26 +33,36 @@ import {
   Button,
 } from '@chakra-ui/react';
 import Link from 'next/link';
+import AuthenticatedUserContext from '../../store/authenticated-user-context';
 
-const Review: React.FC<Props> = ({
-  review,
-  deleteUserCreateReviewId,
-  staticView,
-}) => {
-  const [showFullText, setShowFullText] = useState<boolean>(false);
-  const ctx = useContext(ReviewContext);
+const Review: React.FC<Props> = ({ review, staticView }) => {
+  const reviewCtx = useContext(ReviewContext);
+  const { user: currentUser } = useContext(AuthenticatedUserContext);
+  const { isOpen: showFullText, onOpen: setShowFullText } = useDisclosure();
+  const {
+    isOpen: showUpdateForm,
+    onClose: closeUpdateForm,
+    onToggle: toggleUpdateForm,
+  } = useDisclosure();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { status } = useSession();
-  const [showUpdateForm, setShowUpdateForm] = useState<boolean>(false);
   const { tutor, user } = review;
   const { _id: tutorId, fullname: tutorFullname } = tutor as UserDocumentObject;
-  const { fullname: userFullname, avatar } = user as UserDocumentObject;
+  const {
+    fullname: userFullname,
+    avatar,
+    _id: creatorId,
+  } = user as UserDocumentObject;
   const deleteReviewClickHandler = () => {
-    if (deleteUserCreateReviewId) {
-      deleteUserCreateReviewId(review._id);
-      ctx.deleteReview(tutorId.toString(), review._id);
-    }
+    reviewCtx.deleteReview(tutorId.toString(), review._id);
   };
+  const datetime =
+    review.updatedAt!.toString() === review.updatedAt!.toString()
+      ? review.createdAt!.toString()
+      : review.updatedAt!.toString();
+  const readableDatetime = datetime.slice(
+    0,
+    review.createdAt!.toString().length === 18 ? -3 : -6
+  );
 
   return (
     <Box shadow="md" borderWidth="1px" p="6" width="100%" borderRadius="md">
@@ -63,7 +70,7 @@ const Review: React.FC<Props> = ({
         <ReviewForm
           type={ReviewFormTypes.Edit}
           review={review}
-          hideForm={() => setShowUpdateForm(false)}
+          hideForm={closeUpdateForm}
         />
       ) : (
         <>
@@ -82,12 +89,11 @@ const Review: React.FC<Props> = ({
               </ModalFooter>
             </ModalContent>
           </Modal>
-          {staticView && (
+          {staticView ? (
             <Heading as="h3" size="sm">
               {tutorFullname}
             </Heading>
-          )}
-          {!staticView && (
+          ) : (
             <Flex
               justify={staticView ? 'space-between' : 'start'}
               alignItems="center"
@@ -112,27 +118,8 @@ const Review: React.FC<Props> = ({
                 ))}
             </Flex>
             <Flex alignItems="center">
-              <time
-                dateTime={
-                  review.updatedAt!.toString() === review.updatedAt!.toString()
-                    ? review.createdAt!.toString()
-                    : review.updatedAt!.toString()
-                }
-                style={{ float: 'right' }}
-              >
-                {review.updatedAt!.toString() === review.updatedAt!.toString()
-                  ? review
-                      .createdAt!.toString()
-                      .slice(
-                        0,
-                        review.createdAt!.toString().length === 18 ? -3 : -6
-                      )
-                  : review
-                      .updatedAt!.toString()
-                      .slice(
-                        0,
-                        review.updatedAt!.toString().length === 18 ? -3 : -6
-                      )}
+              <time dateTime={datetime} style={{ float: 'right' }}>
+                {readableDatetime}
               </time>
               {staticView && (
                 <Link href={`/tutors/${tutorId}`} style={{ float: 'left' }}>
@@ -152,14 +139,12 @@ const Review: React.FC<Props> = ({
               ) : (
                 <>
                   {`${review.text.slice(0, 100)} ... `}
-                  <strong onClick={() => setShowFullText(true)}>
-                    View more
-                  </strong>
+                  <strong onClick={setShowFullText}>View more</strong>
                 </>
               )}
             </Text>
           )}
-          {status === 'authenticated' && review.ownerAuthenticated && (
+          {currentUser && currentUser._id === creatorId && (
             <Box mt="2">
               <IconButton
                 colorScheme="red"
@@ -169,7 +154,7 @@ const Review: React.FC<Props> = ({
                 mr="1"
               />
               <IconButton
-                onClick={() => setShowUpdateForm(prevState => !prevState)}
+                onClick={toggleUpdateForm}
                 colorScheme="yellow"
                 aria-label="update review"
                 icon={<FaPencilAlt />}

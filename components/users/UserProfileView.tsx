@@ -135,11 +135,7 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
                 {props.currentUser.createdReviews.map(
                   (r: ReviewDocumentObject) => (
                     <Box key={r._id} width="100%">
-                      <Review
-                        review={r}
-                        deleteUserCreateReviewId={null}
-                        staticView
-                      />
+                      <Review review={r} staticView />
                     </Box>
                   )
                 )}

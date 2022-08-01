@@ -1,14 +1,8 @@
-import React, { FormEvent, useContext, useRef, useState } from 'react';
 import type { ReviewDocumentObject } from '../../models/Review';
+import React, { FormEvent, useContext, useRef, useState } from 'react';
 import { UserDocumentObject } from '../../models/User';
 import ReviewContext from '../../store/reviews-context';
 import StarRating, { StarRatingHandle } from './StarRating';
-
-export enum ReviewFormTypes {
-  Create,
-  Edit,
-}
-
 import {
   FormControl,
   FormLabel,
@@ -20,10 +14,14 @@ import {
 } from '@chakra-ui/react';
 import { FaPen, FaRegTimesCircle } from 'react-icons/fa';
 
+export enum ReviewFormTypes {
+  Create,
+  Edit,
+}
+
 type CreateReviewFormProps = {
   type: ReviewFormTypes.Create;
   tutorId: string;
-  addUserCreateReviewId(reviewId: string): void;
 };
 
 type EditReviewFormProps = {
@@ -35,7 +33,7 @@ type EditReviewFormProps = {
 const ReviewForm: React.FC<
   CreateReviewFormProps | EditReviewFormProps
 > = props => {
-  const ctx = useContext(ReviewContext);
+  const reviewCtx = useContext(ReviewContext);
   const isEdit = props.type === ReviewFormTypes.Edit;
   const imperativeHandlingRef = useRef<StarRatingHandle>(null);
   const [errorAlert, setErrorAlert] = useState<string | null>(null);
@@ -46,7 +44,7 @@ const ReviewForm: React.FC<
 
   const createReviewHandler = async () => {
     if (props.type === ReviewFormTypes.Create) {
-      const apiResponse = await ctx.addReview(props.tutorId, {
+      const apiResponse = await reviewCtx.addReview(props.tutorId, {
         stars,
         text,
       });
@@ -55,7 +53,6 @@ const ReviewForm: React.FC<
         setStars(0);
         setText('');
         setErrorAlert(null);
-        props.addUserCreateReviewId(apiResponse._id);
         imperativeHandlingRef.current!.reset();
       }
     }
@@ -64,7 +61,7 @@ const ReviewForm: React.FC<
   const updateReviewHandler = async () => {
     if (props.type === ReviewFormTypes.Edit) {
       const editReviewProps = props as EditReviewFormProps;
-      const apiResponse = await ctx.updateReview(
+      const apiResponse = await reviewCtx.updateReview(
         (props.review.tutor as UserDocumentObject)._id,
         {
           ...editReviewProps.review,
@@ -82,11 +79,8 @@ const ReviewForm: React.FC<
 
   const formSubmitHandler = (e: FormEvent) => {
     e.preventDefault();
-    if (props.type === ReviewFormTypes.Create) {
-      createReviewHandler();
-    } else {
-      updateReviewHandler();
-    }
+    if (props.type === ReviewFormTypes.Create) return createReviewHandler();
+    updateReviewHandler();
   };
 
   return (
