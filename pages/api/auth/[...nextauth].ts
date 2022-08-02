@@ -1,8 +1,8 @@
-import connectDB from '../../../middleware/mongo-connect';
+import connectionPromise from '../../../middleware/mongo-connect';
 import GoogleProvider from 'next-auth/providers/google';
 import NextAuth, { NextAuthOptions } from 'next-auth';
-import User, { UserDocument } from '../../../models/User';
 import { getUserDocumentObject } from '../../../utils/casting-helpers';
+import type { UserDocument } from '../../../models/User';
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -17,10 +17,10 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXT_PUBLIC_SECRET,
   callbacks: {
     async signIn({ user }) {
-      await connectDB();
-      const userFound = await User.findOne({ email: user.email });
+      const { models } = await connectionPromise;
+      const userFound = await models.User.findOne({ email: user.email });
       if (!userFound) {
-        await User.create({
+        await models.User.create({
           fullname: user.name?.trim(),
           email: user.email?.trim(),
           location: '',
@@ -31,8 +31,8 @@ export const authOptions: NextAuthOptions = {
       return true;
     },
     async session({ session }) {
-      await connectDB();
-      const user = await User.findOne({
+      const { models } = await connectionPromise;
+      const user = await models.User.findOne({
         email: session?.user?.email,
       });
       if (!user) return { ...session, user: {} };

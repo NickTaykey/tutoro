@@ -69,7 +69,7 @@ const ProfilePage: NextPage<Props> = ({ currentUser }) => {
   );
 };
 
-import connectDB from '../../middleware/mongo-connect';
+import connectionPromise from '../../middleware/mongo-connect';
 import Review from '../../models/Review';
 import Session from '../../models/Session';
 import Post from '../../models/Post';
@@ -77,9 +77,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
-  const [session] = await Promise.all([
+  const [session, { models }] = await Promise.all([
     getServerSession(context, authOptions),
-    connectDB(),
+    connectionPromise,
   ]);
 
   let query: QueryObject = {};
@@ -90,14 +90,14 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
       sort: { _id: -1 },
     },
     populate: [
-      { path: 'user', model: User },
-      { path: 'tutor', model: User },
+      { path: 'user', model: models.User },
+      { path: 'tutor', model: models.User },
     ],
     sort: { _id: -1 },
   };
 
   if (query.email) {
-    const user = await User.findOne(query);
+    const user = await models.User.findOne(query);
     const currentUser = getUserDocumentObject(user);
     await Promise.all([
       user.populate({
@@ -115,8 +115,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
         model: Post,
         options: { sort: { _id: -1 } },
         populate: [
-          { path: 'answeredBy', model: User },
-          { path: 'creator', model: User },
+          { path: 'answeredBy', model: models.User },
+          { path: 'creator', model: models.User },
         ],
       }),
     ]);

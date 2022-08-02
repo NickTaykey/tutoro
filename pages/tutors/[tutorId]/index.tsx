@@ -5,8 +5,6 @@ import type { ObjectId } from 'mongoose';
 
 import { getReviewDocumentObject } from '../../../utils/casting-helpers';
 import TutorPage from '../../../components/tutors/TutorPage';
-import User from '../../../models/User';
-import Review from '../../../models/Review';
 
 interface Props {
   isUserAllowedToReview: boolean;
@@ -20,26 +18,26 @@ const Page: NextPage<Props> = ({ isUserAllowedToReview, tutor }) => (
 import { getUserDocumentObject } from '../../../utils/casting-helpers';
 import { authOptions } from '../../api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth';
-import connectDB from '../../../middleware/mongo-connect';
+import connectionPromise from '../../../middleware/mongo-connect';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
-  const [session] = await Promise.all([
+  const [session, { models }] = await Promise.all([
     getServerSession(context, authOptions),
-    connectDB(),
+    connectionPromise,
   ]);
   try {
     const [user, userTutor]: UserDocument[] = await Promise.all([
-      User.findOne({ email: session?.user?.email }),
-      User.findById(context.query.tutorId)
+      models.User.findOne({ email: session?.user?.email }),
+      models.User.findById(context.query.tutorId)
         .populate({
           path: 'reviews',
           options: {
             sort: { _id: -1 },
           },
-          model: Review,
+          model: models.Review,
           populate: [
-            { path: 'user', model: User },
-            { path: 'tutor', model: User },
+            { path: 'user', model: models.User },
+            { path: 'tutor', model: models.User },
           ],
         })
         .exec(),

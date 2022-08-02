@@ -1,12 +1,12 @@
 import connectDB from '../../../../../middleware/mongo-connect';
 import sanitize from '../../../../../middleware/mongo-sanitize';
-import Review, { ReviewDocumentObject } from '../../../../../models/Review';
-import User, { UserDocument } from '../../../../../models/User';
 import mongoErrorHandler from '../../../../../middleware/mongo-error-handler';
 import ensureHttpMethod from '../../../../../middleware/ensure-http-method';
 import serverSideErrorHandler from '../../../../../middleware/server-side-error-handler';
 import requireAuth from '../../../../../middleware/require-auth';
 
+import type { UserDocument } from '../../../../../models/User';
+import type { ReviewDocumentObject } from '../../../../../models/Review';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { ObjectId } from 'mongoose';
 
@@ -20,10 +20,10 @@ export default async function handler(
         req,
         res,
         'create a Review',
-        async (userSession, req, res) => {
-          await connectDB();
+        async ({ models }, userSession, req, res) => {
+          await connectDB;
           return mongoErrorHandler(req, res, 'user', async () => {
-            const tutor = await User.findOne({
+            const tutor = await models.User.findOne({
               _id: req.query.tutorId,
               isTutor: true,
             });
@@ -76,7 +76,7 @@ export default async function handler(
 
             if (canUserCreateReview) {
               const sanitizedReqBody = sanitize(req.body);
-              const review = await Review.create({
+              const review = await models.Review.create({
                 text: sanitizedReqBody?.text,
                 stars: Number(sanitizedReqBody.stars),
                 tutor: tutorDocument._id,
@@ -85,14 +85,12 @@ export default async function handler(
               tutor.reviews.push(review);
               userSession.createdReviews.push(review);
               await Promise.all([tutor.calcAvgRating(), userSession.save()]);
-              return res
-                .status(201)
-                .json({
-                  ...review.toObject(),
-                  user: userSession,
-                  tutor: tutorDocument,
-                  ownerAuthenticated: true,
-                });
+              return res.status(201).json({
+                ...review.toObject(),
+                user: userSession,
+                tutor: tutorDocument,
+                ownerAuthenticated: true,
+              });
             }
             return res.status(403).json({
               errorMessage: 'You have already written a review for this tutor.',

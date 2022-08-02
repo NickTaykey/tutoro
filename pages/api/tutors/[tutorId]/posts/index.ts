@@ -6,14 +6,14 @@ import serverSideErrorHandler from '../../../../../middleware/server-side-error-
 import requireAuth from '../../../../../middleware/require-auth';
 
 import { PostType, HTTPError } from '../../../../../types';
-import Post, { PostDocument } from '../../../../../models/Post';
-import User, { UserDocument } from '../../../../../models/User';
 import { parseForm } from '../../../../../utils/parse-form';
 import { unlink } from 'fs';
 import type { PostDocumentObject } from '../../../../../models/Post';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { File, Files } from 'formidable';
 import type { UploadApiResponse } from 'cloudinary';
+import type { PostDocument } from '../../../../../models/Post';
+import type { UserDocument } from '../../../../../models/User';
 import createCheckoutSession from '../../../../../utils/create-checkout-session';
 import { getPostDocumentObject } from '../../../../../utils/casting-helpers';
 
@@ -43,85 +43,92 @@ export default async function handler(
 ) {
   serverSideErrorHandler(req, res, (req, res) => {
     ensureHttpMethod(req, res, 'POST', () => {
-      requireAuth(req, res, 'create a Post', async (userSession, req, res) => {
-        await connectDB();
-        return mongoErrorHandler(req, res, 'post', async () => {
-          const { files, fields } = await parseForm(req, filesUploadConfig);
-          if (Object.keys(files).length > 4) {
-            deleteFiles(files);
-            return res.status(400).json({
-              errorMessage: 'You can provide at the most 4 attachments',
-            });
-          }
-          if (!fields.subject)
-            return res
-              .status(400)
-              .json({ errorMessage: 'You have to specify the subject' });
-          if (!fields.description)
-            return res
-              .status(400)
-              .json({ errorMessage: 'You have to specify the description' });
-
-          const post = new Post({
-            subject: fields.subject,
-            description: fields.description,
-            type:
-              req.query.tutorId === 'global'
-                ? PostType.GLOBAL
-                : PostType.SPECIFIC,
-          });
-
-          const cloudinaryPromises: Promise<UploadApiResponse>[] = [];
-
-          for (const value of Object.values(files)) {
-            const file = value as File;
-            cloudinaryPromises.push(
-              cloudinary.uploader.upload(file.filepath, {
-                folder: 'tutoro/attachments/',
-                use_filename: true,
-                resource_type: file.mimetype?.includes('image')
-                  ? 'image'
-                  : 'raw',
-              })
-            );
-          }
-
-          const responses = await Promise.all(cloudinaryPromises);
-
-          deleteFiles(files);
-
-          post.attachments = responses.map(r => ({
-            public_id: r.public_id,
-            url: r.secure_url,
-          }));
-          post.creator = userSession as UserDocument;
-          userSession.createdPosts.push(post._id);
-
-          if (post.type === PostType.SPECIFIC) {
-            const tutor = await User.findById(req.query.tutorId);
-            if (!tutor)
-              return res.status(404).json({ errorMessage: 'Tutor not found' });
-            if (!tutor.isTutor)
-              return res.status(404).json({
-                errorMessage: `The user with id ${tutor._id.toString()} is not a Tutor.`,
+      requireAuth(
+        req,
+        res,
+        'create a Post',
+        async ({ models }, userSession, req, res) => {
+          await connectDB;
+          return mongoErrorHandler(req, res, 'post', async () => {
+            const { files, fields } = await parseForm(req, filesUploadConfig);
+            if (Object.keys(files).length > 4) {
+              deleteFiles(files);
+              return res.status(400).json({
+                errorMessage: 'You can provide at the most 4 attachments',
               });
-            if (tutor._id.toString() === userSession._id.toString())
+            }
+            if (!fields.subject)
               return res
-                .status(403)
-                .json({ errorMessage: 'You cannot create a Post to yourself' });
-            post.answeredBy = tutor as UserDocument;
-            post.price = tutor.pricePerPost;
-            tutor.posts.push(post._id);
-            await tutor.save();
-          }
-          await Promise.all([post.save(), userSession.save()]);
-          return createCheckoutSession(
-            getPostDocumentObject(post as PostDocument),
-            req,
-            res
-          );
-        });
-      });
+                .status(400)
+                .json({ errorMessage: 'You have to specify the subject' });
+            if (!fields.description)
+              return res
+                .status(400)
+                .json({ errorMessage: 'You have to specify the description' });
+
+            const post = new models.Post({
+              subject: fields.subject,
+              description: fields.description,
+              type:
+                req.query.tutorId === 'global'
+                  ? PostType.GLOBAL
+                  : PostType.SPECIFIC,
+            });
+
+            const cloudinaryPromises: Promise<UploadApiResponse>[] = [];
+
+            for (const value of Object.values(files)) {
+              const file = value as File;
+              cloudinaryPromises.push(
+                cloudinary.uploader.upload(file.filepath, {
+                  folder: 'tutoro/attachments/',
+                  use_filename: true,
+                  resource_type: file.mimetype?.includes('image')
+                    ? 'image'
+                    : 'raw',
+                })
+              );
+            }
+
+            const responses = await Promise.all(cloudinaryPromises);
+
+            deleteFiles(files);
+
+            post.attachments = responses.map(r => ({
+              public_id: r.public_id,
+              url: r.secure_url,
+            }));
+            post.creator = userSession as UserDocument;
+            userSession.createdPosts.push(post._id);
+
+            if (post.type === PostType.SPECIFIC) {
+              const tutor = await models.User.findById(req.query.tutorId);
+              if (!tutor)
+                return res
+                  .status(404)
+                  .json({ errorMessage: 'Tutor not found' });
+              if (!tutor.isTutor)
+                return res.status(404).json({
+                  errorMessage: `The user with id ${tutor._id.toString()} is not a Tutor.`,
+                });
+              if (tutor._id.toString() === userSession._id.toString())
+                return res.status(403).json({
+                  errorMessage: 'You cannot create a Post to yourself',
+                });
+              post.answeredBy = tutor as UserDocument;
+              post.price = tutor.pricePerPost;
+              tutor.posts.push(post._id);
+              await tutor.save();
+            }
+            await Promise.all([post.save(), userSession.save()]);
+            return createCheckoutSession(
+              getPostDocumentObject(post as PostDocument),
+              req,
+              res
+            );
+          });
+        }
+      );
     });
   });
 }

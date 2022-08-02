@@ -4,9 +4,8 @@ import type { TutorObjectGeoJSON, HTTPError } from '../../../types';
 import serverSideErrorHandler from '../../../middleware/server-side-error-handler';
 import mongoErrorHandler from '../../../middleware/mongo-error-handler';
 import ensureHttpMethod from '../../../middleware/ensure-http-method';
-import connectDB from '../../../middleware/mongo-connect';
+import connectionPromise from '../../../middleware/mongo-connect';
 import sanitize from '../../../middleware/mongo-sanitize';
-import User from '../../../models/User';
 import mapbox from '@mapbox/mapbox-sdk/services/geocoding';
 
 const geoCodeClient = mapbox({
@@ -19,7 +18,7 @@ export default function handler(
 ) {
   ensureHttpMethod(req, res, 'GET', () => {
     serverSideErrorHandler(req, res, async (req, res) => {
-      await connectDB();
+      const { models } = await connectionPromise;
       mongoErrorHandler(req, res, 'User', async () => {
         let coordinates: number[] | null = null;
         const {
@@ -88,7 +87,7 @@ export default function handler(
             },
           });
         }
-        const filteredTutors = await User.find({ $and: query });
+        const filteredTutors = await models.User.find({ $and: query });
         res.status(200).json({ tutors: filteredTutors });
       });
     });

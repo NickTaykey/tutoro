@@ -4,8 +4,7 @@ import type { QueryObject } from '../../types';
 
 import { authOptions } from '../api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth';
-import connectDB from '../../middleware/mongo-connect';
-import User from '../../models/User';
+import connectionPromise from '../../middleware/mongo-connect';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { useContext } from 'react';
 import { useRouter } from 'next/router';
@@ -200,13 +199,15 @@ const BecomeTutorPage: NextPage = () => {
 };
 
 export const getServerSideProps: GetServerSideProps = async context => {
-  await connectDB();
+  const [session, { models }] = await Promise.all([
+    getServerSession(context, authOptions),
+    connectionPromise,
+  ]);
 
-  const session = await getServerSession(context, authOptions);
   let query: QueryObject = {};
   if (session?.user?.email) query = { email: session.user.email };
 
-  const user = await User.findOne(query);
+  const user = await models.User.findOne(query);
   if (user) {
     if (user.isTutor)
       return {

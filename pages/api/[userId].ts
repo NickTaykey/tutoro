@@ -33,7 +33,7 @@ const handler = async (
       req,
       res,
       'change your avatar',
-      async (sessionUser, req, res) => {
+      async (_, sessionUser, req, res) => {
         try {
           const { files } = await parseForm(req, avatarUploadConfig);
           const file = files.avatar as File;

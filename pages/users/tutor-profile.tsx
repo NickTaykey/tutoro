@@ -1,7 +1,6 @@
 import TutorProfileView from '../../components/tutors/TutorProfileView';
 import { authOptions } from '../api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth';
-import User from '../../models/User';
 
 import type { GetServerSideProps, NextPage } from 'next';
 import type { UserDocumentObject } from '../../models/User';
@@ -76,7 +75,7 @@ const ProfilePage: NextPage<Props> = ({
   );
 };
 
-import connectDB from '../../middleware/mongo-connect';
+import connectionPromise from '../../middleware/mongo-connect';
 import Review from '../../models/Review';
 import Session from '../../models/Session';
 import Post, { PostDocument, PostDocumentObject } from '../../models/Post';
@@ -84,15 +83,15 @@ import { useRouter } from 'next/router';
 import { useState } from 'react';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
-  const [session] = await Promise.all([
+  const [session, { models }] = await Promise.all([
     getServerSession(context, authOptions),
-    connectDB(),
+    connectionPromise,
   ]);
 
   let query: QueryObject = {};
   if (session?.user?.email) query = { email: session.user.email };
 
-  const user = await User.findOne(query);
+  const user = await models.User.findOne(query);
 
   if (user?.isTutor) {
     const currentUser = getUserDocumentObject(user);
@@ -105,16 +104,16 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
             creator: { $ne: currentUser._id },
           })
             .sort({ _id: -1 })
-            .populate({ path: 'user', model: User })
-            .populate({ path: 'tutor', model: User })
+            .populate({ path: 'user', model: models.User })
+            .populate({ path: 'tutor', model: models.User })
             .exec()
         : null,
       user.populate({
         path: 'reviews',
         model: Review,
         populate: [
-          { path: 'user', model: User },
-          { path: 'tutor', model: User },
+          { path: 'user', model: models.User },
+          { path: 'tutor', model: models.User },
         ],
         options: { sort: { _id: -1 } },
       }),
@@ -122,8 +121,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
         path: 'requestedSessions',
         model: Session,
         populate: [
-          { path: 'user', model: User },
-          { path: 'tutor', model: User },
+          { path: 'user', model: models.User },
+          { path: 'tutor', model: models.User },
         ],
         options: { sort: { _id: -1 } },
       }),
@@ -131,8 +130,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
         path: 'posts',
         model: Post,
         populate: [
-          { path: 'creator', model: User },
-          { path: 'answeredBy', model: User },
+          { path: 'creator', model: models.User },
+          { path: 'answeredBy', model: models.User },
         ],
         options: { sort: { _id: -1 } },
       }),

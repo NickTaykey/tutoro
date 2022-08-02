@@ -1,7 +1,4 @@
 import sanitize from '../../../../../middleware/mongo-sanitize';
-import connectDB from '../../../../../middleware/mongo-connect';
-import Review from '../../../../../models/Review';
-import User from '../../../../../models/User';
 import serverSideErrorHandler from '../../../../../middleware/server-side-error-handler';
 import mongoErrorHandler from '../../../../../middleware/mongo-error-handler';
 import ensureHttpMethod from '../../../../../middleware/ensure-http-method';
@@ -21,18 +18,17 @@ export default async function handler(
         req,
         res,
         'modify a Review',
-        async (sessionUser, req, res) => {
-          await connectDB();
-          const user = await User.findById(sessionUser._id);
-
-          const doesReviewExist: boolean = user.createdReviews
+        async ({ models }, sessionUser, req, res) => {
+          const doesReviewExist: boolean = (
+            sessionUser.createdReviews as ObjectId[]
+          )
             .map((reviewId: ObjectId) => reviewId.toString())
-            .includes(req.query.reviewId);
+            .includes(req.query.reviewId as string);
 
           if (doesReviewExist) {
             if (req.method === 'DELETE') {
               mongoErrorHandler(req, res, 'User', async () => {
-                const tutor = await User.findOne({
+                const tutor = await models.User.findOne({
                   isTutor: true,
                   _id: req.query.tutorId,
                 });
@@ -41,10 +37,12 @@ export default async function handler(
                     .status(404)
                     .json({ errorMessage: 'User not found' });
                 }
-                const review = await Review.findByIdAndDelete(
+                const review = await models.Review.findByIdAndDelete(
                   req.query.reviewId
                 );
-                user.createdReviews = user.createdReviews.filter(
+                sessionUser.createdReviews = (
+                  sessionUser.createdReviews as ObjectId[]
+                ).filter(
                   (reviewId: ObjectId) =>
                     reviewId.toString() !== req.query.reviewId
                 );
@@ -52,19 +50,19 @@ export default async function handler(
                   (reviewId: ObjectId) =>
                     reviewId.toString() !== req.query.reviewId
                 );
-                await Promise.all([user.save(), tutor.calcAvgRating()]);
+                await Promise.all([sessionUser.save(), tutor.calcAvgRating()]);
                 res.status(200).json(review.toJSON());
               });
             } else if (req.method === 'PUT') {
               mongoErrorHandler(req, res, 'Review', async () => {
-                const review = await Review.findByIdAndUpdate(
+                const review = await models.Review.findByIdAndUpdate(
                   req.query.reviewId,
                   sanitize(req.body),
                   { runValidators: true, new: true }
                 );
                 await Promise.all([
-                  review.populate({ path: 'user', model: User }),
-                  review.populate({ path: 'tutor', model: User }),
+                  review.populate({ path: 'user', model: models.User }),
+                  review.populate({ path: 'tutor', model: models.User }),
                 ]);
                 res.status(200).json(review.toJSON());
               });

@@ -37,7 +37,7 @@ const buttonOverrides: ComponentStyleConfig = {
       backgroundColor: brandColors.successV1,
     },
     warning: {
-      color: 'gray.600',
+      color: 'white',
       backgroundColor: brandColors.warning,
     },
     cyan: {

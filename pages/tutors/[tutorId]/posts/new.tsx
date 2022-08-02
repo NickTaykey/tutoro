@@ -1,9 +1,10 @@
 import type { NextPage, GetServerSideProps } from 'next';
 import { getServerSession } from 'next-auth';
 import NewPostForm from '../../../../components/posts/NewPostForm';
-import User, { UserDocumentObject } from '../../../../models/User';
+import type { UserDocumentObject } from '../../../../models/User';
 import { getUserDocumentObject } from '../../../../utils/casting-helpers';
 import { authOptions } from '../../../api/auth/[...nextauth]';
+import connectionPromise from '../../../../middleware/mongo-connect';
 
 interface Props {
   tutor?: UserDocumentObject;
@@ -15,11 +16,16 @@ const NewPostPage: NextPage<Props> = props => {
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
-  const session = await getServerSession(context, authOptions);
+  const [{ models }, session] = await Promise.all([
+    connectionPromise,
+    getServerSession(context, authOptions),
+  ]);
   if (session?.user) {
     if (context.query.tutorId !== 'global') {
       try {
-        const tutor = await User.findById(context.query.tutorId as string);
+        const tutor = await models.User.findById(
+          context.query.tutorId as string
+        );
         return {
           props: tutor
             ? {
@@ -32,9 +38,9 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
         return { props: {} };
       }
     }
-    const allSubjects: string[] = (await User.find({ tutors: true })).flatMap(
-      t => t.subjects
-    );
+    const allSubjects: string[] = (
+      await models.User.find({ tutors: true })
+    ).flatMap(t => t.subjects);
     return { props: { subjects: Array.from(new Set(allSubjects)) } };
   }
   return {

@@ -1,12 +1,30 @@
 import mongoose from 'mongoose';
+import type { Mongoose } from 'mongoose';
 
-let connection: typeof mongoose | null = null;
+let clientPromise: Promise<Mongoose>;
 
-const connectDB = async () => {
-  const DB_URL_ATLAS = `mongodb+srv://${process.env.MONGO_ATLAS_USERNAME}:${process.env.MONGO_ATLAS_PWD}@cluster0.ka6g6.mongodb.net/?retryWrites=true&w=majority`;
-  const DB_URL_LOCAL = `mongodb://localhost:27017/tutoro`;
-  if (!connection) connection = await mongoose.connect(DB_URL_LOCAL);
-  return connection;
-};
+if (process.env.NODE_ENV === 'development') {
+  let globalWithMongoClientPromise = global as typeof globalThis & {
+    _mongoClientPromise: Promise<Mongoose>;
+  };
 
-export default connectDB;
+  if (!process.env.DEV_DB_URL) {
+    throw new Error('No DB urls for provided for development var DEV_DB_URL');
+  }
+
+  if (!globalWithMongoClientPromise._mongoClientPromise) {
+    globalWithMongoClientPromise._mongoClientPromise = mongoose.connect(
+      process.env.DEV_DB_URL!
+    );
+  }
+
+  clientPromise = globalWithMongoClientPromise._mongoClientPromise;
+} else {
+  if (!process.env.DEV_DB_URL) {
+    throw new Error('No DB urls for provided for productions var PROD_DB_URL');
+  }
+
+  clientPromise = mongoose.connect(process.env.PROD_DB_URL!);
+}
+
+export default clientPromise;

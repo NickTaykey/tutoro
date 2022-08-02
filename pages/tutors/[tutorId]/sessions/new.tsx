@@ -4,8 +4,6 @@ import Banner404 from '../../../../components/global/404';
 import { FormEvent, useState } from 'react';
 import { getUserDocumentObject } from '../../../../utils/casting-helpers';
 import ApiHelper from '../../../../utils/api-helper';
-import User from '../../../../models/User';
-import Review from '../../../../models/Review';
 import ReactDatePicker from 'react-datepicker';
 
 import * as c from '@chakra-ui/react';
@@ -254,25 +252,25 @@ const Page: NextPage<Props> = ({ tutor }) => {
 };
 
 import { getServerSession } from 'next-auth';
-import connectDB from '../../../../middleware/mongo-connect';
+import connectionPromise from '../../../../middleware/mongo-connect';
 import { authOptions } from '../../../api/auth/[...nextauth]';
 import { useRouter } from 'next/router';
 import { FaArrowRight, FaBroom } from 'react-icons/fa';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
-  const [, session] = await Promise.all([
-    connectDB(),
+  const [{ models }, session] = await Promise.all([
+    connectionPromise,
     getServerSession(context, authOptions),
   ]);
   try {
     if (session) {
-      const tutor = await User.findById(context.query.tutorId)
+      const tutor = await models.User.findById(context.query.tutorId)
         .populate({
           path: 'reviews',
           options: {
             sort: { _id: -1 },
           },
-          model: Review,
+          model: models.Review,
         })
         .exec();
       if (

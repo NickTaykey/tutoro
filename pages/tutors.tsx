@@ -145,12 +145,12 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
     model: Review,
   };
 
-  const [session] = await Promise.all([
+  const [session, { models }] = await Promise.all([
     getServerSession(context, authOptions),
-    connectDB(),
+    connectDB,
   ]);
 
-  const tutors = await User.find({
+  const tutors = await models.User.find({
     isTutor: true,
     email: { $ne: session?.user?.email },
   })

@@ -1,7 +1,6 @@
 import serverSideErrorHandler from '../../../../../../middleware/server-side-error-handler';
 import mongoErrorHandler from '../../../../../../middleware/mongo-error-handler';
 import ensureHttpMethod from '../../../../../../middleware/ensure-http-method';
-import connectDB from '../../../../../../middleware/mongo-connect';
 import requireAuth from '../../../../../../middleware/require-auth';
 
 import type {
@@ -10,10 +9,8 @@ import type {
 } from '../../../../../../models/Session';
 import type { HTTPError } from '../../../../../../types';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import type { ObjectId } from 'mongoose';
 import { SessionStatus } from '../../../../../../types';
-import User from '../../../../../../models/User';
-import Session from '../../../../../../models/Session';
-import { ObjectId } from 'mongoose';
 import sanitize from '../../../../../../middleware/mongo-sanitize';
 import sgMail from '@sendgrid/mail';
 
@@ -29,12 +26,11 @@ export default async function handler(
         req,
         res,
         'modify a Session',
-        async (userSession, req, res) => {
-          await connectDB();
+        async ({ models }, userSession, req, res) => {
           mongoErrorHandler(req, res, 'Session', async () => {
             let [user, tutor] = await Promise.all([
-              User.findById(userSession._id),
-              User.findById(req.query.tutorId),
+              models.User.findById(req.query.tutorId),
+              models.User.findById(userSession._id),
             ]);
             if (req.method === 'DELETE') {
               const sessionRegisteredOnUser = user.bookedSessions.find(
@@ -46,7 +42,7 @@ export default async function handler(
                   sessionId.toString() === req.query.sessionId
               );
               if (sessionRegisteredOnUser && sessionRegisteredOnTutor) {
-                const deletedSession = await Session.findByIdAndDelete(
+                const deletedSession = await models.Session.findByIdAndDelete(
                   req.query.sessionId
                 );
                 user.bookedSessions = user.bookedSessions.filter(
@@ -88,8 +84,10 @@ export default async function handler(
               });
             }
             if (req.method === 'PUT') {
-              const session = await Session.findById(req.query.sessionId);
-              user = await User.findOne({
+              const session = await models.Session.findById(
+                req.query.sessionId
+              );
+              user = await models.User.findOne({
                 bookedSessions: { $elemMatch: { $eq: session._id } },
               });
               const sessionRegisteredOnTutor = tutor.requestedSessions.find(
