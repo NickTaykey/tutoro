@@ -1,10 +1,11 @@
+import type { UserDocumentObject } from '../../../../models/User';
 import type { NextPage, GetServerSideProps } from 'next';
 import { getServerSession } from 'next-auth';
-import NewPostForm from '../../../../components/posts/NewPostForm';
-import type { UserDocumentObject } from '../../../../models/User';
+
 import { getUserDocumentObject } from '../../../../utils/casting-helpers';
+import NewPostForm from '../../../../components/posts/NewPostForm';
 import { authOptions } from '../../../api/auth/[...nextauth]';
-import connectionPromise from '../../../../middleware/mongo-connect';
+import * as models from '../../../../models';
 
 interface Props {
   tutor?: UserDocumentObject;
@@ -16,10 +17,7 @@ const NewPostPage: NextPage<Props> = props => {
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
-  const [{ models }, session] = await Promise.all([
-    connectionPromise,
-    getServerSession(context, authOptions),
-  ]);
+  const session = await getServerSession(context, authOptions);
   if (session?.user) {
     if (context.query.tutorId !== 'global') {
       try {

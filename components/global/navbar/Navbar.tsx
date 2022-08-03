@@ -74,20 +74,18 @@ const Navbar: React.FC = () => {
         </Link>
         <c.Show breakpoint="(max-width: 767px)">
           <c.Flex>
-            {pathname !== '/auth-wall' && (
-              <c.IconButton
-                ref={btnRef}
-                boxShadow="none"
-                onClick={onDrawerOpen}
-                size="lg"
-                backgroundColor="transparent"
-                fontSize="48"
-                mr={3}
-                color="gray.500"
-                aria-label="navbar-hamburger"
-                icon={<GoThreeBars />}
-              />
-            )}
+            <c.IconButton
+              ref={btnRef}
+              boxShadow="none"
+              onClick={onDrawerOpen}
+              size="lg"
+              backgroundColor="transparent"
+              fontSize="48"
+              mr={3}
+              color="gray.500"
+              aria-label="navbar-hamburger"
+              icon={<GoThreeBars />}
+            />
             <c.Drawer
               isOpen={isDrawerOpen}
               placement="right"
@@ -191,20 +189,18 @@ const Navbar: React.FC = () => {
                 </c.DrawerBody>
               </c.DrawerContent>
             </c.Drawer>
-            {pathname === '/auth-wall' && <ColorModeToggler />}
           </c.Flex>
         </c.Show>
         <c.Show breakpoint="(min-width: 768px)">
           <c.HStack spacing="3" mr="3">
-            {user && (
+            {user ? (
               <>
                 <Link href="/users/user-profile">
                   <c.Avatar name={user.fullname} src={user.avatar?.url || ''} />
                 </Link>
                 <NavbarButtonGroup />
               </>
-            )}
-            {!user && pathname !== '/auth-wall' && (
+            ) : (
               <>
                 <c.Button
                   variant="link"

@@ -2,15 +2,14 @@ import type { GetServerSideProps, NextPage } from 'next';
 import type { SubmitHandler } from 'react-hook-form';
 import type { QueryObject } from '../../types';
 
-import { authOptions } from '../api/auth/[...nextauth]';
-import { getServerSession } from 'next-auth';
-import connectionPromise from '../../middleware/mongo-connect';
-import { useForm, useFieldArray } from 'react-hook-form';
-import { useContext } from 'react';
-import { useRouter } from 'next/router';
-import * as c from '@chakra-ui/react';
-import { FaHandsHelping, FaPlus, FaTrashAlt } from 'react-icons/fa';
 import AuthenticatedUserContext from '../../store/authenticated-user-context';
+import { FaHandsHelping, FaPlus, FaTrashAlt } from 'react-icons/fa';
+import { authOptions } from '../api/auth/[...nextauth]';
+import { useForm, useFieldArray } from 'react-hook-form';
+import { getServerSession } from 'next-auth';
+import { useContext, useState } from 'react';
+import * as models from '../../models';
+import * as c from '@chakra-ui/react';
 
 type FormValues = {
   location: string;
@@ -46,10 +45,11 @@ const BecomeTutorPage: NextPage = () => {
     name: 'subjects',
   });
   const { becomeTutor } = useContext(AuthenticatedUserContext);
-  const router = useRouter();
+  const [showSpinner, setShowSpinner] = useState<boolean>(false);
 
   const onSubmit: SubmitHandler<FormValues> = async data => {
     const formData: Record<string, string | string[]> = {};
+    setShowSpinner(true);
     for (let e of Object.entries(data)) {
       formData[e[0]] =
         e[0] === 'subjects'
@@ -57,7 +57,6 @@ const BecomeTutorPage: NextPage = () => {
           : e[1].toString();
     }
     becomeTutor(formData);
-    return router.replace('/users/tutor-profile');
   };
 
   return (
@@ -81,13 +80,11 @@ const BecomeTutorPage: NextPage = () => {
       )}
       <form onSubmit={handleSubmit(onSubmit)}>
         <c.FormControl mb="3">
-          <c.FormLabel htmlFor="bio" fontWeight="bold">
-            Some words about you
-          </c.FormLabel>
+          <c.FormLabel htmlFor="bio">Some words about you</c.FormLabel>
           <c.Textarea id="bio" {...register('bio', { required: true })} />
         </c.FormControl>
         <c.FormControl mb="3">
-          <c.FormLabel htmlFor="location" fontWeight="bold">
+          <c.FormLabel htmlFor="location">
             Where will you host your sessions?
           </c.FormLabel>
           <c.Input
@@ -97,11 +94,7 @@ const BecomeTutorPage: NextPage = () => {
           />
         </c.FormControl>
         <c.FormControl mb="3">
-          <c.FormLabel
-            htmlFor="post-price-c.input"
-            id="post-price-label"
-            fontWeight="bold"
-          >
+          <c.FormLabel htmlFor="post-price-c.input" id="post-price-label">
             How much will you charge per post?
           </c.FormLabel>
           <c.Heading as="h3" size="lg">
@@ -111,8 +104,8 @@ const BecomeTutorPage: NextPage = () => {
             aria-labelledby="post-price-label"
             aria-label="post price"
             defaultValue={watch('pricePerPost')}
-            min={0}
-            max={250}
+            min={+process.env.NEXT_PUBLIC_MIN_POST_PRICE!}
+            max={+process.env.NEXT_PUBLIC_MAX_POST_PRICE!}
             onChange={(value: number) => setValue('pricePerPost', value)}
           >
             <c.SliderTrack>
@@ -125,7 +118,6 @@ const BecomeTutorPage: NextPage = () => {
           <c.FormLabel
             htmlFor="session-price-c.input"
             id="session-price-hour-label"
-            fontWeight="bold"
           >
             How much will you charge per hour of session?
           </c.FormLabel>
@@ -136,8 +128,8 @@ const BecomeTutorPage: NextPage = () => {
             aria-labelledby="session-price-hour-label"
             aria-label="session price per hour"
             defaultValue={watch('sessionPricePerHour')}
-            min={0}
-            max={250}
+            min={+process.env.NEXT_PUBLIC_MIN_SESSION_PRICE!}
+            max={+process.env.NEXT_PUBLIC_MAX_SESSION_PRICE!}
             onChange={(value: number) => setValue('sessionPricePerHour', value)}
           >
             <c.SliderTrack>
@@ -147,9 +139,7 @@ const BecomeTutorPage: NextPage = () => {
           </c.Slider>
         </c.FormControl>
         <c.FormControl mb="3">
-          <c.FormLabel id="subjects-label" fontWeight="bold">
-            What are you subjects?
-          </c.FormLabel>
+          <c.FormLabel id="subjects-label">What are you subjects?</c.FormLabel>
           <c.VStack spacing="3">
             {subjects.map((subject, index, subjects) => (
               <c.Flex key={subject.id} width="100%">
@@ -184,25 +174,33 @@ const BecomeTutorPage: NextPage = () => {
             Add a subject
           </c.Button>
         </c.FormControl>
-        <c.Button
-          type="submit"
-          variant="primary"
-          width={['100%', null, 'auto']}
-          mt="3"
-        >
-          <FaHandsHelping size="25" />
-          <c.Text ml="2">Become a Tutor!</c.Text>
-        </c.Button>
+        {showSpinner ? (
+          <c.Spinner
+            my="3"
+            thickness="4px"
+            speed="0.65s"
+            emptyColor="gray.200"
+            color="blue.500"
+            size="lg"
+          />
+        ) : (
+          <c.Button
+            type="submit"
+            variant="primary"
+            width={['100%', null, 'auto']}
+            mt="3"
+          >
+            <FaHandsHelping size="25" />
+            <c.Text ml="2">Become a Tutor!</c.Text>
+          </c.Button>
+        )}
       </form>
     </c.Box>
   );
 };
 
 export const getServerSideProps: GetServerSideProps = async context => {
-  const [session, { models }] = await Promise.all([
-    getServerSession(context, authOptions),
-    connectionPromise,
-  ]);
+  const session = await getServerSession(context, authOptions);
 
   let query: QueryObject = {};
   if (session?.user?.email) query = { email: session.user.email };

@@ -1,6 +1,6 @@
-import type { GetServerSideProps, NextPage } from 'next';
 import type { UserDocument, UserDocumentObject } from '../../../models/User';
 import type { ReviewDocument } from '../../../models/Review';
+import type { GetServerSideProps, NextPage } from 'next';
 import type { ObjectId } from 'mongoose';
 
 import { getReviewDocumentObject } from '../../../utils/casting-helpers';
@@ -18,13 +18,10 @@ const Page: NextPage<Props> = ({ isUserAllowedToReview, tutor }) => (
 import { getUserDocumentObject } from '../../../utils/casting-helpers';
 import { authOptions } from '../../api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth';
-import connectionPromise from '../../../middleware/mongo-connect';
+import * as models from '../../../models';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
-  const [session, { models }] = await Promise.all([
-    getServerSession(context, authOptions),
-    connectionPromise,
-  ]);
+  const session = await getServerSession(context, authOptions);
   try {
     const [user, userTutor]: UserDocument[] = await Promise.all([
       models.User.findOne({ email: session?.user?.email }),

@@ -1,10 +1,11 @@
-import type { NextPage, GetServerSideProps } from 'next';
 import type { UserDocument, UserDocumentObject } from '../../../../models/User';
-import Banner404 from '../../../../components/global/404';
-import { FormEvent, useState } from 'react';
+import type { NextPage, GetServerSideProps } from 'next';
+
 import { getUserDocumentObject } from '../../../../utils/casting-helpers';
+import Banner404 from '../../../../components/global/404';
 import ApiHelper from '../../../../utils/api-helper';
 import ReactDatePicker from 'react-datepicker';
+import { FormEvent, useState } from 'react';
 
 import * as c from '@chakra-ui/react';
 
@@ -144,15 +145,13 @@ const Page: NextPage<Props> = ({ tutor }) => {
           </c.Heading>
           <form onSubmit={formSubmitHandler} style={{ width: '100%' }}>
             {validationError && (
-              <c.Alert status="error" mb="5" fontWeight="bold">
+              <c.Alert status="error" mb="5">
                 <c.AlertIcon />
                 {validationError}
               </c.Alert>
             )}
             <c.FormControl mb="4">
-              <c.FormLabel htmlFor="session-subject" fontWeight="bold">
-                Subject
-              </c.FormLabel>
+              <c.FormLabel htmlFor="session-subject">Subject</c.FormLabel>
               <c.Select
                 id="session-subject"
                 name="subject"
@@ -166,7 +165,7 @@ const Page: NextPage<Props> = ({ tutor }) => {
               </c.Select>
             </c.FormControl>
             <c.FormControl mb="4">
-              <c.FormLabel htmlFor="session-topic" fontWeight="bold">
+              <c.FormLabel htmlFor="session-topic">
                 Topic of the session
               </c.FormLabel>
               <c.Textarea
@@ -177,7 +176,7 @@ const Page: NextPage<Props> = ({ tutor }) => {
               />
             </c.FormControl>
             <c.FormControl mb="4">
-              <c.FormLabel htmlFor="session-hours" fontWeight="bold">
+              <c.FormLabel htmlFor="session-hours">
                 How many hours do you need?
               </c.FormLabel>
               <c.NumberInput
@@ -193,9 +192,6 @@ const Page: NextPage<Props> = ({ tutor }) => {
                 </c.NumberInputStepper>
               </c.NumberInput>
             </c.FormControl>
-            <c.Text mb="3" fontWeight="bold">
-              When would you like to have this session?
-            </c.Text>
             <c.FormControl>
               <c.Text fontWeight="light" mb="2">
                 Date
@@ -252,16 +248,14 @@ const Page: NextPage<Props> = ({ tutor }) => {
 };
 
 import { getServerSession } from 'next-auth';
-import connectionPromise from '../../../../middleware/mongo-connect';
 import { authOptions } from '../../../api/auth/[...nextauth]';
 import { useRouter } from 'next/router';
 import { FaArrowRight, FaBroom } from 'react-icons/fa';
+import * as models from '../../../../models';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
-  const [{ models }, session] = await Promise.all([
-    connectionPromise,
-    getServerSession(context, authOptions),
-  ]);
+  const session = await getServerSession(context, authOptions);
+
   try {
     if (session) {
       const tutor = await models.User.findById(context.query.tutorId)

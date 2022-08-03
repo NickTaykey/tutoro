@@ -54,7 +54,7 @@ interface User extends UserCoreObject {
   requestedSessions: SessionsArray;
 }
 
-export type UserDocument = User & Document;
+export type UserDocument = User & Document & { calcAvgRating(): number };
 
 export interface UserDocumentObject extends UserCoreObject {
   _id: string;

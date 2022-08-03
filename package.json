@@ -9,7 +9,7 @@
     "lint": "next lint",
     "test": "jest --watch",
     "test:ci": "jest --ci",
-    "seed": "ts-node --project tsconfig.seeder.json seeder.ts --users 2 --tutors 60"
+    "seed": "ts-node --project ./seeds/tsconfig.seeder.json ./seeds/seeder.ts --users 2 --tutors 60"
   },
   "dependencies": {
     "@chakra-ui/react": "^2.2.1",
@@ -25,6 +25,7 @@
     "mongoose": "^6.4.0",
     "next": "12.1.6",
     "next-auth": "^4.5.0",
+    "next-connect": "^1.0.0-next.3",
     "react": "18.2.0",
     "react-datepicker": "^4.8.0",
     "react-dom": "18.2.0",

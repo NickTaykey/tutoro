@@ -1,9 +1,10 @@
 import type { SessionDocumentObject } from '../models/Session';
 import type { NextApiResponse, NextApiRequest } from 'next';
 import type { PostDocumentObject } from '../models/Post';
-import Stripe from 'stripe';
-import { UserDocumentObject } from '../models/User';
+import type { UserDocumentObject } from '../models/User';
+
 import { PostType } from '../types';
+import Stripe from 'stripe';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2020-08-27',

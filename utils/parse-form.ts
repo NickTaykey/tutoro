@@ -3,7 +3,7 @@ import mime from 'mime';
 import { join } from 'path';
 import formidable from 'formidable';
 import { mkdir, stat } from 'fs/promises';
-import sanitize from '../middleware/mongo-sanitize';
+import sanitize from './mongo-sanitize';
 
 export const FormidableError = formidable.errors.FormidableError;
 

@@ -1,7 +1,6 @@
 import UserProfileView from '../../components/users/UserProfileView';
 import { authOptions } from '../api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth';
-import User from '../../models/User';
 
 import type { GetServerSideProps, NextPage } from 'next';
 import type { UserDocumentObject } from '../../models/User';
@@ -69,18 +68,13 @@ const ProfilePage: NextPage<Props> = ({ currentUser }) => {
   );
 };
 
-import connectionPromise from '../../middleware/mongo-connect';
-import Review from '../../models/Review';
-import Session from '../../models/Session';
+import * as models from '../../models';
 import Post from '../../models/Post';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
-  const [session, { models }] = await Promise.all([
-    getServerSession(context, authOptions),
-    connectionPromise,
-  ]);
+  const session = await getServerSession(context, authOptions);
 
   let query: QueryObject = {};
   if (session?.user?.email) query = { email: session.user.email };
@@ -103,12 +97,12 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
       user.populate({
         path: 'createdReviews',
         ...populateConfig,
-        model: Review,
+        model: models.Review,
       }),
       user.populate({
         path: 'bookedSessions',
         ...populateConfig,
-        model: Session,
+        model: models.Session,
       }),
       user.populate({
         path: 'createdPosts',
@@ -139,7 +133,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
     props: {},
     redirect: {
       permanent: false,
-      destination: `/auth-wall`,
+      destination: `/tutors`,
     },
   };
 };

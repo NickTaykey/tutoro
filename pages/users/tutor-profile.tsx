@@ -1,10 +1,12 @@
 import TutorProfileView from '../../components/tutors/TutorProfileView';
+import { QueryObject, PostType, PostStatus } from '../../types';
 import { authOptions } from '../api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth';
+import * as models from '../../models';
 
-import type { GetServerSideProps, NextPage } from 'next';
+import type { PostDocument, PostDocumentObject } from '../../models/Post';
 import type { UserDocumentObject } from '../../models/User';
-import { QueryObject, PostType, PostStatus } from '../../types';
+import type { GetServerSideProps, NextPage } from 'next';
 
 import {
   getUserDocumentObject,
@@ -75,18 +77,13 @@ const ProfilePage: NextPage<Props> = ({
   );
 };
 
-import connectionPromise from '../../middleware/mongo-connect';
 import Review from '../../models/Review';
 import Session from '../../models/Session';
-import Post, { PostDocument, PostDocumentObject } from '../../models/Post';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
-  const [session, { models }] = await Promise.all([
-    getServerSession(context, authOptions),
-    connectionPromise,
-  ]);
+  const session = await getServerSession(context, authOptions);
 
   let query: QueryObject = {};
   if (session?.user?.email) query = { email: session.user.email };
@@ -97,15 +94,15 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
     const currentUser = getUserDocumentObject(user);
     let [pertinentGlobalPosts] = await Promise.all([
       user.globalPostsEnabled
-        ? Post.find({
+        ? models.Post.find({
             type: PostType.GLOBAL,
             status: { $ne: PostStatus.ANSWERED },
             subject: { $in: user.subjects },
             creator: { $ne: currentUser._id },
           })
             .sort({ _id: -1 })
-            .populate({ path: 'user', model: models.User })
-            .populate({ path: 'tutor', model: models.User })
+            .populate({ path: 'creator', model: models.User })
+            .populate({ path: 'answeredBy', model: models.User })
             .exec()
         : null,
       user.populate({
@@ -128,7 +125,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
       }),
       user.populate({
         path: 'posts',
-        model: Post,
+        model: models.Post,
         populate: [
           { path: 'creator', model: models.User },
           { path: 'answeredBy', model: models.User },
@@ -148,7 +145,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
       pertinentGlobalPostsObjects = (
         pertinentGlobalPosts as Array<PostDocument>
       )
-        .map((p: PostDocument): PostDocumentObject => getPostDocumentObject(p))
+        .map(p => getPostDocumentObject(p as PostDocument))
         .filter(p => p.checkoutCompleted);
     }
 
@@ -163,7 +160,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
     props: {},
     redirect: {
       permanent: false,
-      destination: `/auth-wall`,
+      destination: `/tutors`,
     },
   };
 };

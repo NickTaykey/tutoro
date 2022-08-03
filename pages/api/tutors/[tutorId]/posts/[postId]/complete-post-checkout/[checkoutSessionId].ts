@@ -1,43 +1,41 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-import requireAuth from '../../../../../../../middleware/require-auth';
-import ensureHttpMethod from '../../../../../../../middleware/ensure-http-method';
+import type { NextApiResponse } from 'next';
+
 import checkPaymentStatus from '../../../../../../../utils/check-payment-status';
-import mongoErrorHandler from '../../../../../../../middleware/mongo-error-handler';
+import onError from '../../../../../../../middleware/server-error-handler';
+import requireAuth from '../../../../../../../middleware/require-auth';
+import { ExtendedRequest } from '../../../../../../../types';
+import { createRouter } from 'next-connect';
+import { PostDocument } from '../../../../../../../models/Post';
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  mongoErrorHandler(req, res, 'User', async () => {
-    ensureHttpMethod(req, res, 'GET', (req, res) => {
-      requireAuth(
-        req,
-        res,
-        'complete checkout',
-        async ({ models }, _, req, res) => {
-          const { checkoutSessionId, postId } = req.query;
-          if (
-            typeof checkoutSessionId === 'string' &&
-            typeof checkoutSessionId === 'string'
-          ) {
-            checkPaymentStatus(checkoutSessionId)
-              .then(async () => {
-                const post = await models.Post.findById(postId);
-                post.checkoutCompleted = true;
-                post.save();
-                const queryString = new URLSearchParams({
-                  successAlert: 'Checkout successfully completed!',
-                });
-                return res.redirect('/users/user-profile?' + queryString);
-              })
-              .catch(() => {
-                const queryString = new URLSearchParams({
-                  errorAlert: 'Checkout process failed, contact us.',
-                });
-                return res.redirect('/tutors?' + queryString);
-              });
-          }
-        }
-      );
-    });
+const router = createRouter<ExtendedRequest, NextApiResponse>();
+
+router
+  .use(requireAuth('You have to be authenticated to complete the checkout'))
+  .get((req, res) => {
+    const { checkoutSessionId, postId } = req.query;
+    if (
+      typeof checkoutSessionId === 'string' &&
+      typeof checkoutSessionId === 'string'
+    ) {
+      checkPaymentStatus(checkoutSessionId)
+        .then(async () => {
+          const post = (await req.models.Post.findById(postId)) as PostDocument;
+          post.checkoutCompleted = true;
+          post.save();
+          const queryString = new URLSearchParams({
+            successAlert: 'Checkout successfully completed!',
+          });
+          return res.redirect('/users/user-profile?' + queryString);
+        })
+        .catch(() => {
+          const queryString = new URLSearchParams({
+            errorAlert: 'Checkout process failed, contact us.',
+          });
+          return res.redirect('/tutors?' + queryString);
+        });
+    }
   });
-};
 
-export default handler;
+export default router.handler({
+  onError,
+});

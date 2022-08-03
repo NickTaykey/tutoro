@@ -89,6 +89,7 @@ const Home: NextPage<Props> = ({ points, allSubjects }) => {
                           placement="right"
                         >
                           <c.Button
+                            variant="cta"
                             width={['100%', null, 'auto']}
                             onClick={() =>
                               user
@@ -121,9 +122,7 @@ const Home: NextPage<Props> = ({ points, allSubjects }) => {
 
 import { authOptions } from './api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth';
-import connectDB from '../middleware/mongo-connect';
-import Review from '../models/Review';
-import User from '../models/User';
+import * as models from '../models';
 import FiltersForm from '../components/cluster-map/FiltersForm';
 import ClusterMapContextProvider from '../store/ClusterMapProvider';
 import ClusterMapContext from '../store/cluster-map-context';
@@ -139,16 +138,13 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
       sort: { _id: -1 },
     },
     populate: [
-      { path: 'user', model: User },
-      { path: 'tutor', model: User },
+      { path: 'user', model: models.User },
+      { path: 'tutor', model: models.User },
     ],
-    model: Review,
+    model: models.Review,
   };
 
-  const [session, { models }] = await Promise.all([
-    getServerSession(context, authOptions),
-    connectDB,
-  ]);
+  const session = await getServerSession(context, authOptions);
 
   const tutors = await models.User.find({
     isTutor: true,

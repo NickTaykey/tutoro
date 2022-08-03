@@ -1,43 +1,40 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiResponse } from 'next';
+
+import onError from '../../../../../../../middleware/server-error-handler';
 import requireAuth from '../../../../../../../middleware/require-auth';
-import ensureHttpMethod from '../../../../../../../middleware/ensure-http-method';
-import checkPaymentStatus from '../../../../../../../utils/check-payment-status';
-import mongoErrorHandler from '../../../../../../../middleware/mongo-error-handler';
+import { ExtendedRequest } from '../../../../../../../types';
+import { createRouter } from 'next-connect';
+import { SessionDocument } from '../../../../../../../models/Session';
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  mongoErrorHandler(req, res, 'User', async () => {
-    ensureHttpMethod(req, res, 'GET', (req, res) => {
-      requireAuth(
-        req,
-        res,
-        'complete checkout',
-        async ({ models }, _, req, res) => {
-          const { checkoutSessionId, sessionId } = req.query;
-          if (
-            typeof checkoutSessionId === 'string' &&
-            typeof checkoutSessionId === 'string'
-          ) {
-            checkPaymentStatus(checkoutSessionId)
-              .then(async () => {
-                const session = await models.Session.findById(sessionId);
-                session.checkoutCompleted = true;
-                session.save();
-                const queryString = new URLSearchParams({
-                  successAlert: 'Checkout successfully completed!',
-                });
-                return res.redirect('/users/user-profile?' + queryString);
-              })
-              .catch(() => {
-                const queryString = new URLSearchParams({
-                  errorAlert: 'Checkout process failed, contact us.',
-                });
-                return res.redirect('/tutors?' + queryString);
-              });
-          }
-        }
-      );
-    });
+const router = createRouter<ExtendedRequest, NextApiResponse>();
+
+router
+  .use(requireAuth('You have to be authenticated to complete the checkout'))
+  .get(async (req, res) => {
+    const { checkoutSessionId, sessionId } = req.query;
+    if (
+      typeof checkoutSessionId === 'string' &&
+      typeof checkoutSessionId === 'string'
+    ) {
+      try {
+        const session = (await req.models.Session.findById(
+          sessionId
+        )) as SessionDocument;
+        session.checkoutCompleted = true;
+        session.save();
+        const queryString = new URLSearchParams({
+          successAlert: 'Checkout successfully completed!',
+        });
+        return res.redirect('/users/user-profile?' + queryString);
+      } catch (err) {
+        const queryString = new URLSearchParams({
+          errorAlert: 'Checkout process failed, contact us.',
+        });
+        return res.redirect('/tutors?' + queryString);
+      }
+    }
   });
-};
 
-export default handler;
+export default router.handler({
+  onError,
+});

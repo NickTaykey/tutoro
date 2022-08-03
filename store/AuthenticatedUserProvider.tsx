@@ -157,6 +157,7 @@ const AuthenticatedUserProvider: React.FC<{
                   errorMessage:
                     'Unexpected server side error, impossible to update your profile, try again later...',
                 });
+              window.location.assign('/users/tutor-profile');
               dispatchAuthenticatedUserAction({
                 type: AuthenticatedUserActionTypes.UPDATE_TUTOR,
                 payload: res,

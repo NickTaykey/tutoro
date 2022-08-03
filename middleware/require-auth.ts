@@ -1,36 +1,29 @@
-import connectionPromise from './mongo-connect';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '../pages/api/auth/[...nextauth]';
-import User from '../models/User';
-
-import type { NextApiRequest, NextApiResponse } from 'next';
+import type { ExtendedRequest } from '../types';
 import type { UserDocument } from '../models/User';
-import type { Mongoose } from 'mongoose';
+import { authOptions } from '../pages/api/auth/[...nextauth]';
+import { getServerSession } from 'next-auth';
+import { NextHandler } from 'next-connect';
+import { NextApiResponse } from 'next';
+import * as models from '../models';
 
-const requireAuth = async (
-  req: NextApiRequest,
-  res: NextApiResponse,
-  contextMessage: string,
-  cb: (
-    connection: Mongoose,
-    sessionUser: UserDocument,
-    req: NextApiRequest,
-    res: NextApiResponse
-  ) => void
-) => {
-  const [session, connection] = await Promise.all([
-    getServerSession({ req, res }, authOptions),
-    connectionPromise,
-  ]);
-  if (session?.user?.email) {
-    const { _id } = session.user as UserDocument;
-    const user = await User.findById(_id);
-    const userDocument = user as UserDocument;
-    return cb(connection, userDocument, req, res);
-  }
-  return res.status(403).json({
-    errorMessage: `You have to be authenticated to ${contextMessage}.`,
-  });
-};
+function requireAuth(userNotAuthenticatedMessage: string) {
+  return async (
+    req: ExtendedRequest,
+    res: NextApiResponse,
+    next: NextHandler
+  ) => {
+    const session = await getServerSession({ req, res }, authOptions);
+    if (session?.user?.email) {
+      const { _id } = session.user as UserDocument;
+      const user = await models.User.findById(_id);
+      req.sessionUser = user as UserDocument;
+      req.models = models;
+      return next();
+    }
+    return res.status(403).json({
+      errorMessage: userNotAuthenticatedMessage,
+    });
+  };
+}
 
 export default requireAuth;

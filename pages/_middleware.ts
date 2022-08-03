@@ -7,7 +7,6 @@ export async function middleware(req: NextRequest) {
     !req.nextUrl.pathname.includes('/tutors') &&
     !req.nextUrl.pathname.includes('/signin') &&
     !req.nextUrl.pathname.includes('/users') &&
-    !req.nextUrl.pathname.includes('/auth-wall') &&
     !req.nextUrl.pathname.includes('/favicon')
   ) {
     const url = req.nextUrl.clone();

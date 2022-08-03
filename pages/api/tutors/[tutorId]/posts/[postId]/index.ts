@@ -1,20 +1,16 @@
-import connectDB from '../../../../../../middleware/mongo-connect';
-import mongoErrorHandler from '../../../../../../middleware/mongo-error-handler';
-import ensureHttpMethod from '../../../../../../middleware/ensure-http-method';
-import serverSideErrorHandler from '../../../../../../middleware/server-side-error-handler';
+import onError from '../../../../../../middleware/server-error-handler';
 import requireAuth from '../../../../../../middleware/require-auth';
-import { v2 as cloudinary } from 'cloudinary';
 import { PostStatus, PostType } from '../../../../../../types';
 import { parseForm } from '../../../../../../utils/parse-form';
+import { ExtendedRequest } from '../../../../../../types';
+import { v2 as cloudinary } from 'cloudinary';
+import { createRouter } from 'next-connect';
 import { unlink } from 'fs';
 
-import type { NextApiRequest, NextApiResponse } from 'next';
+import type { PostDocument } from '../../../../../../models/Post';
 import type { UploadApiResponse } from 'cloudinary';
 import type { File, Files } from 'formidable';
-import type {
-  PostDocument,
-  PostDocumentObject,
-} from '../../../../../../models/Post';
+import type { NextApiResponse } from 'next';
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -36,92 +32,85 @@ const filesUploadConfig = {
   filter: () => true,
 };
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<PostDocumentObject>
-) {
-  serverSideErrorHandler(req, res, (req, res) => {
-    ensureHttpMethod(req, res, ['DELETE', 'PUT'], () => {
-      requireAuth(
-        req,
-        res,
-        'delete a Post',
-        async ({ models }, userSession, req, res) => {
-          await connectDB;
-          return mongoErrorHandler(req, res, 'post', async () => {
-            const post = await models.Post.findById(req.query.postId);
-            if (req.method === 'DELETE') {
-              await post.remove();
-              return res.status(200).json(post.toObject());
-            }
-            if (req.method === 'PUT') {
-              const { files, fields } = await parseForm(req, filesUploadConfig);
-              if (!userSession.isTutor) {
-                return res.status(403).json({
-                  errorMessage: 'Only a Tutor can answer a Post',
-                });
-              }
-              if (Object.keys(files).length > 4) {
-                deleteFiles(files);
-                return res.status(400).json({
-                  errorMessage: 'You can provide at the most 4 attachments',
-                });
-              }
-              post.answer = fields.text;
-              post.status = PostStatus.ANSWERED;
-              const cloudinaryPromises: Promise<UploadApiResponse>[] = [];
+const router = createRouter<ExtendedRequest, NextApiResponse>();
 
-              for (const value of Object.values(files)) {
-                const file = value as File;
-                cloudinaryPromises.push(
-                  cloudinary.uploader.upload(file.filepath, {
-                    folder: 'tutoro/attachments/',
-                    use_filename: true,
-                    resource_type: file.mimetype?.includes('image')
-                      ? 'image'
-                      : 'raw',
-                  })
-                );
-              }
+router
+  .use(
+    requireAuth('You have to be authenticated to change the state of a Post')
+  )
+  .put(async (req, res) => {
+    if (req.method === 'PUT') {
+      const [post, { files, fields }] = await Promise.all([
+        req.models.Post.findById(req.query.postId),
+        parseForm(req, filesUploadConfig),
+      ]);
+      const postDocument = post as PostDocument;
 
-              const responses = await Promise.all(cloudinaryPromises);
+      if (!req.sessionUser.isTutor) {
+        return res.status(403).json({
+          errorMessage: 'Only a Tutor can answer a Post',
+        });
+      }
+      if (Object.keys(files).length > 4) {
+        deleteFiles(files);
+        return res.status(400).json({
+          errorMessage: 'You can provide at the most 4 attachments',
+        });
+      }
 
-              deleteFiles(files);
+      postDocument.answer = fields.text as string;
+      postDocument.status = PostStatus.ANSWERED;
 
-              post.answerAttachments = responses.map(r => ({
-                public_id: r.public_id,
-                url: r.secure_url,
-              }));
+      const cloudinaryPromises: Promise<UploadApiResponse>[] = [];
+      for (const value of Object.values(files)) {
+        const file = value as File;
+        cloudinaryPromises.push(
+          cloudinary.uploader.upload(file.filepath, {
+            folder: 'tutoro/attachments/',
+            use_filename: true,
+            resource_type: file.mimetype?.includes('image') ? 'image' : 'raw',
+          })
+        );
+      }
 
-              if (
-                post.type === PostType.GLOBAL &&
-                userSession.posts.findIndex(
-                  p =>
-                    (p as PostDocument)._id.toString() === post._id.toString()
-                ) === -1
-              ) {
-                post.answeredBy = userSession._id;
-                post.type = PostType.SPECIFIC;
-                userSession.posts.push(post._id);
-              }
-              if (userSession.posts.length) {
-                await userSession.populate('posts');
-                userSession.postEarnings = (
-                  userSession.posts as PostDocument[]
-                ).reduce(
-                  (acm: number, post: PostDocument) => (acm += post.price),
-                  0
-                );
-              }
-              await Promise.all([post.save(), userSession.save()]);
-              return res.status(200).json(post.toObject());
-            }
-          });
-        }
-      );
-    });
+      const responses = await Promise.all(cloudinaryPromises);
+
+      deleteFiles(files);
+
+      postDocument.answerAttachments = responses.map(r => ({
+        public_id: r.public_id,
+        url: r.secure_url,
+      }));
+
+      if (
+        postDocument.type === PostType.GLOBAL &&
+        req.sessionUser.posts.findIndex(
+          p =>
+            (p as PostDocument)._id.toString() === postDocument._id.toString()
+        ) === -1
+      ) {
+        postDocument.answeredBy = req.sessionUser._id;
+        postDocument.type = PostType.SPECIFIC;
+        req.sessionUser.posts.push(postDocument._id);
+      }
+      if (req.sessionUser.posts.length) {
+        await req.sessionUser.populate('posts');
+        req.sessionUser.postEarnings = (
+          req.sessionUser.posts as PostDocument[]
+        ).reduce(
+          (acm: number, post: PostDocument) => (acm += postDocument.price),
+          0
+        );
+      }
+
+      await Promise.all([postDocument.save(), req.sessionUser.save()]);
+      return res.status(200).json(postDocument.toObject());
+    }
   });
-}
+
+export default router.handler({
+  onError,
+});
 
 export const config = {
   api: {
