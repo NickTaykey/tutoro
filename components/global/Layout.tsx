@@ -11,6 +11,7 @@ const Layout: React.FC<{ children: React.ReactNode[] | React.ReactNode }> = ({
 }) => {
   const { status, data } = useSession();
   const { pathname } = useRouter();
+  console.log(pathname);
   return status !== 'loading' ? (
     <AuthenticatedUserProvider
       user={
@@ -18,9 +19,7 @@ const Layout: React.FC<{ children: React.ReactNode[] | React.ReactNode }> = ({
       }
     >
       <Navbar />
-      <Box mb={!pathname.includes('/users') ? 10 : 0} my={5}>
-        {children}
-      </Box>
+      <Box my="5">{children}</Box>
       <Footer />
     </AuthenticatedUserProvider>
   ) : (
@@ -38,9 +37,6 @@ const Layout: React.FC<{ children: React.ReactNode[] | React.ReactNode }> = ({
         size="xl"
         mb="5"
       />
-      <Heading as="h1" size="xl">
-        Loading
-      </Heading>
     </Flex>
   );
 };

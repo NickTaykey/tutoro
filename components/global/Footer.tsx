@@ -5,7 +5,7 @@ const Footer: React.FC = () => {
   const { pathname } = useRouter();
   return (
     <Box as="footer">
-      {!pathname.includes('/users') && (
+      {pathname === '/tutors' && (
         <>
           <Divider orientation="horizontal" borderTopWidth="1px" />
           <Flex justify="center" alignItems="center">

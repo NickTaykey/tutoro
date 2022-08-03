@@ -108,15 +108,13 @@ const NewPostForm: React.FC<Props> = props => {
             style={{ width: '100%' }}
           >
             {(validationError || !!Object.keys(errors).length) && (
-              <c.Alert status="error" mb="3" fontWeight="bold">
+              <c.Alert status="error" mb="3">
                 <c.AlertIcon />
                 {validationError || `Provide your ${Object.keys(errors)[0]}`}
               </c.Alert>
             )}
             <c.FormControl mb="4">
-              <c.FormLabel htmlFor="post-subject" fontWeight="bold">
-                Subject
-              </c.FormLabel>
+              <c.FormLabel htmlFor="post-subject">Subject</c.FormLabel>
               <c.Select id="post-subject" {...register('subject')}>
                 {props.subjects.map(s => (
                   <option key={s} value={s}>
@@ -126,9 +124,7 @@ const NewPostForm: React.FC<Props> = props => {
               </c.Select>
             </c.FormControl>
             <c.FormControl mb="4">
-              <c.FormLabel htmlFor="post-description" fontWeight="bold">
-                Description
-              </c.FormLabel>
+              <c.FormLabel htmlFor="post-description">Description</c.FormLabel>
               <c.Textarea
                 id="post-description"
                 {...register('description', { required: true })}
@@ -136,19 +132,20 @@ const NewPostForm: React.FC<Props> = props => {
             </c.FormControl>
             <c.FormControl mb="4">
               {filesList && filesList.length! > 4 && (
-                <c.Alert status="error" fontWeight="bold" my="3">
+                <c.Alert status="error" my="3">
                   <c.AlertIcon />
                   Maximum 4 attachments
                 </c.Alert>
               )}
-              <c.FormLabel htmlFor="attachments-input" fontWeight="bold">
+              <c.FormLabel htmlFor="attachments-input">
                 Optional, any attachments to share?
               </c.FormLabel>
               <c.Input
                 type="file"
-                multiple
+                fontWeight="normal"
                 id="attachments-input"
                 onChange={onFileUploadChange}
+                multiple
               />
               <c.Text fontWeight="light" my="2" color={lightTextColor}>
                 Only images, PDFs and office format files
@@ -161,11 +158,8 @@ const NewPostForm: React.FC<Props> = props => {
                   speed="0.65s"
                   emptyColor="gray.200"
                   color="blue.500"
-                  size="xl"
+                  size="lg"
                 />
-                <c.Heading as="h3" size="md" ml="3">
-                  Saving Post
-                </c.Heading>
               </c.Flex>
             ) : (
               <c.Box mt="3">

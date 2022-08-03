@@ -83,7 +83,7 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
             ) : (
               <c.Flex justify="center" align="center" height="100%">
                 <c.Heading as="h2" size="md" textAlign="center">
-                  You no posts for now!
+                  You have no posts for now!
                 </c.Heading>
               </c.Flex>
             )}

@@ -1,6 +1,6 @@
 import type { ReviewDocumentObject } from '../../models/Review';
+import type { UserDocumentObject } from '../../models/User';
 import React, { FormEvent, useContext, useRef, useState } from 'react';
-import { UserDocumentObject } from '../../models/User';
 import ReviewContext from '../../store/reviews-context';
 import StarRating, { StarRatingHandle } from './StarRating';
 import * as c from '@chakra-ui/react';

@@ -24,6 +24,7 @@ const AnswerPostModal = React.forwardRef<
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [validationError, setValidationError] = useState<string | null>(null);
   const { isOpen, onOpen, onClose } = c.useDisclosure();
+  const lightTextColor = c.useColorModeValue('gray.500', 'gray.300');
 
   const {
     register,
@@ -101,7 +102,7 @@ const AnswerPostModal = React.forwardRef<
                 <c.Heading as="h3" size="md" my="4">
                   Description
                 </c.Heading>
-                <c.Text>{props.post?.description}</c.Text>
+                <c.Text textAlign="justify">{props.post?.description}</c.Text>
                 {!!props.post.attachments.length && (
                   <>
                     <c.Flex my="4">
@@ -134,7 +135,7 @@ const AnswerPostModal = React.forwardRef<
               </c.Flex>
             </c.Box>
             <c.Box width={['100%', '100%', '50%']} mx={['0', '0', '2']} my="2">
-              <c.Heading as="h1" size="lg">
+              <c.Heading as="h1" size="lg" my="4">
                 Your answer
               </c.Heading>
               {validationError && (
@@ -152,19 +153,18 @@ const AnswerPostModal = React.forwardRef<
                 </c.Alert>
               )}
               <form onSubmit={handleSubmit(formSubmitHandler)}>
-                <c.FormControl>
-                  <c.FormLabel htmlFor="answer-text" fontWeight="bold" my="3">
+                <c.FormControl mb="4">
+                  <c.FormLabel htmlFor="answer-text" fontWeight="bold">
                     Answer description
                   </c.FormLabel>
                   <c.Textarea
-                    mb="4"
                     id="answer-text"
                     {...register('text', { minLength: 10, required: true })}
                   />
                 </c.FormControl>
                 <c.FormControl mb="4">
                   {filesList && filesList.length! > 4 && (
-                    <c.Alert status="error" fontWeight="bold" my="3">
+                    <c.Alert status="error" fontWeight="bold">
                       <c.AlertIcon />
                       Maximum 4 attachments
                     </c.Alert>
@@ -178,7 +178,7 @@ const AnswerPostModal = React.forwardRef<
                     id="attachments-input"
                     onChange={onFileUploadChange}
                   />
-                  <c.Text fontWeight="bold" my="2">
+                  <c.Text fontWeight="light" my="2" color={lightTextColor}>
                     Only images, PDFs and office format files
                   </c.Text>
                 </c.FormControl>
@@ -190,11 +190,8 @@ const AnswerPostModal = React.forwardRef<
                       speed="0.65s"
                       emptyColor="gray.200"
                       color="blue.500"
-                      size="xl"
+                      size="lg"
                     />
-                    <c.Heading as="h3" size="md" ml="3">
-                      Saving Post
-                    </c.Heading>
                   </c.Flex>
                 ) : (
                   <c.Flex

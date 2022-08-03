@@ -167,7 +167,7 @@ const Session: React.FC<Props> = ({
             onClick={approveSessionHandler}
             icon={<FaCheck />}
             mb={[1, 0]}
-            mr={[0, 1]}
+            mr={[0, 3]}
           />
         )}
         {viewAsTutor && session.status !== SessionStatus.REJECTED && (
@@ -177,7 +177,7 @@ const Session: React.FC<Props> = ({
             onClick={rejectSessionHandler}
             icon={<FaArchive />}
             mb={[1, 0]}
-            mr={[0, 1]}
+            mr={[0, 3]}
           />
         )}
       </c.Flex>

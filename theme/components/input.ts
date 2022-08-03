@@ -8,7 +8,7 @@ const inputOverrides: ComponentStyleConfig = {
     field: {
       rounded: 'none',
       fontSize: '16',
-      fontWeight: '700',
+      fontWeight: 'bold',
       fontFamily: 'ubuntu',
       border: '2px solid rgba(0, 0, 0, 0.1)',
       letterSpacing: '1px',

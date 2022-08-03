@@ -1,15 +1,12 @@
-import connectDB from './middleware/mongo-connect';
+import { User, Post, Session, Review } from '../models';
+import fakeCoordinates from './seed-coordinates.json';
+import calcAvgRating from '../utils/calc-avg-rating';
 import { faker } from '@faker-js/faker';
 import dotenv from 'dotenv';
 import fs from 'fs';
-import Review from './models/Review';
-import User from './models/User';
-import Session from './models/Session';
-import type { UserDocument } from './models/User';
-import type { ReviewDocument } from './models/Review';
-import fakeCoordinates from './seed-coordinates.json';
-import calcAvgRating from './utils/calc-avg-rating';
-import Post from './models/Post';
+
+import type { ReviewDocument } from '../models/Review';
+import type { UserDocument } from '../models/User';
 
 dotenv.config({ path: __dirname + '/.env.local' });
 
@@ -23,13 +20,14 @@ const N_TUTORS =
 
 const seeder = async () => {
   faker.setLocale('it');
-  await connectDB();
+
   await Promise.all([
     User.deleteMany({}),
     Post.deleteMany({}),
     Review.deleteMany({}),
     Session.deleteMany({}),
   ]);
+
   const users: Array<UserDocument> = [];
   const tutors: Array<UserDocument> = [];
   const defaultSubjects = ['science', 'maths', 'physics'];
@@ -56,11 +54,6 @@ const seeder = async () => {
   }
 
   for (let i = 0; i < N_TUTORS; i++) {
-    /* const coordinates = faker.address.nearbyGPSCoordinate(
-      LOCATION_CENTER_COORDINATES,
-      50,
-      true
-    ); */
     const coordinates = fakeCoordinates[i];
     const tutor = new User({
       fullname: faker.name.findName(),

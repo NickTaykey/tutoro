@@ -318,8 +318,11 @@ const TutorProfileView: React.FC<Props> = ({
                                 mx="auto"
                               >
                                 <c.Tab
-                                  color="gray"
-                                  _selected={{ bg: 'gray.100', color: 'gray' }}
+                                  color={hourGlassIconColor}
+                                  _selected={{
+                                    color: 'gray.800',
+                                    bgColor: hourGlassIconBgColor,
+                                  }}
                                 >
                                   <FaHourglassHalf size="25" />
                                 </c.Tab>
@@ -433,8 +436,11 @@ const TutorProfileView: React.FC<Props> = ({
                               mx="auto"
                             >
                               <c.Tab
-                                color="gray"
-                                _selected={{ bg: 'gray.100', color: 'gray' }}
+                                color={hourGlassIconColor}
+                                _selected={{
+                                  color: 'gray.800',
+                                  bgColor: hourGlassIconBgColor,
+                                }}
                               >
                                 <FaHourglassHalf size="25" />
                               </c.Tab>

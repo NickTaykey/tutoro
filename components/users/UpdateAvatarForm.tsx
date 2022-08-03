@@ -88,8 +88,7 @@ const UpdateAvatarForm: React.FC = () => {
             type="file"
             name="avatar"
             my="2"
-            fontWeight="600"
-            fontSize="14"
+            fontWeight="normal"
             onChange={onFileUploadChange}
           />
           <c.FormHelperText>
@@ -107,7 +106,7 @@ const UpdateAvatarForm: React.FC = () => {
                 speed="0.65s"
                 emptyColor="gray.200"
                 color="blue.500"
-                size="xl"
+                size="lg"
               />
             </c.Center>
           ) : (

@@ -1,7 +1,6 @@
 import { useContext, useRef } from 'react';
 import PostsContext from '../../store/posts-context';
 import { useSession } from 'next-auth/react';
-import { UserDocumentObject } from '../../models/User';
 import * as c from '@chakra-ui/react';
 import * as fa from 'react-icons/fa';
 import { MdError, MdOutlineAttachment } from 'react-icons/md';
@@ -9,9 +8,10 @@ import AnswerPostModal from './AnswerPostModal';
 import Link from 'next/link';
 import colors from '../../theme/colors';
 import AuthenticatedUserContext from '../../store/authenticated-user-context';
+import type { AnswerPostModalHandler } from './AnswerPostModal';
+import type { UserDocumentObject } from '../../models/User';
 import type { APIError } from '../../store/posts-context';
 import type { PostDocumentObject } from '../../models/Post';
-import type { AnswerPostModalHandler } from './AnswerPostModal';
 import { PostType, PostStatus, CloudFile } from '../../types';
 
 interface Props {
@@ -69,7 +69,7 @@ const Post: React.FC<Props> = ({
           <c.ModalOverlay />
           <c.ModalContent py="6" width="90%">
             <c.ModalHeader>
-              <c.Heading as="h1">Answer</c.Heading>
+              <c.Heading as="h2">Answer</c.Heading>
             </c.ModalHeader>
             <c.ModalCloseButton />
             <c.ModalBody>
@@ -77,7 +77,12 @@ const Post: React.FC<Props> = ({
                 <c.Heading as="h2" size="md" mb="2">
                   Description
                 </c.Heading>
-                <c.Text maxHeight="40vh" pr="2" overflowY="auto">
+                <c.Text
+                  maxHeight="40vh"
+                  pr="2"
+                  overflowY="auto"
+                  textAlign="justify"
+                >
                   {post.answer}
                 </c.Text>
               </c.Box>

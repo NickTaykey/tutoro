@@ -1,4 +1,4 @@
-import type { TutorObjectGeoJSON } from '../../types/index';
+import type { TutorObjectGeoJSON } from '../../types';
 import { FaStar } from 'react-icons/fa';
 import * as c from '@chakra-ui/react';
 import { useRouter } from 'next/router';

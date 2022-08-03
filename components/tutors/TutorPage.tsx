@@ -31,10 +31,11 @@ const TutorPage: React.FC<Props> = ({
     <c.Box width="90%" mx="auto">
       <c.Flex alignItems="center">
         <c.Avatar
+          size="xl"
           src={currentTutor.avatar?.url ? currentTutor.avatar.url : ''}
           name={currentTutor.fullname}
         />
-        <c.Heading as="h1" size="xl" my="5" ml="2">
+        <c.Heading as="h1" size="xl" my="5" ml="4">
           {currentTutor.fullname}
         </c.Heading>
       </c.Flex>
@@ -130,14 +131,6 @@ const TutorPage: React.FC<Props> = ({
                       type={ReviewFormTypes.Create}
                       tutorId={currentTutor._id}
                     />
-                    {!isUserAllowedToReview && user?._id !== currentTutor._id && (
-                      <c.Flex alignItems="center" width="100%" my="5">
-                        <FaPen size={20} />
-                        <c.Heading as="h3" size="md" ml="3">
-                          Have a Session or Post to review
-                        </c.Heading>
-                      </c.Flex>
-                    )}
                     <c.VStack
                       overflowY="auto"
                       mt="3"
