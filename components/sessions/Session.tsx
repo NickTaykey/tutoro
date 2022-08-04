@@ -8,6 +8,7 @@ import colors from '../../theme/colors';
 import type { SessionDocumentObject } from '../../models/Session';
 import type { UserDocumentObject } from '../../models/User';
 import { SessionStatus } from '../../utils/types';
+import Link from 'next/link';
 
 interface Props {
   session: SessionDocumentObject;
@@ -60,18 +61,20 @@ const Session: React.FC<Props> = ({
       >
         <c.Flex alignItems="center" direction={['column', 'row']}>
           <c.Flex alignItems="center">
-            <c.Avatar
-              src={
-                viewAsTutor
-                  ? (session.user as UserDocumentObject).avatar?.url
-                  : tutor.avatar?.url
-              }
-              name={
-                viewAsTutor
-                  ? (session.user as UserDocumentObject).fullname
-                  : tutor.fullname
-              }
-            />
+            <Link href={`/tutors/${tutorId}`}>
+              <c.Avatar
+                src={
+                  viewAsTutor
+                    ? (session.user as UserDocumentObject).avatar?.url
+                    : tutor.avatar?.url
+                }
+                name={
+                  viewAsTutor
+                    ? (session.user as UserDocumentObject).fullname
+                    : tutor.fullname
+                }
+              />
+            </Link>
             <c.Heading as="h3" size="md" mx="3">
               {viewAsTutor ? user.fullname : tutor.fullname}
             </c.Heading>

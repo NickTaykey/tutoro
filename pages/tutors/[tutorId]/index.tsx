@@ -1,7 +1,6 @@
 import type { UserDocument, UserDocumentObject } from '../../../models/User';
 import type { ReviewDocument } from '../../../models/Review';
 import type { GetServerSideProps, NextPage } from 'next';
-import type { ObjectId } from 'mongoose';
 
 import { getReviewDocumentObject } from '../../../utils/casting-helpers';
 import TutorPage from '../../../components/tutors/TutorPage';

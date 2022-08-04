@@ -129,7 +129,8 @@ const TutorProfileView: React.FC<Props> = ({
                       my="4"
                     >
                       <c.Tab m="0" fontSize="sm" color={unSelectedTabColor}>
-                        ({getNotAnsweredPosts(posts).length}) Posts
+                        ({getNotAnsweredPosts(getSpecificPosts(posts)).length})
+                        Posts
                       </c.Tab>
                       {globalPostsEnabled && (
                         <c.Tab m="0" fontSize="sm" color={unSelectedTabColor}>

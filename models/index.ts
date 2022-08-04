@@ -11,31 +11,27 @@ import User from './User';
       let globalWithMongoClient = global as typeof globalThis & {
         _mongoClient: Mongoose;
       };
-
-      if (!process.env.DEV_DB_URL) {
-        throw new Error(
-          'No DB urls for provided for development var DEV_DB_URL'
-        );
-      }
-
       if (!globalWithMongoClient._mongoClient) {
         globalWithMongoClient._mongoClient = await mongoose.connect(
-          process.env.DEV_DB_URL!
+          'mongodb://localhost:27017/tutoro'
         );
       }
     } else {
-      if (!process.env.DEV_DB_URL) {
+      if (!process.env.MONGO_ATLAS_USERNAME || !process.env.MONGO_ATLAS_PWD) {
         throw new Error(
-          'No DB urls for provided for productions var PROD_DB_URL'
+          `No ${
+            !process.env.MONGO_ATLAS_USERNAME
+              ? 'MONGO_ATLAS_USERNAME'
+              : 'MONGO_ATLAS_PWD'
+          } provided`
         );
       }
-
-      await mongoose.connect(process.env.PROD_DB_URL!);
+      await mongoose.connect(
+        `mongodb+srv://${process.env.MONGO_ATLAS_USERNAME}:${process.env.MONGO_ATLAS_PWD}@cluster0.ka6g6.mongodb.net/?retryWrites=true&w=majority`
+      );
     }
   } catch (err) {
-    throw new Error(
-      'Something went wrong and a connection with the DB cannot be esablished'
-    );
+    console.error(err);
   }
 })();
 

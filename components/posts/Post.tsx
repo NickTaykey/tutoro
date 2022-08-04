@@ -56,6 +56,7 @@ const Post: React.FC<Props> = ({
   const currentUser = data?.user as unknown as UserDocumentObject;
   const creator = post.creator as UserDocumentObject;
   const answeredBy = post.answeredBy as UserDocumentObject;
+  const tutorId = answeredBy ? answeredBy._id : null;
   const imperativeHandlingRef = useRef<AnswerPostModalHandler>(null);
   const {
     isOpen: showFullPostDescription,
@@ -138,11 +139,13 @@ const Post: React.FC<Props> = ({
         >
           <c.Flex alignItems="center">
             {!viewAsTutor && post.type === PostType.SPECIFIC && (
-              <c.Avatar
-                src={answeredBy.avatar?.url}
-                name={answeredBy.fullname}
-                mx={[0, 2]}
-              />
+              <Link href={`/tutors/${tutorId}`}>
+                <c.Avatar
+                  src={answeredBy.avatar?.url}
+                  name={answeredBy.fullname}
+                  mx={[0, 2]}
+                />
+              </Link>
             )}
             {viewAsTutor && (
               <c.Avatar
@@ -167,7 +170,7 @@ const Post: React.FC<Props> = ({
                 post.status !== PostStatus.ANSWERED ? (
                 <c.Flex alignItems="center">
                   <fa.FaGlobe size="50" />
-                  <c.Text mx="2">Global</c.Text>
+                  <c.Text ml="3">Global</c.Text>
                 </c.Flex>
               ) : (
                 answeredBy?.fullname

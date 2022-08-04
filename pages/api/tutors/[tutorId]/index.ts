@@ -29,7 +29,7 @@ router.put(
     if (typeof globalPostsEnabled !== 'undefined') {
       req.sessionUser.globalPostsEnabled = eval(globalPostsEnabled);
       req.sessionUser.save();
-      return res.status(200);
+      return res.status(200).end();
     }
 
     if (
