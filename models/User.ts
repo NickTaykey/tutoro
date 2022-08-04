@@ -4,7 +4,7 @@ import type { Model, ObjectId, Document } from 'mongoose';
 import type { ReviewDocument, ReviewDocumentObject } from './Review';
 import type { SessionDocument, SessionDocumentObject } from './Session';
 import type { PostDocument, PostDocumentObject } from './Post';
-import type { CloudFile } from '../types';
+import type { CloudFile } from '../utils/types';
 
 type ReviewsArray =
   | ObjectId[]

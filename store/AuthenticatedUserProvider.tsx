@@ -14,7 +14,7 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import type { UpdateTutorObject } from './authenticated-user-context';
-import type { CloudFile } from '../types';
+import type { CloudFile } from '../utils/types';
 import getProvidersList from '../utils/get-providers';
 import { ClientSafeProvider, signIn } from 'next-auth/react';
 import { FcGoogle } from 'react-icons/fc';

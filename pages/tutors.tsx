@@ -1,19 +1,16 @@
-import type { PointsCollection } from '../types';
 import type { UserDocument, UserDocumentObject } from '../models/User';
 import type { GetServerSideProps, NextPage } from 'next';
+import type { PointsCollection } from '../utils/types';
 
-import {
-  getReviewDocumentObject,
-  getUserDocumentObject,
-  getTutorGeoJSON,
-  getUsersPointsCollection,
-} from '../utils/casting-helpers';
-
+import AuthenticatedUserContext from '../store/authenticated-user-context';
+import ClusterMapContextProvider from '../store/ClusterMapProvider';
+import FiltersForm from '../components/cluster-map/FiltersForm';
 import ClusterMap from '../components/cluster-map/ClusterMap';
-
+import ClusterMapContext from '../store/cluster-map-context';
+import { FaGlobe } from 'react-icons/fa';
+import { useRouter } from 'next/router';
 import * as c from '@chakra-ui/react';
-
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 
 interface Props {
   points: PointsCollection;
@@ -120,16 +117,17 @@ const Home: NextPage<Props> = ({ points, allSubjects }) => {
   );
 };
 
+import {
+  getReviewDocumentObject,
+  getUserDocumentObject,
+  getTutorGeoJSON,
+  getUsersPointsCollection,
+} from '../utils/casting-helpers';
 import { authOptions } from './api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth';
 import * as models from '../models';
-import FiltersForm from '../components/cluster-map/FiltersForm';
-import ClusterMapContextProvider from '../store/ClusterMapProvider';
-import ClusterMapContext from '../store/cluster-map-context';
+
 import type { ReviewDocument, ReviewDocumentObject } from '../models/Review';
-import { useRouter } from 'next/router';
-import { FaGlobe } from 'react-icons/fa';
-import AuthenticatedUserContext from '../store/authenticated-user-context';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
   const populateReviewConfig = {

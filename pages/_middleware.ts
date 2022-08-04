@@ -9,8 +9,8 @@ export async function middleware(req: NextRequest) {
     !req.nextUrl.pathname.includes('/users') &&
     !req.nextUrl.pathname.includes('/favicon')
   ) {
-    const url = req.nextUrl.clone();
-    return NextResponse.redirect(`${url.protocol}/${url.host}/tutors`);
+    const { protocol, host } = req.nextUrl.clone();
+    return NextResponse.redirect(`${protocol}/${host}/tutors`);
   }
   return NextResponse.next();
 }

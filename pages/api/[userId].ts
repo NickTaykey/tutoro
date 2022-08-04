@@ -3,10 +3,10 @@ import onError from '../../middleware/server-error-handler';
 import { v2 as cloudinary } from 'cloudinary';
 import fs from 'fs';
 
-import type { NextApiResponse } from 'next';
-import type { ExtendedRequest } from '../../types';
+import type { ExtendedRequest } from '../../utils/types';
 import type { UploadApiResponse } from 'cloudinary';
 import type { File, Part } from 'formidable';
+import type { NextApiResponse } from 'next';
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -32,6 +32,7 @@ router.put(
     try {
       const { files } = await parseForm(req, avatarUploadConfig);
       const file = files.avatar as File;
+
       if (file) {
         if (
           !!req.sessionUser.avatar?.public_id &&
@@ -39,16 +40,21 @@ router.put(
         ) {
           cloudinary.uploader.destroy(req.sessionUser.avatar.public_id);
         }
-        const cloudinaryResponse: UploadApiResponse =
-          await cloudinary.uploader.upload(file.filepath, {
+
+        const cloudinaryResponse = await cloudinary.uploader.upload(
+          file.filepath,
+          {
             folder: 'tutoro/avatars/',
-          });
+          }
+        );
+
         req.sessionUser.avatar = {
           public_id: cloudinaryResponse.public_id,
           url: cloudinaryResponse.secure_url,
         };
         req.sessionUser.save();
         fs.unlink(file.filepath, () => {});
+
         return res.status(200).json({
           error: null,
           newAvatar: req.sessionUser.avatar,
@@ -64,20 +70,20 @@ router.put(
           req.sessionUser.save(),
         ]);
       }
+
       return res.status(200).json({
         error: null,
         newAvatar: req.sessionUser.avatar,
       });
     } catch (e) {
       if (e instanceof FormidableError) {
-        res
+        return res
           .status(e.httpCode || 400)
           .json({ error: e.message, newAvatar: null });
-      } else {
-        res
-          .status(500)
-          .json({ error: 'Internal Server Error', newAvatar: null });
       }
+      return res
+        .status(500)
+        .json({ error: 'Internal Server Error', newAvatar: null });
     }
   }
 );

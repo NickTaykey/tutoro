@@ -5,7 +5,7 @@ import { MdOutlineAttachment } from 'react-icons/md';
 import React, { useState, useImperativeHandle } from 'react';
 import type { Dispatch, SetStateAction, ChangeEvent } from 'react';
 import type { PostDocumentObject } from '../../models/Post';
-import type { AnswerFormFields, CloudFile } from '../../types';
+import type { AnswerFormFields, CloudFile } from '../../utils/types';
 
 export type AnswerPostModalHandler = {
   onClose: () => void;
@@ -174,6 +174,7 @@ const AnswerPostModal = React.forwardRef<
                   </c.FormLabel>
                   <c.Input
                     type="file"
+                    fontWeight="normal"
                     multiple
                     id="attachments-input"
                     onChange={onFileUploadChange}

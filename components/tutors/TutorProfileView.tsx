@@ -7,7 +7,7 @@ import type { UserDocumentObject } from '../../models/User';
 import type { SessionDocumentObject } from '../../models/Session';
 import type { ReviewDocumentObject } from '../../models/Review';
 import type { PostDocumentObject } from '../../models/Post';
-import { PostStatus, PostType, SessionStatus } from '../../types';
+import { PostStatus, PostType, SessionStatus } from '../../utils/types';
 import PostsContextProvider from '../../store/PostsProvider';
 import PostsContext from '../../store/posts-context';
 import * as c from '@chakra-ui/react';

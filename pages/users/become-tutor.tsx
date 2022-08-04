@@ -1,14 +1,11 @@
 import type { GetServerSideProps, NextPage } from 'next';
 import type { SubmitHandler } from 'react-hook-form';
-import type { QueryObject } from '../../types';
+import type { QueryObject } from '../../utils/types';
 
 import AuthenticatedUserContext from '../../store/authenticated-user-context';
 import { FaHandsHelping, FaPlus, FaTrashAlt } from 'react-icons/fa';
-import { authOptions } from '../api/auth/[...nextauth]';
 import { useForm, useFieldArray } from 'react-hook-form';
-import { getServerSession } from 'next-auth';
 import { useContext, useState } from 'react';
-import * as models from '../../models';
 import * as c from '@chakra-ui/react';
 
 type FormValues = {
@@ -198,6 +195,10 @@ const BecomeTutorPage: NextPage = () => {
     </c.Box>
   );
 };
+
+import { authOptions } from '../api/auth/[...nextauth]';
+import { getServerSession } from 'next-auth';
+import * as models from '../../models';
 
 export const getServerSideProps: GetServerSideProps = async context => {
   const session = await getServerSession(context, authOptions);

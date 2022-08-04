@@ -1,10 +1,11 @@
 import type { FeatureCollection, GeoJsonProperties, Geometry } from 'geojson';
-import type { UserDocument, UserDocumentObject } from './models/User';
+import type { UserDocument, UserDocumentObject } from '../models/User';
 import type { Model, ObjectId } from 'mongoose';
 import type { NextApiRequest } from 'next';
-import { SessionDocument } from './models/Session';
-import { ReviewDocument } from './models/Review';
-import { PostDocument } from './models/Post';
+
+import type { SessionDocument } from '../models/Session';
+import type { ReviewDocument } from '../models/Review';
+import type { PostDocument } from '../models/Post';
 
 export type TutorObjectGeoJSONProperties = UserDocumentObject & {
   subjects?: string[] | string;
@@ -28,7 +29,7 @@ export type QueryObject = {
 
 export enum SessionStatus {
   APPROVED = 'approved',
-  NOT_APPROVED = 'not approved',
+  NOT_APPROVED = 'not_approved',
   REJECTED = 'rejected',
 }
 

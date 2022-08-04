@@ -1,13 +1,13 @@
 import onError from '../../../../../../middleware/server-error-handler';
 import requireAuth from '../../../../../../middleware/require-auth';
 import sanitize from '../../../../../../utils/mongo-sanitize';
-import { SessionStatus } from '../../../../../../types';
+import { SessionStatus } from '../../../../../../utils/types';
 import { createRouter } from 'next-connect';
 import sgMail from '@sendgrid/mail';
 
 import type { SessionDocument } from '../../../../../../models/Session';
+import type { ExtendedRequest } from '../../../../../../utils/types';
 import type { UserDocument } from '../../../../../../models/User';
-import type { ExtendedRequest } from '../../../../../../types';
 import type { NextApiResponse } from 'next';
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
@@ -21,11 +21,15 @@ router
       const session = (await req.models.Session.findById(
         req.query.sessionId
       )) as SessionDocument;
+
       session.status = sanitize(req.body).newStatus;
+
       const user = (await req.models.User.findOne({
         _id: session.user,
       })) as UserDocument;
+
       const promises: Promise<unknown>[] = [session.save()];
+
       if (session.status !== SessionStatus.NOT_APPROVED) {
         const emailMessage = {
           to: user.email,
@@ -55,7 +59,9 @@ router
             ''
           ),
         };
+
         // promises.push(sgMail.send(emailMessage));
+
         if (
           session.status === SessionStatus.APPROVED &&
           req.sessionUser!.requestedSessions.length
@@ -70,7 +76,9 @@ router
           promises.push(req.sessionUser!.save());
         }
       }
+
       await Promise.all(promises);
+
       return res.status(200).json(session.toObject());
     }
 

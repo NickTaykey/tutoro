@@ -1,9 +1,10 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-import { createRouter } from 'next-connect';
-import sanitize from '../../../utils/mongo-sanitize';
-import mapbox from '@mapbox/mapbox-sdk/services/geocoding';
 import onError from '../../../middleware/server-error-handler';
+import mapbox from '@mapbox/mapbox-sdk/services/geocoding';
+import sanitize from '../../../utils/mongo-sanitize';
+import { createRouter } from 'next-connect';
 import * as models from '../../../models';
+
+import type { NextApiRequest, NextApiResponse } from 'next';
 
 const geoCodeClient = mapbox({
   accessToken: process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!,

@@ -1,8 +1,8 @@
 import onError from '../../../../../../middleware/server-error-handler';
+import { PostStatus, PostType } from '../../../../../../utils/types';
 import requireAuth from '../../../../../../middleware/require-auth';
-import { PostStatus, PostType } from '../../../../../../types';
+import { ExtendedRequest } from '../../../../../../utils/types';
 import { parseForm } from '../../../../../../utils/parse-form';
-import { ExtendedRequest } from '../../../../../../types';
 import { v2 as cloudinary } from 'cloudinary';
 import { createRouter } from 'next-connect';
 import { unlink } from 'fs';
@@ -51,6 +51,7 @@ router
           errorMessage: 'Only a Tutor can answer a Post',
         });
       }
+
       if (Object.keys(files).length > 4) {
         deleteFiles(files);
         return res.status(400).json({
@@ -82,23 +83,21 @@ router
         url: r.secure_url,
       }));
 
-      if (
-        postDocument.type === PostType.GLOBAL &&
-        req.sessionUser.posts.findIndex(
-          p =>
-            (p as PostDocument)._id.toString() === postDocument._id.toString()
-        ) === -1
-      ) {
+      const userPostDocuments = req.sessionUser.posts as PostDocument[];
+      const postIndex = userPostDocuments.findIndex(
+        ({ _id }) => _id.toString() === postDocument._id.toString()
+      );
+
+      if (postDocument.type === PostType.GLOBAL && postIndex === -1) {
         postDocument.answeredBy = req.sessionUser._id;
         postDocument.type = PostType.SPECIFIC;
         req.sessionUser.posts.push(postDocument._id);
       }
+
       if (req.sessionUser.posts.length) {
         await req.sessionUser.populate('posts');
-        req.sessionUser.postEarnings = (
-          req.sessionUser.posts as PostDocument[]
-        ).reduce(
-          (acm: number, post: PostDocument) => (acm += postDocument.price),
+        req.sessionUser.postEarnings = userPostDocuments.reduce(
+          (acm: number, post: PostDocument) => (acm += post.price),
           0
         );
       }

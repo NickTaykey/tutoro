@@ -2,8 +2,9 @@ import type { UserDocument, UserDocumentObject } from '../models/User';
 import type { SessionDocument } from '../models/Session';
 import type { ReviewDocument } from '../models/Review';
 import type { PostDocument } from '../models/Post';
-import { TutorObjectGeoJSON } from '../types';
+
 import { FeatureCollection, Geometry, GeoJsonProperties } from 'geojson';
+import { TutorObjectGeoJSON } from './types';
 
 export const getUserDocumentObject = (
   user: UserDocument
@@ -33,11 +34,12 @@ export const getUserDocumentObject = (
     requestedSessions: [],
     globalPostsEnabled: user.globalPostsEnabled,
   };
-  if (user.isTutor)
+  if (user.isTutor) {
     userObject.geometry = {
       type: 'Point',
       coordinates: [...user.geometry!.coordinates] as [number, number],
     };
+  }
   return userObject;
 };
 
@@ -59,20 +61,18 @@ export const getReviewDocumentObject = (r: ReviewDocument) => {
   };
 };
 
-export const getSessionDocumentObject = (s: SessionDocument) => {
-  return {
-    checkoutCompleted: s.checkoutCompleted,
-    _id: s._id.toString(),
-    subject: s.subject,
-    topic: s.topic,
-    price: s.price,
-    hours: s.hours,
-    status: s.status,
-    date: new Date(s.date).toLocaleString(),
-    user: getUserDocumentObject(s.user as UserDocument),
-    tutor: getUserDocumentObject(s.tutor as UserDocument),
-  };
-};
+export const getSessionDocumentObject = (s: SessionDocument) => ({
+  checkoutCompleted: s.checkoutCompleted,
+  _id: s._id.toString(),
+  subject: s.subject,
+  topic: s.topic,
+  price: s.price,
+  hours: s.hours,
+  status: s.status,
+  date: new Date(s.date).toLocaleString(),
+  user: getUserDocumentObject(s.user as UserDocument),
+  tutor: getUserDocumentObject(s.tutor as UserDocument),
+});
 
 export const getPostDocumentObject = (p: PostDocument) => {
   const createdAt = new Date(p.createdAt!);
@@ -97,7 +97,7 @@ export const getPostDocumentObject = (p: PostDocument) => {
     createdAt: createdAt ? createdAt.toLocaleDateString() : null,
     updatedAt: updatedAt ? updatedAt.toLocaleDateString() : null,
     creator: getUserDocumentObject(p.creator as UserDocument),
-    answeredBy: (p.answeredBy as UserDocument).email
+    answeredBy: (p.answeredBy as UserDocument)?.email
       ? getUserDocumentObject(p.answeredBy as UserDocument)
       : null,
   };

@@ -1,4 +1,3 @@
-import { User, Post, Session, Review } from '../models';
 import fakeCoordinates from './seed-coordinates.json';
 import calcAvgRating from '../utils/calc-avg-rating';
 import { faker } from '@faker-js/faker';
@@ -8,7 +7,9 @@ import fs from 'fs';
 import type { ReviewDocument } from '../models/Review';
 import type { UserDocument } from '../models/User';
 
-dotenv.config({ path: __dirname + '/.env.local' });
+dotenv.config();
+
+import { User, Post, Session, Review } from '../models';
 
 const N_USERS = process.argv.length === 6 ? Number(process.argv[3]) : 1;
 const N_TUTORS =
@@ -92,10 +93,11 @@ const seeder = async () => {
   tutors.forEach(t => {
     t.avgRating = calcAvgRating(t.reviews as ReviewDocument[]);
   });
+
   Promise.all([...users.map(u => u.save()), ...tutors.map(t => t.save())]);
 
   fs.writeFile(
-    'seed-tutors.json',
+    './seeds/seed-tutors.json',
     JSON.stringify([...tutors, ...users]),
     () => {}
   );

@@ -1,4 +1,4 @@
-import type { NewPostFormFields } from '../../types';
+import type { NewPostFormFields } from '../../utils/types';
 import type { UserDocumentObject } from '../../models/User';
 import Banner404 from '../global/404';
 import { ChangeEvent, useState } from 'react';

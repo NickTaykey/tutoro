@@ -15,13 +15,9 @@ import type { UserDocumentObject } from '../../models/User';
 
 interface Props {
   tutor?: UserDocumentObject;
-  isUserAllowedToReview: boolean;
 }
 
-const TutorPage: React.FC<Props> = ({
-  tutor,
-  isUserAllowedToReview,
-}: Props) => {
+const TutorPage: React.FC<Props> = ({ tutor }: Props) => {
   const { user, openSignInMenu } = useContext(AuthenticatedUserContext);
   const currentTutor = user?._id === tutor?._id ? user! : tutor!;
   const { colorMode } = c.useColorMode();
@@ -70,6 +66,7 @@ const TutorPage: React.FC<Props> = ({
               mt="3"
               variant="success"
               width="100%"
+              disabled={currentTutor._id === user?._id}
               leftIcon={<FaPersonBooth />}
               onClick={() => {
                 user
@@ -83,6 +80,7 @@ const TutorPage: React.FC<Props> = ({
               mt="3"
               variant="primary"
               width="100%"
+              disabled={currentTutor._id === user?._id}
               leftIcon={<FaPen />}
               onClick={() => {
                 user

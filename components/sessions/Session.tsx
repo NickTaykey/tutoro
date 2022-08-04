@@ -7,7 +7,7 @@ import SessionsContext from '../../store/sessions-context';
 import colors from '../../theme/colors';
 import type { SessionDocumentObject } from '../../models/Session';
 import type { UserDocumentObject } from '../../models/User';
-import { SessionStatus } from '../../types';
+import { SessionStatus } from '../../utils/types';
 
 interface Props {
   session: SessionDocumentObject;
@@ -72,7 +72,7 @@ const Session: React.FC<Props> = ({
                   : tutor.fullname
               }
             />
-            <c.Heading as="h3" size="md" mx="1">
+            <c.Heading as="h3" size="md" mx="3">
               {viewAsTutor ? user.fullname : tutor.fullname}
             </c.Heading>
             <c.Show below="sm">
@@ -85,7 +85,7 @@ const Session: React.FC<Props> = ({
             </c.Show>
           </c.Flex>
           <c.Flex my="3">
-            <c.Badge fontSize="0.8em" bg="purple.600" color="white" ml="3">
+            <c.Badge fontSize="0.8em" bg="purple.600" color="white">
               {session.subject}
             </c.Badge>
             <c.Badge

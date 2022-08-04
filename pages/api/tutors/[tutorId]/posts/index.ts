@@ -1,9 +1,11 @@
 import createCheckoutSession from '../../../../../utils/create-checkout-session';
 import { getPostDocumentObject } from '../../../../../utils/casting-helpers';
-import { PostType, ExtendedRequest } from '../../../../../types';
+import { PostType, ExtendedRequest } from '../../../../../utils/types';
+import onError from '../../../../../middleware/server-error-handler';
 import requireAuth from '../../../../../middleware/require-auth';
 import { parseForm } from '../../../../../utils/parse-form';
 import { v2 as cloudinary } from 'cloudinary';
+import { createRouter } from 'next-connect';
 import { unlink } from 'fs';
 
 import type { UserDocument } from '../../../../../models/User';
@@ -32,29 +34,31 @@ const deleteFiles = (files: Files) => {
   }
 };
 
-import { createRouter } from 'next-connect';
-import onError from '../../../../../middleware/server-error-handler';
-
 const router = createRouter<ExtendedRequest, NextApiResponse>();
 
 router
   .use(requireAuth('You need to be authenticated to create a Post'))
   .post(async (req, res) => {
     const { files, fields } = await parseForm(req, filesUploadConfig);
+
     if (Object.keys(files).length > 4) {
       deleteFiles(files);
       return res.status(400).json({
         errorMessage: 'You can provide at the most 4 attachments',
       });
     }
-    if (!fields.subject)
+
+    if (!fields.subject) {
       return res
         .status(400)
         .json({ errorMessage: 'You have to specify the subject' });
-    if (!fields.description)
+    }
+
+    if (!fields.description) {
       return res
         .status(400)
         .json({ errorMessage: 'You have to specify the description' });
+    }
 
     const post = new req.models.Post({
       subject: fields.subject,
@@ -91,6 +95,7 @@ router
       const tutor = (await req.models.User.findById(
         req.query.tutorId
       )) as UserDocument;
+
       if (!tutor)
         return res.status(404).json({ errorMessage: 'Tutor not found' });
       if (!tutor.isTutor)
@@ -104,6 +109,7 @@ router
       post.answeredBy = tutor as UserDocument;
       post.price = tutor.pricePerPost;
       tutor.posts.push(post._id);
+
       await tutor.save();
     }
 

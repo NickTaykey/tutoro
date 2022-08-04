@@ -2,17 +2,17 @@ import sgMail from '@sendgrid/mail';
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
 
-import { ExtendedRequest, SessionStatus } from '../../../../../types';
-import type { NextApiResponse } from 'next';
+import { ExtendedRequest, SessionStatus } from '../../../../../utils/types';
 import type { SessionDocument } from '../../../../../models/Session';
+import type { NextApiResponse } from 'next';
 
-import onError from '../../../../../middleware/server-error-handler';
-import requireAuth from '../../../../../middleware/require-auth';
-import { createRouter } from 'next-connect';
-import sanitize from '../../../../../utils/mongo-sanitize';
 import createCheckoutSession from '../../../../../utils/create-checkout-session';
 import { getSessionDocumentObject } from '../../../../../utils/casting-helpers';
+import onError from '../../../../../middleware/server-error-handler';
+import requireAuth from '../../../../../middleware/require-auth';
+import sanitize from '../../../../../utils/mongo-sanitize';
 import { UserDocument } from '../../../../../models/User';
+import { createRouter } from 'next-connect';
 
 const router = createRouter<ExtendedRequest, NextApiResponse>();
 
@@ -48,6 +48,7 @@ router.post(
         });
         tutor.requestedSessions.push(createdSession._id);
         req.sessionUser.bookedSessions.push(createdSession._id);
+
         const emailMessage = {
           to: tutor.email,
           from: 'authteam.tutorbookingapp@gmail.com',
@@ -64,11 +65,13 @@ router.post(
             ''
           ),
         };
+
         await Promise.all([
           req.sessionUser.save(),
           tutor.save(),
           // sgMail.send(emailMessage),
         ]);
+
         return createCheckoutSession(
           getSessionDocumentObject(createdSession as SessionDocument),
           req,

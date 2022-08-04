@@ -1,19 +1,11 @@
 import UserProfileView from '../../components/users/UserProfileView';
-import { authOptions } from '../api/auth/[...nextauth]';
-import { getServerSession } from 'next-auth';
+import { Box, Heading, Alert, AlertIcon } from '@chakra-ui/react';
+import { useRouter } from 'next/router';
+import { useState } from 'react';
 
 import type { GetServerSideProps, NextPage } from 'next';
 import type { UserDocumentObject } from '../../models/User';
-import type { QueryObject } from '../../types';
-
-import {
-  getUserDocumentObject,
-  getReviewDocumentObject,
-  getSessionDocumentObject,
-  getPostDocumentObject,
-} from '../../utils/casting-helpers';
-
-import { Box, Heading, Alert, AlertIcon } from '@chakra-ui/react';
+import type { QueryObject } from '../../utils/types';
 
 interface Props {
   currentUser: UserDocumentObject;
@@ -68,10 +60,15 @@ const ProfilePage: NextPage<Props> = ({ currentUser }) => {
   );
 };
 
+import {
+  getUserDocumentObject,
+  getReviewDocumentObject,
+  getSessionDocumentObject,
+  getPostDocumentObject,
+} from '../../utils/casting-helpers';
 import * as models from '../../models';
-import Post from '../../models/Post';
-import { useState } from 'react';
-import { useRouter } from 'next/router';
+import { authOptions } from '../api/auth/[...nextauth]';
+import { getServerSession } from 'next-auth';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
   const session = await getServerSession(context, authOptions);
@@ -106,7 +103,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
       }),
       user.populate({
         path: 'createdPosts',
-        model: Post,
+        model: models.Post,
         options: { sort: { _id: -1 } },
         populate: [
           { path: 'answeredBy', model: models.User },

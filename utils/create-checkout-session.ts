@@ -3,7 +3,7 @@ import type { NextApiResponse, NextApiRequest } from 'next';
 import type { PostDocumentObject } from '../models/Post';
 import type { UserDocumentObject } from '../models/User';
 
-import { PostType } from '../types';
+import { PostType } from './types';
 import Stripe from 'stripe';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {

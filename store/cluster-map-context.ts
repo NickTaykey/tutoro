@@ -1,6 +1,10 @@
 import React from 'react';
 import type { FeatureCollection, GeoJsonProperties, Geometry } from 'geojson';
-import type { CloudFile, TutorFilters, TutorObjectGeoJSON } from '../types';
+import type {
+  CloudFile,
+  TutorFilters,
+  TutorObjectGeoJSON,
+} from '../utils/types';
 
 export type PointsCollection = FeatureCollection<Geometry, GeoJsonProperties>;
 

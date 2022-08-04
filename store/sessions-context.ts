@@ -1,6 +1,6 @@
 import React from 'react';
 import type { SessionDocumentObject } from '../models/Session';
-import { SessionStatus } from '../types';
+import { SessionStatus } from '../utils/types';
 
 export type APIError = { errorMessage: string };
 type ContextMethodReturnType = Promise<SessionDocumentObject | APIError | {}>;

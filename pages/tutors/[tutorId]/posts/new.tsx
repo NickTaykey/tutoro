@@ -2,10 +2,7 @@ import type { UserDocumentObject } from '../../../../models/User';
 import type { NextPage, GetServerSideProps } from 'next';
 import { getServerSession } from 'next-auth';
 
-import { getUserDocumentObject } from '../../../../utils/casting-helpers';
 import NewPostForm from '../../../../components/posts/NewPostForm';
-import { authOptions } from '../../../api/auth/[...nextauth]';
-import * as models from '../../../../models';
 
 interface Props {
   tutor?: UserDocumentObject;
@@ -15,6 +12,10 @@ interface Props {
 const NewPostPage: NextPage<Props> = props => {
   return <NewPostForm subjects={props.subjects} tutor={props.tutor} />;
 };
+
+import { getUserDocumentObject } from '../../../../utils/casting-helpers';
+import { authOptions } from '../../../api/auth/[...nextauth]';
+import * as models from '../../../../models';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
   const session = await getServerSession(context, authOptions);

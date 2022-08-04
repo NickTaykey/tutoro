@@ -1,5 +1,5 @@
 import { Schema, model, models } from 'mongoose';
-import { SessionStatus } from '../types';
+import { SessionStatus } from '../utils/types';
 import type { ObjectId, Document, Model } from 'mongoose';
 import type { UserDocument, UserDocumentObject } from '../models/User';
 

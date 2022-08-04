@@ -2,7 +2,7 @@ import React, { useReducer } from 'react';
 import SessionsContext, { APIError } from './sessions-context';
 import ApiHelper from '../utils/api-helper';
 import type { SessionDocumentObject } from '../models/Session';
-import { SessionStatus } from '../types';
+import { SessionStatus } from '../utils/types';
 
 enum SessionActionTypes {
   UPDATE,

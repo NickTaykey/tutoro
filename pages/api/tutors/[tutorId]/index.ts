@@ -1,11 +1,11 @@
+import type { ExtendedRequest } from '../../../../utils/types';
 import type { NextApiResponse } from 'next';
-import type { ExtendedRequest } from '../../../../types';
 
-import requireAuth from '../../../../middleware/require-auth';
-import sanitize from '../../../../utils/mongo-sanitize';
-import mapbox from '@mapbox/mapbox-sdk/services/geocoding';
 import { getUserDocumentObject } from '../../../../utils/casting-helpers';
 import onError from '../../../../middleware/server-error-handler';
+import requireAuth from '../../../../middleware/require-auth';
+import mapbox from '@mapbox/mapbox-sdk/services/geocoding';
+import sanitize from '../../../../utils/mongo-sanitize';
 import { createRouter } from 'next-connect';
 
 const geoCodeClient = mapbox({
@@ -47,6 +47,7 @@ router.put(
         .forwardGeocode({ query: location, limit: 1 })
         .send();
       const { coordinates } = response.body.features[0].geometry;
+
       req.sessionUser.isTutor = true;
       req.sessionUser.geometry = {
         type: 'Point',
@@ -60,6 +61,7 @@ router.put(
       req.sessionUser.sessionPricePerHour = sessionPricePerHour;
       req.sessionUser.pricePerPost = pricePerPost;
       await req.sessionUser.save();
+
       return res.status(200).json(getUserDocumentObject(req.sessionUser));
     }
 

@@ -12,7 +12,7 @@ import type { AnswerPostModalHandler } from './AnswerPostModal';
 import type { UserDocumentObject } from '../../models/User';
 import type { APIError } from '../../store/posts-context';
 import type { PostDocumentObject } from '../../models/Post';
-import { PostType, PostStatus, CloudFile } from '../../types';
+import { PostType, PostStatus, CloudFile } from '../../utils/types';
 
 interface Props {
   post: PostDocumentObject;

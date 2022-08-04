@@ -1,21 +1,11 @@
 import TutorProfileView from '../../components/tutors/TutorProfileView';
-import { QueryObject, PostType, PostStatus } from '../../types';
-import { authOptions } from '../api/auth/[...nextauth]';
-import { getServerSession } from 'next-auth';
-import * as models from '../../models';
+import { QueryObject, PostType, PostStatus } from '../../utils/types';
+import { Box, Heading, Alert, AlertIcon } from '@chakra-ui/react';
+import { useState } from 'react';
 
 import type { PostDocument, PostDocumentObject } from '../../models/Post';
 import type { UserDocumentObject } from '../../models/User';
 import type { GetServerSideProps, NextPage } from 'next';
-
-import {
-  getUserDocumentObject,
-  getReviewDocumentObject,
-  getSessionDocumentObject,
-  getPostDocumentObject,
-} from '../../utils/casting-helpers';
-
-import { Box, Heading, Alert, AlertIcon } from '@chakra-ui/react';
 
 interface Props {
   currentUser: UserDocumentObject;
@@ -77,10 +67,16 @@ const ProfilePage: NextPage<Props> = ({
   );
 };
 
-import Review from '../../models/Review';
-import Session from '../../models/Session';
+import {
+  getUserDocumentObject,
+  getReviewDocumentObject,
+  getSessionDocumentObject,
+  getPostDocumentObject,
+} from '../../utils/casting-helpers';
+import { authOptions } from '../api/auth/[...nextauth]';
+import { getServerSession } from 'next-auth';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import * as models from '../../models';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
   const session = await getServerSession(context, authOptions);
@@ -107,7 +103,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
         : null,
       user.populate({
         path: 'reviews',
-        model: Review,
+        model: models.Review,
         populate: [
           { path: 'user', model: models.User },
           { path: 'tutor', model: models.User },
@@ -116,7 +112,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
       }),
       user.populate({
         path: 'requestedSessions',
-        model: Session,
+        model: models.Session,
         populate: [
           { path: 'user', model: models.User },
           { path: 'tutor', model: models.User },

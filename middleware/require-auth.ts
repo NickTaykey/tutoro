@@ -1,4 +1,4 @@
-import type { ExtendedRequest } from '../types';
+import type { ExtendedRequest } from '../utils/types';
 import type { UserDocument } from '../models/User';
 import { authOptions } from '../pages/api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth';

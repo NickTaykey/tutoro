@@ -7,13 +7,10 @@ import { getReviewDocumentObject } from '../../../utils/casting-helpers';
 import TutorPage from '../../../components/tutors/TutorPage';
 
 interface Props {
-  isUserAllowedToReview: boolean;
   tutor?: UserDocumentObject;
 }
 
-const Page: NextPage<Props> = ({ isUserAllowedToReview, tutor }) => (
-  <TutorPage tutor={tutor} isUserAllowedToReview={isUserAllowedToReview} />
-);
+const Page: NextPage<Props> = ({ tutor }) => <TutorPage tutor={tutor} />;
 
 import { getUserDocumentObject } from '../../../utils/casting-helpers';
 import { authOptions } from '../../api/auth/[...nextauth]';
@@ -46,37 +43,17 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
     );
 
     if (user) {
-      const hasUserCreatedPost =
-        new Set([
-          ...userTutor.posts.map(id => (id as ObjectId).toString()),
-          ...user.createdPosts.map(id => (id as ObjectId).toString()),
-        ]).size !==
-        userTutor.posts.length + user.createdPosts.length;
-      const hasUserCreatedSession =
-        new Set([
-          ...userTutor.requestedSessions.map(id => (id as ObjectId).toString()),
-          ...user.bookedSessions.map(id => (id as ObjectId).toString()),
-        ]).size !==
-        userTutor.requestedSessions.length + user.bookedSessions.length;
       return {
-        props: {
-          tutor,
-          isUserAllowedToReview: hasUserCreatedPost || hasUserCreatedSession,
-        },
+        props: { tutor },
       };
     }
 
     return {
-      props: {
-        tutor,
-        isUserAllowedToReview: false,
-      },
+      props: { tutor },
     };
   } catch (e) {
     return {
-      props: {
-        isUserAllowedToReview: false,
-      },
+      props: {},
     };
   }
 };

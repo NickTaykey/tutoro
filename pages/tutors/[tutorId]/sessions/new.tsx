@@ -3,10 +3,11 @@ import type { NextPage, GetServerSideProps } from 'next';
 
 import { getUserDocumentObject } from '../../../../utils/casting-helpers';
 import Banner404 from '../../../../components/global/404';
+import { FaArrowRight, FaBroom } from 'react-icons/fa';
 import ApiHelper from '../../../../utils/api-helper';
 import ReactDatePicker from 'react-datepicker';
 import { FormEvent, useState } from 'react';
-
+import { useRouter } from 'next/router';
 import * as c from '@chakra-ui/react';
 
 interface Props {
@@ -247,11 +248,9 @@ const Page: NextPage<Props> = ({ tutor }) => {
   );
 };
 
-import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../api/auth/[...nextauth]';
-import { useRouter } from 'next/router';
-import { FaArrowRight, FaBroom } from 'react-icons/fa';
 import * as models from '../../../../models';
+import { getServerSession } from 'next-auth';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
   const session = await getServerSession(context, authOptions);
@@ -267,25 +266,28 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
           model: models.Review,
         })
         .exec();
-      if (
-        context.query.tutorId ===
-        (session!.user as UserDocument)!._id.toString()
-      ) {
+
+      const { _id: currentUserId } = session.user as UserDocumentObject;
+
+      if (context.query.tutorId === currentUserId.toString()) {
         return {
           props: {},
           redirect: { permanent: false, destination: '/tutoro' },
         };
       }
+
       return {
         props: tutor ? { tutor: getUserDocumentObject(tutor) } : {},
       };
     }
+
     return {
-      props: {},
       redirect: { permanent: false, destination: '/tutoro' },
+      props: {},
     };
   } catch (e) {
     return {
+      redirect: { permanent: false, destination: '/tutoro' },
       props: {},
     };
   }

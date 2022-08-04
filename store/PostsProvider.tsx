@@ -1,7 +1,7 @@
 import React, { useReducer } from 'react';
 import PostsContext, { APIError } from './posts-context';
 import ApiHelper from '../utils/api-helper';
-import { PostStatus, PostType } from '../types';
+import { PostStatus, PostType } from '../utils/types';
 import type { PostDocumentObject } from '../models/Post';
 import { UserDocumentObject } from '../models/User';
 

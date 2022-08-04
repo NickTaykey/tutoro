@@ -1,4 +1,4 @@
-import type { TutorFiltersFormFields } from '../../types';
+import type { TutorFiltersFormFields } from '../../utils/types';
 import { useForm } from 'react-hook-form';
 import * as c from '@chakra-ui/react';
 import { FaBroom, FaFilter } from 'react-icons/fa';

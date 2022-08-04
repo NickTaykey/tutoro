@@ -19,7 +19,7 @@ import ClusterMapContext from '../../store/cluster-map-context';
 
 import type { MapRef, GeoJSONSource } from 'react-map-gl';
 import type { MapLayerMouseEvent } from 'mapbox-gl';
-import type { TutorObjectGeoJSON } from '../../types';
+import type { TutorObjectGeoJSON } from '../../utils/types';
 import colors from '../../theme/colors';
 import { useColorMode, useColorModeValue } from '@chakra-ui/react';
 

@@ -2,7 +2,7 @@ import type { ObjectId, Model, Document } from 'mongoose';
 import type { UserDocument, UserDocumentObject } from './User';
 import { Schema, model, models } from 'mongoose';
 import User from './User';
-import { PostType, PostStatus, CloudFile } from '../types';
+import { PostType, PostStatus, CloudFile } from '../utils/types';
 
 interface Post {
   checkoutCompleted: boolean;

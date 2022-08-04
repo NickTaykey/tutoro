@@ -1,7 +1,11 @@
 import React, { useReducer } from 'react';
 import ClusterMapContext from './cluster-map-context';
 import type { PointsCollection } from './cluster-map-context';
-import type { CloudFile, TutorFilters, TutorObjectGeoJSON } from '../types';
+import type {
+  CloudFile,
+  TutorFilters,
+  TutorObjectGeoJSON,
+} from '../utils/types';
 import ApiHelper from '../utils/api-helper';
 import { getUsersPointsCollection } from '../utils/casting-helpers';
 
