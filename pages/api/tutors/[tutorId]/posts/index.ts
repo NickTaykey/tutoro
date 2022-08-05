@@ -3,8 +3,8 @@ import { getPostDocumentObject } from '../../../../../utils/casting-helpers';
 import { PostType, ExtendedRequest } from '../../../../../utils/types';
 import onError from '../../../../../middleware/server-error-handler';
 import requireAuth from '../../../../../middleware/require-auth';
+import cloudinary from '../../../../../utils/cloudinary-config';
 import { parseForm } from '../../../../../utils/parse-form';
-import { v2 as cloudinary } from 'cloudinary';
 import { createRouter } from 'next-connect';
 import { unlink } from 'fs';
 
@@ -13,12 +13,6 @@ import type { PostDocument } from '../../../../../models/Post';
 import type { UploadApiResponse } from 'cloudinary';
 import type { File, Files } from 'formidable';
 import type { NextApiResponse } from 'next';
-
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
 
 const filesUploadConfig = {
   maxFiles: 4,

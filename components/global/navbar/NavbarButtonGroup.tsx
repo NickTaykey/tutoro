@@ -8,8 +8,13 @@ import ColorModeToggler from './ColorModeToggler';
 
 const NavbarButtonGroup: React.FC = () => {
   const { push } = useRouter();
-  const { user, openUpdateAvatarMenu, openEarningsMenu, openUpdateTutorMenu } =
-    useContext(AuthenticatedUserContext);
+  const {
+    user,
+    openUpdateAvatarMenu,
+    openEarningsMenu,
+    openUpdateTutorMenu,
+    openDeleteAccountMenu,
+  } = useContext(AuthenticatedUserContext);
   return (
     <>
       <c.IconButton
@@ -51,6 +56,23 @@ const NavbarButtonGroup: React.FC = () => {
           />
         </>
       )}
+      <c.Tooltip
+        hasArrow
+        p="3"
+        bg="red.500"
+        color="white"
+        label="Delete your account"
+      >
+        <c.IconButton
+          width="100%"
+          icon={<fa.FaTrash size="25" />}
+          variant="danger"
+          color="white"
+          onClick={openDeleteAccountMenu}
+          aria-label="delete account"
+          mr={[0, 2]}
+        />
+      </c.Tooltip>
       <c.IconButton
         width="100%"
         icon={<fa.FaSignOutAlt size="25" />}

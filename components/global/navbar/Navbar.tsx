@@ -1,18 +1,15 @@
 import * as c from '@chakra-ui/react';
-import * as fa from 'react-icons/fa';
 import { ClientSafeProvider, signIn } from 'next-auth/react';
 import React, { useContext, useEffect, useState } from 'react';
 import Link from 'next/link';
 import Brand from './Brand';
 import { FcGoogle } from 'react-icons/fc';
 import { GoThreeBars } from 'react-icons/go';
-import UpdateAvatarForm from '../../users/UpdateAvatarForm';
-import UpdateTutorForm from '../../tutors/UpdateTutorForm';
 import AuthenticatedUserContext from '../../../store/authenticated-user-context';
 import getProvidersList from '../../../utils/get-providers';
-import { useRouter } from 'next/router';
 import NavbarButtonGroup from './NavbarButtonGroup';
 import ColorModeToggler from './ColorModeToggler';
+import NavbarDrawerContent from './NavbarDrawerContent';
 
 const Navbar: React.FC = () => {
   const {
@@ -22,7 +19,6 @@ const Navbar: React.FC = () => {
   } = c.useDisclosure();
   const { colorMode } = c.useColorMode();
   const [providersList, setProvidersList] = useState<ClientSafeProvider[]>([]);
-  const { pathname } = useRouter();
 
   useEffect(() => {
     getProvidersList().then(list => setProvidersList(list));
@@ -32,14 +28,16 @@ const Navbar: React.FC = () => {
     user,
     openSignInMenu,
     showUpdateAvatarMenu,
-    closeUpdateAvatarMenu,
     showUpdateTutorMenu,
-    closeUpdateTutorMenu,
     showEarningsMenu,
+    showDeleteAccountMenu,
   } = useContext(AuthenticatedUserContext);
 
   const noMenusToDisplay =
-    !showEarningsMenu && !showUpdateAvatarMenu && !showUpdateTutorMenu;
+    !showEarningsMenu &&
+    !showUpdateAvatarMenu &&
+    !showUpdateTutorMenu &&
+    !showDeleteAccountMenu;
   const btnRef = React.useRef(null);
 
   return (
@@ -125,7 +123,7 @@ const Navbar: React.FC = () => {
                       direction="column"
                       height="100%"
                     >
-                      {!showUpdateAvatarMenu && !showUpdateTutorMenu && (
+                      {noMenusToDisplay && (
                         <Link href="/users/user-profile">
                           <c.Avatar
                             size="xl"
@@ -136,49 +134,7 @@ const Navbar: React.FC = () => {
                           />
                         </Link>
                       )}
-                      {showUpdateAvatarMenu && (
-                        <c.Flex
-                          direction="column"
-                          shadow="md"
-                          borderWidth="1px"
-                          borderRadius="md"
-                          p="6"
-                          width="100%"
-                          mt={[2, 0]}
-                        >
-                          <c.Box
-                            color="gray.500"
-                            onClick={closeUpdateAvatarMenu}
-                            alignSelf="end"
-                          >
-                            <fa.FaRegTimesCircle size="25" />
-                          </c.Box>
-                          <c.Box my="3">
-                            <UpdateAvatarForm />
-                          </c.Box>
-                        </c.Flex>
-                      )}
-                      {showUpdateTutorMenu && (
-                        <c.Flex
-                          direction="column"
-                          shadow="md"
-                          borderWidth="1px"
-                          borderRadius="md"
-                          p="6"
-                          width="100%"
-                          mt={[2, 0]}
-                        >
-                          <c.Box color="gray.500" alignSelf="end">
-                            <fa.FaRegTimesCircle
-                              size="25"
-                              onClick={closeUpdateTutorMenu}
-                            />
-                          </c.Box>
-                          <c.Box my="3">
-                            <UpdateTutorForm />
-                          </c.Box>
-                        </c.Flex>
-                      )}
+                      <NavbarDrawerContent />
                       {noMenusToDisplay && (
                         <c.VStack width="100%" spacing="4">
                           <NavbarButtonGroup />

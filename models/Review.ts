@@ -1,4 +1,6 @@
 import { Schema, model, models, Document, Model } from 'mongoose';
+import User from './User';
+
 import type { ObjectId } from 'mongoose';
 import type { UserDocument, UserDocumentObject } from './User';
 
@@ -20,7 +22,7 @@ export type ReviewDocument = Review & Document;
 
 type ReviewModel = Model<ReviewDocument>;
 
-const reviewSchema = new Schema<ReviewDocument, ReviewModel>(
+const ReviewSchema = new Schema<ReviewDocument, ReviewModel>(
   {
     stars: {
       type: Number,
@@ -35,5 +37,26 @@ const reviewSchema = new Schema<ReviewDocument, ReviewModel>(
   { timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' } }
 );
 
+ReviewSchema.pre('remove', async function () {
+  return new Promise<void>(async resolve => {
+    try {
+      const [tutor, user]: UserDocument[] = await Promise.all([
+        User.findById(this.tutor),
+        User.findById(this.user),
+      ]);
+      user.createdReviews = (user.createdReviews as ObjectId[]).filter(id => {
+        return id.toString() !== this._id.toString();
+      });
+      tutor.reviews = (tutor.reviews as ObjectId[]).filter(
+        id => id.toString() !== this._id.toString()
+      );
+      await Promise.all([tutor.save(), user.save()]);
+      return resolve();
+    } catch (e) {
+      return resolve();
+    }
+  });
+});
+
 export default models.Review ||
-  model<ReviewDocument, ReviewModel>('Review', reviewSchema);
+  model<ReviewDocument, ReviewModel>('Review', ReviewSchema);

@@ -10,6 +10,9 @@ const buttonOverrides: ComponentStyleConfig = {
     boxShadow: '-5px 5px 5px 1px rgba(0, 0, 0, 0.25)',
     _hover: {
       boxShadow: '-2.5px 2.5px 2.5px 1px rgba(0, 0, 0, 0.125)',
+      _disabled: {
+        bg: 'gray.500',
+      },
     },
   },
   variants: {

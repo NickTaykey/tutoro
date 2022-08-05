@@ -1,8 +1,10 @@
-import type { ObjectId, Model, Document } from 'mongoose';
-import type { UserDocument, UserDocumentObject } from './User';
+import { PostType, PostStatus, CloudFile } from '../utils/types';
+import cloudinary from '../utils/cloudinary-config';
 import { Schema, model, models } from 'mongoose';
 import User from './User';
-import { PostType, PostStatus, CloudFile } from '../utils/types';
+
+import type { UserDocument, UserDocumentObject } from './User';
+import type { ObjectId, Model, Document } from 'mongoose';
 
 interface Post {
   checkoutCompleted: boolean;
@@ -52,20 +54,30 @@ const PostSchema = new Schema<PostDocument, PostModel>(
 );
 
 PostSchema.pre('remove', async function () {
-  const [tutor, user] = await Promise.all([
-    User.findOne({ posts: { $in: [this._id] } }),
-    User.findOne({ createdPosts: { $in: [this._id] } }),
-  ]);
+  const user = await User.findById(this.creator);
   user.createdPosts = user.createdPosts.filter(
     (pid: ObjectId) => pid.toString() !== this._id.toString()
   );
   const promises: Array<Promise<UserDocument>> = [user.save()];
-  if (tutor) {
+
+  if (this.attachments.length)
+    this.attachments.forEach(({ public_id }) => {
+      promises.push(cloudinary.uploader.destroy(public_id));
+    });
+
+  if (this.answerAttachments.length)
+    this.answerAttachments.forEach(({ public_id }) => {
+      promises.push(cloudinary.uploader.destroy(public_id));
+    });
+
+  if (this.answeredBy) {
+    const tutor = await User.findById(this.answeredBy);
     tutor.posts = tutor.posts.filter(
       (pid: ObjectId) => pid.toString() !== this._id.toString()
     );
     promises.push(tutor.save());
   }
+
   await Promise.all(promises);
 });
 

@@ -1,31 +1,19 @@
-import React, { useEffect, useReducer, useState } from 'react';
-import ApiHelper from '../utils/api-helper';
-import { UserDocumentObject } from '../models/User';
 import AuthenticatedUserContext from './authenticated-user-context';
-import {
-  Button,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
-  Show,
-  useDisclosure,
-} from '@chakra-ui/react';
+import { Show, useDisclosure } from '@chakra-ui/react';
+import { UserDocumentObject } from '../models/User';
+import ApiHelper from '../utils/api-helper';
+import { signOut } from 'next-auth/react';
+import { useReducer } from 'react';
+
 import type { UpdateTutorObject } from './authenticated-user-context';
 import type { CloudFile } from '../utils/types';
-import getProvidersList from '../utils/get-providers';
-import { ClientSafeProvider, signIn } from 'next-auth/react';
-import { FcGoogle } from 'react-icons/fc';
-import UpdateTutorForm from '../components/tutors/UpdateTutorForm';
-import UpdateAvatarForm from '../components/users/UpdateAvatarForm';
-import EarningsMenu from '../components/users/EarningsMenu';
+import NavbarModals from '../components/global/navbar/NavbarModals';
 
 enum AuthenticatedUserActionTypes {
   UPDATE_AVATAR,
   UPDATE_TUTOR,
   RESET_AVATAR,
+  DELETE_ACCOUNT,
 }
 
 type UpdateAvatarAction = {
@@ -38,6 +26,11 @@ type ResetAvatarAction = {
   payload: null;
 };
 
+type DeleteAccountAction = {
+  type: AuthenticatedUserActionTypes.DELETE_ACCOUNT;
+  payload: null;
+};
+
 type UpdateTutorAction = {
   type: AuthenticatedUserActionTypes.UPDATE_TUTOR;
   payload: UpdateTutorObject;
@@ -46,7 +39,8 @@ type UpdateTutorAction = {
 type AuthenticatedUserAction =
   | UpdateAvatarAction
   | UpdateTutorAction
-  | ResetAvatarAction;
+  | ResetAvatarAction
+  | DeleteAccountAction;
 
 type State = UserDocumentObject | null;
 
@@ -62,6 +56,9 @@ function reducer(prevState: State, action: AuthenticatedUserAction): State {
     return prevState
       ? { ...prevState, avatar: { url: '', public_id: '' } }
       : prevState;
+  }
+  if (action.type === AuthenticatedUserActionTypes.DELETE_ACCOUNT) {
+    return null;
   }
   return prevState;
 }
@@ -94,11 +91,24 @@ const AuthenticatedUserProvider: React.FC<{
     onOpen: openEarningsMenu,
     onClose: closeEarningsMenu,
   } = useDisclosure();
-  const [providersList, setProvidersList] = useState<ClientSafeProvider[]>([]);
+  const {
+    isOpen: showDeleteAccountMenu,
+    onOpen: openDeleteAccountMenu,
+    onClose: closeDeleteAccountMenu,
+  } = useDisclosure();
 
-  useEffect(() => {
-    getProvidersList().then(list => setProvidersList(list));
-  }, [getProvidersList]);
+  const deleteAccount = () => {
+    return new Promise<null>(async resolve => {
+      await ApiHelper('/api/auth/delete-account', null, 'DELETE');
+      signOut();
+      dispatchAuthenticatedUserAction({
+        type: AuthenticatedUserActionTypes.DELETE_ACCOUNT,
+        payload: null,
+      });
+      window.location.assign('/tutors');
+      return resolve(null);
+    });
+  };
 
   return (
     <AuthenticatedUserContext.Provider
@@ -115,7 +125,11 @@ const AuthenticatedUserProvider: React.FC<{
         showUpdateTutorMenu,
         openUpdateTutorMenu,
         closeUpdateTutorMenu,
+        showDeleteAccountMenu,
+        openDeleteAccountMenu,
+        closeDeleteAccountMenu,
         user: authenticatedUserState,
+        deleteAccount,
         updateAvatar(formData: FormData) {
           return new Promise(async (resolve, reject) => {
             if (authenticatedUserState) {
@@ -235,76 +249,7 @@ const AuthenticatedUserProvider: React.FC<{
       }}
     >
       <Show breakpoint="(min-width: 767px)">
-        {!user && (
-          <Modal isOpen={showSignInMenu} onClose={closeSignInMenu} isCentered>
-            <ModalOverlay />
-            <ModalContent>
-              <ModalCloseButton />
-              <ModalHeader textAlign="center">Sign In to Tutoro</ModalHeader>
-              <ModalBody mb="5">
-                {providersList.map(provider => (
-                  <Button
-                    width="100%"
-                    key={provider.name}
-                    leftIcon={<FcGoogle size="30" />}
-                    aria-label="Google OAuth Icon"
-                    onClick={() => signIn(provider.id)}
-                  >
-                    Google
-                  </Button>
-                ))}
-              </ModalBody>
-            </ModalContent>
-          </Modal>
-        )}
-        {user && (
-          <Modal
-            blockScrollOnMount={false}
-            isOpen={showUpdateAvatarMenu}
-            onClose={closeUpdateAvatarMenu}
-          >
-            <ModalOverlay />
-            <ModalContent>
-              <ModalHeader>Choose another avatar!</ModalHeader>
-              <ModalCloseButton />
-              <ModalBody>
-                <UpdateAvatarForm />
-              </ModalBody>
-            </ModalContent>
-          </Modal>
-        )}
-        {user && user.isTutor && (
-          <>
-            <Modal
-              blockScrollOnMount={false}
-              isOpen={showUpdateTutorMenu}
-              onClose={closeUpdateTutorMenu}
-            >
-              <ModalOverlay />
-              <ModalContent>
-                <ModalHeader>Update your tutor profile</ModalHeader>
-                <ModalCloseButton />
-                <ModalBody>
-                  <UpdateTutorForm />
-                </ModalBody>
-              </ModalContent>
-            </Modal>
-            <Modal
-              blockScrollOnMount={false}
-              isOpen={showEarningsMenu}
-              onClose={closeEarningsMenu}
-            >
-              <ModalOverlay />
-              <ModalContent>
-                <ModalHeader>Your earnings as a Tutor</ModalHeader>
-                <ModalCloseButton />
-                <ModalBody>
-                  <EarningsMenu />
-                </ModalBody>
-              </ModalContent>
-            </Modal>
-          </>
-        )}
+        <NavbarModals />
       </Show>
       {children}
     </AuthenticatedUserContext.Provider>

@@ -27,6 +27,10 @@ interface AuthenticatedUserContextObject {
   showEarningsMenu: boolean;
   openEarningsMenu(): void;
   closeEarningsMenu(): void;
+  showDeleteAccountMenu: boolean;
+  openDeleteAccountMenu(): void;
+  closeDeleteAccountMenu(): void;
+  deleteAccount(): Promise<null>;
   updateAvatar(formData: FormData): Promise<null | UserUpdateError>;
   resetAvatar(): Promise<null | UserUpdateError>;
   becomeTutor(
@@ -52,6 +56,12 @@ const AuthenticatedUserContext =
     showUpdateTutorMenu: false,
     openUpdateTutorMenu() {},
     closeUpdateTutorMenu() {},
+    showDeleteAccountMenu: false,
+    openDeleteAccountMenu() {},
+    closeDeleteAccountMenu() {},
+    deleteAccount() {
+      return Promise.resolve(null);
+    },
     updateAvatar(formData: FormData) {
       return Promise.resolve(null);
     },

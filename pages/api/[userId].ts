@@ -1,18 +1,11 @@
 import { parseForm, FormidableError } from '../../utils/parse-form';
 import onError from '../../middleware/server-error-handler';
-import { v2 as cloudinary } from 'cloudinary';
+import cloudinary from '../../utils/cloudinary-config';
 import fs from 'fs';
 
 import type { ExtendedRequest } from '../../utils/types';
-import type { UploadApiResponse } from 'cloudinary';
 import type { File, Part } from 'formidable';
 import type { NextApiResponse } from 'next';
-
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
 
 const avatarUploadConfig = {
   maxFiles: 1,
