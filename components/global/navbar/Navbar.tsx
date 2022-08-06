@@ -63,7 +63,7 @@ const Navbar: React.FC = () => {
             style={{ fontFamily: 'Inter', fontWeight: '500' }}
           >
             <c.Flex alignItems="center">
-              <Brand width={60} height={60} />
+              <Brand width={45} height={45} />
               <c.Text textTransform="capitalize" ml={2} letterSpacing="1px">
                 tutoro
               </c.Text>
