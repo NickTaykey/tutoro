@@ -4,11 +4,13 @@ import AuthenticatedUserProvider from '../../store/AuthenticatedUserProvider';
 import { useSession } from 'next-auth/react';
 import type { UserDocumentObject } from '../../models/User';
 import Footer from './Footer';
+import { useRouter } from 'next/router';
 
 const Layout: React.FC<{ children: React.ReactNode[] | React.ReactNode }> = ({
   children,
 }) => {
   const { status, data } = useSession();
+  const { pathname } = useRouter();
   return status !== 'loading' ? (
     <AuthenticatedUserProvider
       user={
@@ -16,7 +18,9 @@ const Layout: React.FC<{ children: React.ReactNode[] | React.ReactNode }> = ({
       }
     >
       <Navbar />
-      <Box my="5">{children}</Box>
+      <Box m={0} mt={pathname !== '/' ? 100 : 0}>
+        {children}
+      </Box>
       <Footer />
     </AuthenticatedUserProvider>
   ) : (

@@ -45,12 +45,14 @@ const Navbar: React.FC = () => {
       as="nav"
       boxShadow="lg"
       rounded="md"
-      position="sticky"
+      position="fixed"
+      right="0"
+      left="0"
+      zIndex="200"
       top="0"
       p="2"
       borderRadius="none"
       backgroundColor={colorMode === 'dark' ? 'gray.700' : 'white'}
-      zIndex="200"
       width="100%"
     >
       <c.Flex justify="space-between" alignItems="center">

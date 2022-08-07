@@ -1,0 +1,78 @@
+#hero,
+#illustration-container {
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: forwards;
+}
+
+#hero {
+  transform: translateX(-200%);
+  animation-delay: 125ms;
+  animation-duration: 500ms;
+  animation-name: hero-loading-animation;
+}
+
+#illustration-container {
+  transform: translateY(-200%);
+  animation-delay: 625ms;
+  animation-duration: 500ms;
+  animation-name: illustration-loading-animation;
+}
+
+@keyframes hero-loading-animation {
+  from {
+    transform: translateX(-200%);
+  }
+  to {
+    transform: translateX(0%);
+  }
+}
+
+@keyframes illustration-loading-animation {
+  from {
+    transform: translateY(-200%);
+  }
+  to {
+    transform: translateY(0%);
+  }
+}
+
+@media screen and (max-width: 768px) {
+  #hero {
+    transform: translateX(-500%);
+  }
+  #illustration-container {
+    transform: translateY(-500%);
+  }
+
+  @keyframes hero-loading-animation {
+    from {
+      transform: translateX(-500%);
+    }
+    to {
+      transform: translateX(0%);
+    }
+  }
+
+  @keyframes illustration-loading-animation {
+    from {
+      transform: translateX(-500%);
+    }
+    to {
+      transform: translateX(0%);
+    }
+  }
+}
+
+@media screen and (max-width: 1000px) and (max-height: 450px) {
+  #illustration-container {
+    transform: translateY(-500%);
+  }
+  @keyframes illustration-loading-animation {
+    from {
+      transform: translateY(-200%);
+    }
+    to {
+      transform: translateY(0%);
+    }
+  }
+}

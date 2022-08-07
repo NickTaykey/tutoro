@@ -23,8 +23,8 @@ const Brand: React.FC<{
         y2="150"
         gradientUnits="userSpaceOnUse"
       >
-        <stop offset="0.135417" stop-color="#7928CA" />
-        <stop offset="1" stop-color="#FF0080" />
+        <stop offset="0.135417" stopColor="#7928CA" />
+        <stop offset="1" stopColor="#FF0080" />
       </linearGradient>
     </defs>
   </svg>
