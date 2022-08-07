@@ -2,9 +2,9 @@ import Navbar from './navbar/Navbar';
 import { Box, Flex, Spinner } from '@chakra-ui/react';
 import AuthenticatedUserProvider from '../../store/AuthenticatedUserProvider';
 import { useSession } from 'next-auth/react';
-import type { UserDocumentObject } from '../../models/User';
-import Footer from './Footer';
 import { useRouter } from 'next/router';
+
+import type { UserDocumentObject } from '../../models/User';
 
 const Layout: React.FC<{ children: React.ReactNode[] | React.ReactNode }> = ({
   children,
@@ -18,10 +18,9 @@ const Layout: React.FC<{ children: React.ReactNode[] | React.ReactNode }> = ({
       }
     >
       <Navbar />
-      <Box m={0} mt={pathname !== '/' ? 100 : 0}>
+      <Box m={0} mt={pathname !== '/' ? 100 : 0} height="auto">
         {children}
       </Box>
-      <Footer />
     </AuthenticatedUserProvider>
   ) : (
     <Flex

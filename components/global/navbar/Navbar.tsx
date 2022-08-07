@@ -10,6 +10,7 @@ import getProvidersList from '../../../utils/get-providers';
 import NavbarButtonGroup from './NavbarButtonGroup';
 import ColorModeToggler from './ColorModeToggler';
 import NavbarDrawerContent from './NavbarDrawerContent';
+import { useRouter } from 'next/router';
 
 const Navbar: React.FC = () => {
   const {
@@ -19,6 +20,7 @@ const Navbar: React.FC = () => {
   } = c.useDisclosure();
   const { colorMode } = c.useColorMode();
   const [providersList, setProvidersList] = useState<ClientSafeProvider[]>([]);
+  const { push } = useRouter();
 
   useEffect(() => {
     getProvidersList().then(list => setProvidersList(list));
@@ -56,22 +58,27 @@ const Navbar: React.FC = () => {
       width="100%"
     >
       <c.Flex justify="space-between" alignItems="center">
-        <Link href="/tutors">
-          <c.Heading
-            size="xl"
-            fontFamily="itim"
-            ml="1"
-            _hover={{ cursor: 'pointer' }}
-            style={{ fontFamily: 'Inter', fontWeight: '500' }}
-          >
-            <c.Flex alignItems="center">
+        <c.Heading
+          size="xl"
+          fontFamily="itim"
+          ml="1"
+          _hover={{ cursor: 'pointer' }}
+          style={{ fontFamily: 'Inter', fontWeight: '500' }}
+        >
+          <c.Flex alignItems="center">
+            <c.Box onClick={() => push('/')}>
               <Brand width={45} height={45} />
-              <c.Text textTransform="capitalize" ml={2} letterSpacing="1px">
-                tutoro
-              </c.Text>
-            </c.Flex>
-          </c.Heading>
-        </Link>
+            </c.Box>
+            <c.Text
+              textTransform="capitalize"
+              ml={2}
+              letterSpacing="1px"
+              onClick={() => push('/tutors')}
+            >
+              tutoro
+            </c.Text>
+          </c.Flex>
+        </c.Heading>
         <c.Show breakpoint="(max-width: 767px)">
           <c.Flex>
             <c.IconButton

@@ -110,6 +110,7 @@ const Home: NextPage<Props> = ({ points, allSubjects }) => {
                 </c.GridItem>
               </c.Grid>
             </c.Box>
+            <Footer />
           </>
         )}
       </ClusterMapContext.Consumer>
@@ -128,6 +129,7 @@ import { getServerSession } from 'next-auth';
 import * as models from '../models';
 
 import type { ReviewDocument, ReviewDocumentObject } from '../models/Review';
+import Footer from '../components/global/Footer';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
   const populateReviewConfig = {
