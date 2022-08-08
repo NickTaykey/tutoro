@@ -1,46 +1,25 @@
-import * as c from '@chakra-ui/react';
-import { ClientSafeProvider, signIn } from 'next-auth/react';
-import React, { useContext, useEffect, useState } from 'react';
-import Link from 'next/link';
-import Brand from './Brand';
-import { FcGoogle } from 'react-icons/fc';
-import { GoThreeBars } from 'react-icons/go';
 import AuthenticatedUserContext from '../../../store/authenticated-user-context';
-import getProvidersList from '../../../utils/get-providers';
-import NavbarButtonGroup from './NavbarButtonGroup';
-import ColorModeToggler from './ColorModeToggler';
-import NavbarDrawerContent from './NavbarDrawerContent';
+import { GiHamburgerMenu } from 'react-icons/gi';
+import { signOut } from 'next-auth/react';
+import React, { useContext } from 'react';
 import { useRouter } from 'next/router';
+import * as c from '@chakra-ui/react';
+import * as fa from 'react-icons/fa';
+import Brand from './Brand';
 
 const Navbar: React.FC = () => {
-  const {
-    isOpen: isDrawerOpen,
-    onOpen: onDrawerOpen,
-    onClose: onDrawerClose,
-  } = c.useDisclosure();
-  const { colorMode } = c.useColorMode();
-  const [providersList, setProvidersList] = useState<ClientSafeProvider[]>([]);
   const { push } = useRouter();
-
-  useEffect(() => {
-    getProvidersList().then(list => setProvidersList(list));
-  }, []);
 
   const {
     user,
     openSignInMenu,
-    showUpdateAvatarMenu,
-    showUpdateTutorMenu,
-    showEarningsMenu,
-    showDeleteAccountMenu,
+    openDeleteAccountMenu,
+    openEarningsMenu,
+    openUpdateAvatarMenu,
+    openUpdateTutorMenu,
   } = useContext(AuthenticatedUserContext);
 
-  const noMenusToDisplay =
-    !showEarningsMenu &&
-    !showUpdateAvatarMenu &&
-    !showUpdateTutorMenu &&
-    !showDeleteAccountMenu;
-  const btnRef = React.useRef(null);
+  const { colorMode, toggleColorMode } = c.useColorMode();
 
   return (
     <c.Box
@@ -79,110 +58,102 @@ const Navbar: React.FC = () => {
             </c.Text>
           </c.Flex>
         </c.Heading>
-        <c.Show breakpoint="(max-width: 767px)">
-          <c.Flex>
-            <c.IconButton
-              ref={btnRef}
-              boxShadow="none"
-              onClick={onDrawerOpen}
-              size="lg"
-              backgroundColor="transparent"
-              fontSize="48"
-              mr={3}
-              color="gray.500"
-              aria-label="navbar-hamburger"
-              icon={<GoThreeBars />}
-            />
-            <c.Drawer
-              isOpen={isDrawerOpen}
-              placement="right"
-              onClose={onDrawerClose}
-              size="full"
-              finalFocusRef={btnRef}
-            >
-              <c.DrawerOverlay />
-              <c.DrawerContent>
-                {!showUpdateAvatarMenu && !showUpdateTutorMenu && (
-                  <c.DrawerCloseButton />
-                )}
-                <c.DrawerBody>
-                  {!user && providersList && (
-                    <c.Flex height="100%" direction="column" justify="center">
-                      <c.Heading as="h1" size="md" textAlign="center" my="4">
-                        Sign In
-                      </c.Heading>
-                      {providersList.map(provider => (
-                        <c.Button
-                          width="100%"
-                          key={provider.name}
-                          leftIcon={<FcGoogle size="30" />}
-                          aria-label="Google OAuth Icon"
-                          onClick={() => signIn(provider.id)}
-                        >
-                          Google
-                        </c.Button>
-                      ))}
-                      <ColorModeToggler />
-                    </c.Flex>
-                  )}
-                  {user && (
-                    <c.Flex
-                      alignItems="center"
-                      justify="center"
-                      direction="column"
-                      height="100%"
-                    >
-                      {noMenusToDisplay && (
-                        <Link href="/users/user-profile">
-                          <c.Avatar
-                            size="xl"
-                            name={user.fullname}
-                            src={user.avatar?.url || ''}
-                            _hover={{ cursor: 'pointer' }}
-                            my="5"
-                          />
-                        </Link>
-                      )}
-                      <NavbarDrawerContent />
-                      {noMenusToDisplay && (
-                        <c.VStack width="100%" spacing="4">
-                          <NavbarButtonGroup />
-                        </c.VStack>
-                      )}
-                    </c.Flex>
-                  )}
-                </c.DrawerBody>
-              </c.DrawerContent>
-            </c.Drawer>
-          </c.Flex>
-        </c.Show>
-        <c.Show breakpoint="(min-width: 768px)">
-          <c.HStack spacing="3" mr="3">
+        <c.Menu>
+          <c.MenuButton
+            as={c.IconButton}
+            aria-label="Options"
+            icon={<GiHamburgerMenu size="30" />}
+            variant="link"
+          />
+          <c.MenuList>
             {user ? (
               <>
-                <Link href="/users/user-profile">
-                  <c.Avatar name={user.fullname} src={user.avatar?.url || ''} />
-                </Link>
-                <NavbarButtonGroup />
+                <c.MenuGroup title="User profile">
+                  <c.MenuItem
+                    width="100%"
+                    icon={<fa.FaRegUserCircle size="25" />}
+                    onClick={() => push('/users/user-profile')}
+                  >
+                    Profile page
+                  </c.MenuItem>
+                  <c.MenuItem
+                    icon={
+                      <c.Avatar
+                        src={user.avatar?.url}
+                        name={user.fullname}
+                        size="xs"
+                        boxShadow="none"
+                      />
+                    }
+                    onClick={() => openUpdateAvatarMenu()}
+                  >
+                    Update avatar
+                  </c.MenuItem>
+                </c.MenuGroup>
+                <c.MenuDivider />
+                {user.isTutor && (
+                  <>
+                    <c.MenuGroup title="Tutor profile">
+                      <c.MenuItem
+                        width="100%"
+                        icon={<fa.FaHandsHelping size="25" />}
+                        onClick={() => push('/users/tutor-profile')}
+                      >
+                        Profile page
+                      </c.MenuItem>
+                      <c.MenuItem
+                        icon={<fa.FaListUl size="25" />}
+                        onClick={openUpdateTutorMenu}
+                      >
+                        Update info
+                      </c.MenuItem>
+                      <c.MenuItem
+                        icon={<fa.FaDollarSign size="25" />}
+                        onClick={openEarningsMenu}
+                      >
+                        Earnings
+                      </c.MenuItem>
+                    </c.MenuGroup>
+                    <c.MenuDivider />
+                  </>
+                )}
+                <c.MenuGroup title="Settings">
+                  <c.MenuItem
+                    icon={<fa.FaTrash size="25" />}
+                    onClick={openDeleteAccountMenu}
+                  >
+                    Delete Account
+                  </c.MenuItem>
+                  <c.MenuItem
+                    icon={<fa.FaSignOutAlt size="25" />}
+                    onClick={() => signOut()}
+                  >
+                    Logout
+                  </c.MenuItem>
+                </c.MenuGroup>
               </>
             ) : (
-              <>
-                <c.Button
-                  variant="link"
-                  size="lg"
-                  onClick={openSignInMenu}
-                  _hover={{
-                    textDecoration: 'none',
-                    color: colorMode === 'dark' ? 'white' : 'blackAlpha.800',
-                  }}
-                >
-                  Sign In
-                </c.Button>
-                <ColorModeToggler />
-              </>
+              <c.MenuItem
+                onClick={openSignInMenu}
+                icon={<fa.FaUserCheck size="25" />}
+              >
+                Sign In
+              </c.MenuItem>
             )}
-          </c.HStack>
-        </c.Show>
+            <c.MenuItem
+              onClick={toggleColorMode}
+              icon={
+                colorMode === 'dark' ? (
+                  <fa.FaSun size="25" />
+                ) : (
+                  <fa.FaMoon size="25" />
+                )
+              }
+            >
+              {colorMode === 'dark' ? 'Light' : 'Dark'}
+            </c.MenuItem>
+          </c.MenuList>
+        </c.Menu>
       </c.Flex>
     </c.Box>
   );
