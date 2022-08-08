@@ -6,34 +6,45 @@ import type { PostDocumentObject } from '../models/Post';
 import { UserDocumentObject } from '../models/User';
 
 enum PostActionTypes {
-  DELETE,
   UPDATE_STATUS,
   ANSWER,
+  ADD,
 }
 
-interface PostAction {
-  type: PostActionTypes;
+type AddPostAction = {
+  type: PostActionTypes.ADD;
+  payload: PostDocumentObject;
+};
+
+type UpdatePostStatusAction = {
+  type: PostActionTypes.UPDATE_STATUS;
+  payload: { postId: string; newStatus: PostStatus };
+};
+
+type AnswerPostAction = {
+  type: PostActionTypes.ANSWER;
   payload: {
     postId: string;
-    newStatus?: PostStatus;
-    answer?: string;
-    answeredBy?: UserDocumentObject;
+    answer: string;
+    answeredBy: UserDocumentObject;
   };
-}
+};
+
+type PostAction = AddPostAction | UpdatePostStatusAction | AnswerPostAction;
 
 function reducer(
   prevState: PostDocumentObject[],
   action: PostAction
 ): PostDocumentObject[] {
   switch (action.type) {
-    case PostActionTypes.DELETE:
-      return prevState.filter(p => p._id !== action.payload.postId);
     case PostActionTypes.UPDATE_STATUS:
       return prevState.map(p =>
         p._id === action.payload.postId
           ? { ...p, status: action.payload.newStatus! }
           : p
       );
+    case PostActionTypes.ADD:
+      return [action.payload, ...prevState];
     case PostActionTypes.ANSWER:
       return prevState.map(p =>
         p._id === action.payload.postId
@@ -60,22 +71,11 @@ const PostsContextProvider: React.FC<{
     <PostsContext.Provider
       value={{
         posts,
-        async deletePost(
-          postId: string,
-          tutorId: string = 'global'
-        ): Promise<PostDocumentObject | APIError> {
-          const apiResponse = await ApiHelper(
-            `/api/tutors/${tutorId}/posts/${postId}`,
-            null,
-            'DELETE'
-          );
-          if (!apiResponse.errorMessage) {
-            dispatchPostsAction({
-              type: PostActionTypes.DELETE,
-              payload: { postId },
-            });
-          }
-          return apiResponse;
+        addPost(post: PostDocumentObject) {
+          dispatchPostsAction({
+            type: PostActionTypes.ADD,
+            payload: post,
+          });
         },
         async updatedPostStatus(
           postId: string,

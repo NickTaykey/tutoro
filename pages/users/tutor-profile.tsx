@@ -60,16 +60,24 @@ const ProfilePage: NextPage<Props> = ({
         </Alert>
       )}
       {currentUser.isTutor && (
-        <SessionsContextProvider sessions={currentUser.requestedSessions}>
-          <TutorProfileView
-            setSuccessAlert={setSuccessAlert}
-            setErrorAlert={setErrorAlert}
-            errorAlert={errorAlert}
-            successAlert={successAlert}
-            currentUser={currentUser}
-            pertinentGlobalPosts={pertinentGlobalPosts}
-          />
-        </SessionsContextProvider>
+        <PostsContextProvider
+          posts={
+            currentUser.globalPostsEnabled
+              ? [...pertinentGlobalPosts, ...currentUser.posts]
+              : currentUser.posts
+          }
+        >
+          <SessionsContextProvider sessions={currentUser.requestedSessions}>
+            <TutorProfileView
+              setSuccessAlert={setSuccessAlert}
+              setErrorAlert={setErrorAlert}
+              errorAlert={errorAlert}
+              successAlert={successAlert}
+              currentUser={currentUser}
+              pertinentGlobalPosts={pertinentGlobalPosts}
+            />
+          </SessionsContextProvider>{' '}
+        </PostsContextProvider>
       )}
     </Box>
   );
@@ -85,6 +93,7 @@ import { authOptions } from '../api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth';
 import { useRouter } from 'next/router';
 import * as models from '../../models';
+import PostsContextProvider from '../../store/PostsProvider';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
   const session = await getServerSession(context, authOptions);

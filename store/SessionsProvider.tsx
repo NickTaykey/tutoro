@@ -33,7 +33,6 @@ function reducer(
           : s
       );
     case SessionActionTypes.ADD:
-      debugger;
       return [action.payload, ...prevState];
     default:
       return prevState;

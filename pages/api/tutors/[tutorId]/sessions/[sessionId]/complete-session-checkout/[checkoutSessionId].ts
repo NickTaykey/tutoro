@@ -1,11 +1,11 @@
 import type { NextApiResponse } from 'next';
-import Ably from 'ably/promises';
 
 import onError from '../../../../../../../middleware/server-error-handler';
 import requireAuth from '../../../../../../../middleware/require-auth';
 import { SessionDocument } from '../../../../../../../models/Session';
 import { ExtendedRequest } from '../../../../../../../utils/types';
 import { createRouter } from 'next-connect';
+import Ably from 'ably/promises';
 
 const router = createRouter<ExtendedRequest, NextApiResponse>();
 

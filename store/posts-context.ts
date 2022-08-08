@@ -8,7 +8,7 @@ export type ContextMethodReturnType = Promise<
 
 interface PostsContextObject {
   posts: PostDocumentObject[];
-  deletePost(postId: string, tutorId: string): ContextMethodReturnType;
+  addPost(post: PostDocumentObject): void;
   updatedPostStatus(postId: string, tutorId: string): ContextMethodReturnType;
   answerPost(
     postId: string,
@@ -19,9 +19,7 @@ interface PostsContextObject {
 
 const PostsContext = React.createContext<PostsContextObject>({
   posts: [],
-  deletePost(postId: string, tutorId: string = 'global') {
-    return Promise.resolve({});
-  },
+  addPost(post: PostDocumentObject) {},
   updatedPostStatus(postId: string, tutorId: string = 'global') {
     return Promise.resolve({});
   },
