@@ -7,7 +7,7 @@ type ContextMethodReturnType = Promise<SessionDocumentObject | APIError | {}>;
 
 interface SessionsContextObject {
   sessions: SessionDocumentObject[];
-  deleteSession(sessionId: string, tutorId: string): ContextMethodReturnType;
+  addSession(session: SessionDocumentObject): void;
   setSessionStatus(
     sessionId: string,
     tutorId: string,
@@ -17,9 +17,7 @@ interface SessionsContextObject {
 
 const SessionsContext = React.createContext<SessionsContextObject>({
   sessions: [],
-  deleteSession(sessionId: string, tutorId: string) {
-    return Promise.resolve({});
-  },
+  addSession(session: SessionDocumentObject) {},
   setSessionStatus(
     sessionId: string,
     tutorId: string,

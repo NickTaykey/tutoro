@@ -6,30 +6,35 @@ import { SessionStatus } from '../utils/types';
 
 enum SessionActionTypes {
   UPDATE,
-  DELETE,
+  ADD,
 }
 
-interface SessionAction {
-  type: SessionActionTypes;
-  payload: {
-    sessionId: string;
-    sessionStatus?: SessionStatus;
-  };
-}
+type AddSessionAction = {
+  type: SessionActionTypes.ADD;
+  payload: SessionDocumentObject;
+};
+
+type UpdateSessionStatus = {
+  type: SessionActionTypes.UPDATE;
+  payload: { sessionId: string; sessionStatus: SessionStatus };
+};
+
+type SessionAction = AddSessionAction | UpdateSessionStatus;
 
 function reducer(
   prevState: SessionDocumentObject[],
   action: SessionAction
 ): SessionDocumentObject[] {
   switch (action.type) {
-    case SessionActionTypes.DELETE:
-      return prevState.filter(s => s._id !== action.payload.sessionId);
     case SessionActionTypes.UPDATE:
       return prevState.map(s =>
         s._id === action.payload.sessionId
           ? { ...s, status: action.payload.sessionStatus! }
           : s
       );
+    case SessionActionTypes.ADD:
+      debugger;
+      return [action.payload, ...prevState];
     default:
       return prevState;
   }
@@ -47,6 +52,12 @@ const SessionContextProvider: React.FC<{
     <SessionsContext.Provider
       value={{
         sessions,
+        addSession(session: SessionDocumentObject) {
+          dispatchSessionsAction({
+            type: SessionActionTypes.ADD,
+            payload: session,
+          });
+        },
         async setSessionStatus(
           sessionId: string,
           tutorId: string,
@@ -64,23 +75,6 @@ const SessionContextProvider: React.FC<{
                 sessionId,
                 sessionStatus: newStatus,
               },
-            });
-          }
-          return apiResponse;
-        },
-        async deleteSession(
-          sessionId: string,
-          tutorId: string
-        ): Promise<SessionDocumentObject | APIError> {
-          const apiResponse = await ApiHelper(
-            `/api/tutors/${tutorId}/sessions/${sessionId}`,
-            null,
-            'DELETE'
-          );
-          if (!apiResponse.errorMessage) {
-            dispatchSessionsAction({
-              type: SessionActionTypes.DELETE,
-              payload: { sessionId },
             });
           }
           return apiResponse;

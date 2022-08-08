@@ -1,11 +1,17 @@
-import TutorProfileView from '../../components/tutors/TutorProfileView';
 import { QueryObject, PostType, PostStatus } from '../../utils/types';
+import SessionsContextProvider from '../../store/SessionsProvider';
 import { Box, Heading, Alert, AlertIcon } from '@chakra-ui/react';
+import dynamic from 'next/dynamic';
 import { useState } from 'react';
 
 import type { PostDocument, PostDocumentObject } from '../../models/Post';
 import type { UserDocumentObject } from '../../models/User';
 import type { GetServerSideProps, NextPage } from 'next';
+
+const TutorProfileView = dynamic(
+  () => import('../../components/tutors/TutorProfileView'),
+  { ssr: false }
+);
 
 interface Props {
   currentUser: UserDocumentObject;
@@ -54,14 +60,16 @@ const ProfilePage: NextPage<Props> = ({
         </Alert>
       )}
       {currentUser.isTutor && (
-        <TutorProfileView
-          setSuccessAlert={setSuccessAlert}
-          setErrorAlert={setErrorAlert}
-          errorAlert={errorAlert}
-          successAlert={successAlert}
-          currentUser={currentUser}
-          pertinentGlobalPosts={pertinentGlobalPosts}
-        />
+        <SessionsContextProvider sessions={currentUser.requestedSessions}>
+          <TutorProfileView
+            setSuccessAlert={setSuccessAlert}
+            setErrorAlert={setErrorAlert}
+            errorAlert={errorAlert}
+            successAlert={successAlert}
+            currentUser={currentUser}
+            pertinentGlobalPosts={pertinentGlobalPosts}
+          />
+        </SessionsContextProvider>
       )}
     </Box>
   );

@@ -17,6 +17,7 @@
     "@emotion/styled": "^11.9.3",
     "@mapbox/mapbox-sdk": "^0.13.3",
     "@sendgrid/mail": "^7.7.0",
+    "ably": "^1.2.5-beta.1",
     "cloudinary": "^1.30.0",
     "formidable": "^2.0.1",
     "framer-motion": "^6.4.3",
