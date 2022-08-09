@@ -57,25 +57,23 @@ const SessionContextProvider: React.FC<{
             payload: session,
           });
         },
-        async setSessionStatus(
+        setSessionStatus(
           sessionId: string,
           tutorId: string,
           newStatus: SessionStatus
         ): Promise<SessionDocumentObject | APIError> {
-          const apiResponse = await ApiHelper(
+          const apiResponse = ApiHelper(
             `/api/tutors/${tutorId}/sessions/${sessionId}`,
             { newStatus },
             'PUT'
           );
-          if (!apiResponse.errorMessage) {
-            dispatchSessionsAction({
-              type: SessionActionTypes.UPDATE,
-              payload: {
-                sessionId,
-                sessionStatus: newStatus,
-              },
-            });
-          }
+          dispatchSessionsAction({
+            type: SessionActionTypes.UPDATE,
+            payload: {
+              sessionId,
+              sessionStatus: newStatus,
+            },
+          });
           return apiResponse;
         },
       }}

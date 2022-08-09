@@ -2,7 +2,7 @@ import { FaArchive, FaCheckCircle, FaHourglassHalf } from 'react-icons/fa';
 import { PostStatus, PostType, SessionStatus } from '../../utils/types';
 import SessionsContext from '../../store/sessions-context';
 import PostsContext from '../../store/posts-context';
-import useChannel from '../../utils/use-channel';
+import { useChannel } from '@ably-labs/react-hooks';
 import ApiHelper from '../../utils/api-helper';
 import { useContext, useState } from 'react';
 import Session from '../sessions/Session';

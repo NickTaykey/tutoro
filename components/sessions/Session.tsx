@@ -1,13 +1,14 @@
-import * as c from '@chakra-ui/react';
-import { useContext, useState } from 'react';
 import { FaArchive, FaArrowUp, FaCheck, FaStar } from 'react-icons/fa';
-import { MdError } from 'react-icons/md';
 import AuthenticatedUserContext from '../../store/authenticated-user-context';
-import SessionsContext from '../../store/sessions-context';
-import colors from '../../theme/colors';
 import type { SessionDocumentObject } from '../../models/Session';
 import type { UserDocumentObject } from '../../models/User';
+import SessionsContext from '../../store/sessions-context';
+import { useChannel } from '@ably-labs/react-hooks';
 import { SessionStatus } from '../../utils/types';
+import { useCallback, useContext, useState } from 'react';
+import { MdError } from 'react-icons/md';
+import colors from '../../theme/colors';
+import * as c from '@chakra-ui/react';
 import Link from 'next/link';
 
 interface Props {
@@ -25,26 +26,95 @@ const Session: React.FC<Props> = ({
   const { updateTutorProfile } = useContext(AuthenticatedUserContext);
   const [showFullTopic, setShowFullTopic] = useState<boolean>(false);
   let { tutor, user } = session;
+
   tutor = tutor as UserDocumentObject;
   user = user as UserDocumentObject;
+
   const { _id: tutorId, sessionEarnings } = tutor;
+  const [sessionStatus, setSessionStatusState] = useState<SessionStatus>(
+    session.status
+  );
+
+  const channelHandler = useCallback(
+    (publisher: () => void, onAttachedCb: () => void) => {
+      if (tutorChannel.state === 'attached') {
+        publisher();
+        tutorChannel.detach();
+        tutorChannel.on('detached', onAttachedCb);
+      }
+    },
+    []
+  );
+
+  const [tutorChannel, ably] = useChannel(tutorId, message => {
+    if (message.name === `update-session-${session._id}-status`) {
+      setSessionStatusState(message.data);
+      return;
+    }
+  });
 
   const approveSessionHandler = () => {
-    setSessionStatus(session._id, tutorId.toString(), SessionStatus.APPROVED);
-    updateTutorProfile({
-      sessionEarnings: sessionEarnings + session.price,
-    });
+    channelHandler(
+      () => {
+        tutorChannel.publish(
+          `update-session-${session._id}-status`,
+          SessionStatus.APPROVED
+        );
+      },
+      () => {
+        if (session.status !== SessionStatus.APPROVED) {
+          Promise.all([
+            setSessionStatus(
+              session._id,
+              tutorId.toString(),
+              SessionStatus.APPROVED
+            ),
+            updateTutorProfile({
+              sessionEarnings: sessionEarnings + session.price,
+            }),
+          ]);
+        }
+      }
+    );
   };
 
   const rejectSessionHandler = () => {
-    setSessionStatus(session._id, tutorId.toString(), SessionStatus.REJECTED);
+    channelHandler(
+      () => {
+        tutorChannel.publish(
+          `update-session-${session._id}-status`,
+          SessionStatus.REJECTED
+        );
+      },
+      () => {
+        if (session.status !== SessionStatus.REJECTED) {
+          setSessionStatus(
+            session._id,
+            tutorId.toString(),
+            SessionStatus.REJECTED
+          );
+        }
+      }
+    );
   };
 
   const resetSessionHandler = () => {
-    setSessionStatus(
-      session._id,
-      tutorId.toString(),
-      SessionStatus.NOT_APPROVED
+    channelHandler(
+      () => {
+        tutorChannel.publish(
+          `update-session-${session._id}-status`,
+          SessionStatus.NOT_APPROVED
+        );
+      },
+      () => {
+        if (session.status !== SessionStatus.NOT_APPROVED) {
+          setSessionStatus(
+            session._id,
+            tutorId.toString(),
+            SessionStatus.NOT_APPROVED
+          );
+        }
+      }
     );
   };
 
@@ -94,17 +164,17 @@ const Session: React.FC<Props> = ({
             <c.Badge
               fontSize="0.8em"
               colorScheme={
-                session.status === SessionStatus.APPROVED
+                sessionStatus === SessionStatus.APPROVED
                   ? 'green'
-                  : session.status === SessionStatus.REJECTED
+                  : sessionStatus === SessionStatus.REJECTED
                   ? 'red'
                   : 'gray'
               }
               ml="3"
             >
-              {session.status === SessionStatus.APPROVED
+              {sessionStatus === SessionStatus.APPROVED
                 ? 'Approved!'
-                : session.status === SessionStatus.REJECTED
+                : sessionStatus === SessionStatus.REJECTED
                 ? 'Rejected'
                 : 'Not approved!'}
             </c.Badge>
@@ -155,7 +225,7 @@ const Session: React.FC<Props> = ({
         {startHour} - {endHour}
       </c.Text>
       <c.Flex mt="3" direction={['column', 'row']}>
-        {viewAsTutor && session.status === SessionStatus.REJECTED && (
+        {viewAsTutor && sessionStatus === SessionStatus.REJECTED && (
           <c.IconButton
             onClick={resetSessionHandler}
             aria-label="reset session status"
@@ -163,7 +233,7 @@ const Session: React.FC<Props> = ({
             icon={<FaArrowUp />}
           />
         )}
-        {viewAsTutor && session.status === SessionStatus.NOT_APPROVED && (
+        {viewAsTutor && sessionStatus === SessionStatus.NOT_APPROVED && (
           <c.IconButton
             aria-label="approve session"
             variant="success"
@@ -173,7 +243,7 @@ const Session: React.FC<Props> = ({
             mr={[0, 3]}
           />
         )}
-        {viewAsTutor && session.status !== SessionStatus.REJECTED && (
+        {viewAsTutor && sessionStatus !== SessionStatus.REJECTED && (
           <c.IconButton
             aria-label="reject session"
             variant="danger"

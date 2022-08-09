@@ -12,6 +12,7 @@
     "seed": "ts-node --project ./seeds/tsconfig.seeder.json ./seeds/seeder.ts --users 2 --tutors 60"
   },
   "dependencies": {
+    "@ably-labs/react-hooks": "^2.0.7",
     "@chakra-ui/react": "^2.2.1",
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",

@@ -6,6 +6,7 @@ import { SessionDocument } from '../../../../../../../models/Session';
 import { ExtendedRequest } from '../../../../../../../utils/types';
 import { createRouter } from 'next-connect';
 import Ably from 'ably/promises';
+import { UserDocument } from '../../../../../../../models/User';
 
 const router = createRouter<ExtendedRequest, NextApiResponse>();
 
@@ -23,7 +24,7 @@ router
         session.checkoutCompleted = true;
 
         client.channels
-          .get(session.tutor.toString())
+          .get((session.tutor as UserDocument)._id.toString())
           .publish('new-session', session.toJSON());
 
         session.save();
