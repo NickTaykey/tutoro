@@ -16,8 +16,8 @@ router
     const { checkoutSessionId, sessionId } = req.query;
     if (typeof checkoutSessionId === 'string') {
       try {
-        const session = (await req.models.Session.findById(
-          sessionId
+        const session = (await req.models.Session.findById(sessionId).populate(
+          'user'
         )) as SessionDocument;
         session.checkoutCompleted = true;
 

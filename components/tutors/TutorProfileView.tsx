@@ -1,22 +1,22 @@
-import Session from '../sessions/Session';
-import Review from '../reviews/Review';
-import Post from '../posts/Post';
-import SessionsContext from '../../store/sessions-context';
-import type { UserDocumentObject } from '../../models/User';
-import type { SessionDocumentObject } from '../../models/Session';
-import type { ReviewDocumentObject } from '../../models/Review';
-import type { PostDocumentObject } from '../../models/Post';
-import { PostStatus, PostType, SessionStatus } from '../../utils/types';
-import * as c from '@chakra-ui/react';
 import { FaArchive, FaCheckCircle, FaHourglassHalf } from 'react-icons/fa';
-import colors from '../../theme/colors';
-import { useContext, useState } from 'react';
+import { PostStatus, PostType, SessionStatus } from '../../utils/types';
+import SessionsContext from '../../store/sessions-context';
+import PostsContext from '../../store/posts-context';
 import useChannel from '../../utils/use-channel';
 import ApiHelper from '../../utils/api-helper';
-import PostsContext from '../../store/posts-context';
+import { useContext, useState } from 'react';
+import Session from '../sessions/Session';
+import colors from '../../theme/colors';
+import Review from '../reviews/Review';
+import * as c from '@chakra-ui/react';
+import Post from '../posts/Post';
+
+import type { SessionDocumentObject } from '../../models/Session';
+import type { ReviewDocumentObject } from '../../models/Review';
+import type { UserDocumentObject } from '../../models/User';
+import type { PostDocumentObject } from '../../models/Post';
 
 interface Props {
-  pertinentGlobalPosts: PostDocumentObject[];
   currentUser: UserDocumentObject;
   errorAlert: string | null;
   successAlert: string | null;
@@ -25,7 +25,6 @@ interface Props {
 }
 
 const TutorProfileView: React.FC<Props> = ({
-  pertinentGlobalPosts,
   currentUser,
   setSuccessAlert,
 }) => {
@@ -71,7 +70,7 @@ const TutorProfileView: React.FC<Props> = ({
   const { addSession, sessions } = useContext(SessionsContext);
   const { addPost, posts } = useContext(PostsContext);
 
-  const [channel, ably] = useChannel(currentUser._id, message => {
+  const [tutorChannel, ably] = useChannel(currentUser._id, message => {
     if (message.name === 'new-session') {
       setSuccessAlert('You Just received a session request');
       addSession(message.data as SessionDocumentObject);
@@ -79,6 +78,17 @@ const TutorProfileView: React.FC<Props> = ({
     }
     if (message.name === 'new-post') {
       setSuccessAlert('You Just received a new post');
+      addPost(message.data as PostDocumentObject);
+      return;
+    }
+  });
+
+  const [globalPostsChannel] = useChannel('global-posts', message => {
+    if (
+      message.name === 'new-global-post' &&
+      currentUser.subjects.includes(message.data.subject)
+    ) {
+      setSuccessAlert('New global post for you');
       addPost(message.data as PostDocumentObject);
       return;
     }

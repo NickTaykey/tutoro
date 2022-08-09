@@ -35,12 +35,13 @@ const NavbarModals: React.FC = () => {
   return user ? (
     <>
       <c.Modal
+        isCentered
         blockScrollOnMount={false}
         isOpen={showUpdateAvatarMenu}
         onClose={closeUpdateAvatarMenu}
       >
         <c.ModalOverlay />
-        <c.ModalContent>
+        <c.ModalContent width="90%" mx="auto">
           <c.ModalHeader>Choose another avatar!</c.ModalHeader>
           <c.ModalCloseButton />
           <c.ModalBody>
@@ -49,13 +50,14 @@ const NavbarModals: React.FC = () => {
         </c.ModalContent>
       </c.Modal>
       <c.Modal
+        isCentered
         blockScrollOnMount={false}
         size="lg"
         isOpen={showDeleteAccountMenu}
         onClose={closeDeleteAccountMenu}
       >
         <c.ModalOverlay />
-        <c.ModalContent>
+        <c.ModalContent width="90%" mx="auto">
           <c.ModalHeader>
             Are you sure you want to delete your account?
           </c.ModalHeader>
@@ -78,12 +80,13 @@ const NavbarModals: React.FC = () => {
       {user.isTutor && (
         <>
           <c.Modal
+            isCentered
             blockScrollOnMount={false}
             isOpen={showUpdateTutorMenu}
             onClose={closeUpdateTutorMenu}
           >
             <c.ModalOverlay />
-            <c.ModalContent>
+            <c.ModalContent width="90%" mx="auto">
               <c.ModalHeader>Update your tutor profile</c.ModalHeader>
               <c.ModalCloseButton />
               <c.ModalBody>
@@ -92,12 +95,13 @@ const NavbarModals: React.FC = () => {
             </c.ModalContent>
           </c.Modal>
           <c.Modal
+            isCentered
             blockScrollOnMount={false}
             isOpen={showEarningsMenu}
             onClose={closeEarningsMenu}
           >
             <c.ModalOverlay />
-            <c.ModalContent>
+            <c.ModalContent width="90%" mx="auto">
               <c.ModalHeader>Your earnings as a Tutor</c.ModalHeader>
               <c.ModalCloseButton />
               <c.ModalBody>
@@ -109,9 +113,9 @@ const NavbarModals: React.FC = () => {
       )}
     </>
   ) : (
-    <c.Modal isOpen={showSignInMenu} onClose={closeSignInMenu} isCentered>
+    <c.Modal isCentered isOpen={showSignInMenu} onClose={closeSignInMenu}>
       <c.ModalOverlay />
-      <c.ModalContent>
+      <c.ModalContent width="90%" mx="auto">
         <c.ModalCloseButton />
         <c.ModalHeader textAlign="center">Sign In to Tutoro</c.ModalHeader>
         <c.ModalBody mb="5">

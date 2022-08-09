@@ -248,9 +248,7 @@ const AuthenticatedUserProvider: React.FC<{
         },
       }}
     >
-      <Show breakpoint="(min-width: 767px)">
-        <NavbarModals />
-      </Show>
+      <NavbarModals />
       {children}
     </AuthenticatedUserContext.Provider>
   );

@@ -74,7 +74,6 @@ const ProfilePage: NextPage<Props> = ({
               errorAlert={errorAlert}
               successAlert={successAlert}
               currentUser={currentUser}
-              pertinentGlobalPosts={pertinentGlobalPosts}
             />
           </SessionsContextProvider>{' '}
         </PostsContextProvider>
@@ -94,6 +93,7 @@ import { getServerSession } from 'next-auth';
 import { useRouter } from 'next/router';
 import * as models from '../../models';
 import PostsContextProvider from '../../store/PostsProvider';
+import { SessionDocumentObject } from '../../models/Session';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
   const session = await getServerSession(context, authOptions);
@@ -149,9 +149,9 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
 
     currentUser.reviews = user.reviews.map(getReviewDocumentObject);
     currentUser.posts = user.posts.map(getPostDocumentObject);
-    currentUser.requestedSessions = user.requestedSessions.map(
-      getSessionDocumentObject
-    );
+    currentUser.requestedSessions = user.requestedSessions
+      .map(getSessionDocumentObject)
+      .filter((s: SessionDocumentObject) => s.checkoutCompleted);
 
     let pertinentGlobalPostsObjects: PostDocumentObject[] = [];
     if (pertinentGlobalPosts) {
