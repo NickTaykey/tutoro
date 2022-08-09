@@ -16,9 +16,10 @@ router
     const { checkoutSessionId, sessionId } = req.query;
     if (typeof checkoutSessionId === 'string') {
       try {
-        const session = (await req.models.Session.findById(sessionId).populate(
-          'user'
-        )) as SessionDocument;
+        const session = (await req.models.Session.findById(sessionId)
+          .populate('user')
+          .populate('tutor')
+          .exec()) as SessionDocument;
         session.checkoutCompleted = true;
 
         client.channels

@@ -112,11 +112,15 @@ const AnswerPostModal = React.forwardRef<
                       </c.Heading>
                     </c.Flex>
                     {props.post.attachments.map((f: CloudFile, i: number) => (
-                      <a href={f.url} target="_blank" rel="noreferrer">
+                      <a
+                        href={f.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        key={f.public_id}
+                      >
                         <c.Button
                           width="100%"
                           mb="3"
-                          key={f.public_id}
                           textTransform="capitalize"
                           leftIcon={
                             f.url.includes('raw') ? (
