@@ -15,6 +15,16 @@ import Post from '../posts/Post';
 import * as c from '@chakra-ui/react';
 import { FaHandsHelping } from 'react-icons/fa';
 
+import { Types } from 'ably';
+
+import { configureAbly } from '@ably-labs/react-hooks';
+import { useState, useEffect } from 'react';
+
+const prefix = process.env.NEXT_PUBLIC_API_ROOT || '';
+const clientId =
+  Math.random().toString(36).substring(2, 15) +
+  Math.random().toString(36).substring(2, 15);
+
 interface Props {
   currentUser: UserDocumentObject;
   errorAlert: string | null;
@@ -29,6 +39,19 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
   const [isLandscapeWidth] = c.useMediaQuery('(max-width: 930px)');
   const [isLandscapeHeight] = c.useMediaQuery('(max-height: 500px)');
   const isXSLandscape = isLandscapeWidth && isLandscapeHeight;
+
+  const sdk: Types.RealtimePromise = configureAbly({
+    authUrl: `${prefix}/api/createTokenRequest?clientId=${clientId}`,
+    clientId: clientId,
+  });
+  const [userChannel, setUserChannel] =
+    useState<Types.RealtimeChannelPromise | null>(null);
+
+  useEffect(() => {
+    setUserChannel(
+      sdk.channels.get(`notifications-user-${props.currentUser._id}`)
+    );
+  }, []);
 
   const unSelectedTabColor = c.useColorModeValue('gray.600', 'white');
 
@@ -98,6 +121,7 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
                     <c.VStack>
                       {ctx.sessions.map((s: SessionDocumentObject, i) => (
                         <Session
+                          userChannel={userChannel}
                           isLatestCreated={i === 0}
                           key={s._id}
                           session={s}

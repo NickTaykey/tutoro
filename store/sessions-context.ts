@@ -3,7 +3,6 @@ import type { SessionDocumentObject } from '../models/Session';
 import { SessionStatus } from '../utils/types';
 
 export type APIError = { errorMessage: string };
-type ContextMethodReturnType = Promise<SessionDocumentObject | APIError | {}>;
 
 interface SessionsContextObject {
   sessions: SessionDocumentObject[];
@@ -12,7 +11,7 @@ interface SessionsContextObject {
     sessionId: string,
     tutorId: string,
     newStatus: SessionStatus
-  ): ContextMethodReturnType;
+  ): void;
 }
 
 const SessionsContext = React.createContext<SessionsContextObject>({

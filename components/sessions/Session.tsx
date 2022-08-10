@@ -5,22 +5,25 @@ import type { UserDocumentObject } from '../../models/User';
 import SessionsContext from '../../store/sessions-context';
 import { useChannel } from '@ably-labs/react-hooks';
 import { SessionStatus } from '../../utils/types';
-import { useCallback, useContext, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { MdError } from 'react-icons/md';
 import colors from '../../theme/colors';
 import * as c from '@chakra-ui/react';
 import Link from 'next/link';
+import { Types } from 'ably';
 
 interface Props {
   session: SessionDocumentObject;
   viewAsTutor: boolean;
   isLatestCreated: boolean;
+  userChannel: Types.RealtimeChannelPromise | null;
 }
 
 const Session: React.FC<Props> = ({
   session,
   viewAsTutor,
   isLatestCreated,
+  userChannel,
 }) => {
   const { setSessionStatus } = useContext(SessionsContext);
   const { updateTutorProfile } = useContext(AuthenticatedUserContext);
@@ -37,26 +40,19 @@ const Session: React.FC<Props> = ({
 
   const channelHandler = useCallback(
     (publisher: () => void, onAttachedCb: () => void) => {
-      if (tutorChannel.state === 'attached') {
+      if (userChannel?.state === 'attached') {
         publisher();
-        tutorChannel.detach();
-        tutorChannel.on('detached', onAttachedCb);
+        userChannel.detach();
+        userChannel.on('detached', onAttachedCb);
       }
     },
     []
   );
 
-  const [tutorChannel, ably] = useChannel(tutorId, message => {
-    if (message.name === `update-session-${session._id}-status`) {
-      setSessionStatusState(message.data);
-      return;
-    }
-  });
-
   const approveSessionHandler = () => {
     channelHandler(
       () => {
-        tutorChannel.publish(
+        userChannel!.publish(
           `update-session-${session._id}-status`,
           SessionStatus.APPROVED
         );
@@ -81,7 +77,7 @@ const Session: React.FC<Props> = ({
   const rejectSessionHandler = () => {
     channelHandler(
       () => {
-        tutorChannel.publish(
+        userChannel!.publish(
           `update-session-${session._id}-status`,
           SessionStatus.REJECTED
         );
@@ -101,7 +97,7 @@ const Session: React.FC<Props> = ({
   const resetSessionHandler = () => {
     channelHandler(
       () => {
-        tutorChannel.publish(
+        userChannel!.publish(
           `update-session-${session._id}-status`,
           SessionStatus.NOT_APPROVED
         );

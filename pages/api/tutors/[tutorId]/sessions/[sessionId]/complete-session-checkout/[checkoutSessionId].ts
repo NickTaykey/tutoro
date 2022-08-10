@@ -24,7 +24,11 @@ router
         session.checkoutCompleted = true;
 
         client.channels
-          .get((session.tutor as UserDocument)._id.toString())
+          .get(
+            `notifications-tutor-${(
+              session.tutor as UserDocument
+            )._id.toString()}`
+          )
           .publish('new-session', session.toJSON());
 
         session.save();

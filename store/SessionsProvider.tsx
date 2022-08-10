@@ -61,8 +61,8 @@ const SessionContextProvider: React.FC<{
           sessionId: string,
           tutorId: string,
           newStatus: SessionStatus
-        ): Promise<SessionDocumentObject | APIError> {
-          const apiResponse = ApiHelper(
+        ) {
+          ApiHelper(
             `/api/tutors/${tutorId}/sessions/${sessionId}`,
             { newStatus },
             'PUT'
@@ -74,7 +74,6 @@ const SessionContextProvider: React.FC<{
               sessionStatus: newStatus,
             },
           });
-          return apiResponse;
         },
       }}
     >

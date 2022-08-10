@@ -28,7 +28,7 @@ router
           .get(
             postDocument.answeredBy
               ? postDocument.answeredBy.toString()
-              : 'global-posts'
+              : 'notifications-global-posts'
           )
           .publish(
             postDocument.answeredBy ? 'new-post' : 'new-global-post',

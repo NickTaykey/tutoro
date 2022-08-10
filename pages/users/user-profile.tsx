@@ -1,7 +1,7 @@
 import UserProfileView from '../../components/users/UserProfileView';
 import { Box, Heading, Alert, AlertIcon } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import type { GetServerSideProps, NextPage } from 'next';
 import type { UserDocumentObject } from '../../models/User';

@@ -13,6 +13,18 @@ const TutorProfileView = dynamic(
   { ssr: false }
 );
 
+import { configureAbly } from '@ably-labs/react-hooks';
+
+const prefix = process.env.NEXT_PUBLIC_API_ROOT || '';
+const clientId =
+  Math.random().toString(36).substring(2, 15) +
+  Math.random().toString(36).substring(2, 15);
+
+configureAbly({
+  authUrl: `${prefix}/api/createTokenRequest?clientId=${clientId}`,
+  clientId: clientId,
+});
+
 interface Props {
   currentUser: UserDocumentObject;
   pertinentGlobalPosts: PostDocumentObject[];
