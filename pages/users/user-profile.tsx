@@ -1,7 +1,7 @@
 import UserProfileView from '../../components/users/UserProfileView';
 import { Box, Heading, Alert, AlertIcon } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import type { GetServerSideProps, NextPage } from 'next';
 import type { UserDocumentObject } from '../../models/User';
@@ -66,9 +66,9 @@ import {
   getSessionDocumentObject,
   getPostDocumentObject,
 } from '../../utils/casting-helpers';
-import * as models from '../../models';
 import { authOptions } from '../api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth';
+import * as models from '../../models';
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
   const session = await getServerSession(context, authOptions);

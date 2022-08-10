@@ -1,29 +1,22 @@
-import Session from '../sessions/Session';
-import Review from '../reviews/Review';
 import SessionsContextProvider from '../../store/SessionsProvider';
+import PostsContextProvider from '../../store/PostsProvider';
 import SessionsContext from '../../store/sessions-context';
 import PostsContext from '../../store/posts-context';
-import PostsContextProvider from '../../store/PostsProvider';
+import sdk from '../../utils/ably-config';
+import Session from '../sessions/Session';
+import Review from '../reviews/Review';
 
-import type { UserDocumentObject } from '../../models/User';
-import type { ReviewDocumentObject } from '../../models/Review';
 import type { SessionDocumentObject } from '../../models/Session';
+import type { ReviewDocumentObject } from '../../models/Review';
+import type { UserDocumentObject } from '../../models/User';
 import type { PostDocumentObject } from '../../models/Post';
+import type { Types } from 'ably';
 
-import Link from 'next/link';
-import Post from '../posts/Post';
-import * as c from '@chakra-ui/react';
 import { FaHandsHelping } from 'react-icons/fa';
-
-import { Types } from 'ably';
-
-import { configureAbly } from '@ably-labs/react-hooks';
-import { useState, useEffect } from 'react';
-
-const prefix = process.env.NEXT_PUBLIC_API_ROOT || '';
-const clientId =
-  Math.random().toString(36).substring(2, 15) +
-  Math.random().toString(36).substring(2, 15);
+import { useState, useEffect, useMemo } from 'react';
+import * as c from '@chakra-ui/react';
+import Post from '../posts/Post';
+import Link from 'next/link';
 
 interface Props {
   currentUser: UserDocumentObject;
@@ -40,17 +33,12 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
   const [isLandscapeHeight] = c.useMediaQuery('(max-height: 500px)');
   const isXSLandscape = isLandscapeWidth && isLandscapeHeight;
 
-  const sdk: Types.RealtimePromise = configureAbly({
-    authUrl: `${prefix}/api/createTokenRequest?clientId=${clientId}`,
-    clientId: clientId,
-  });
-  const [userChannel, setUserChannel] =
-    useState<Types.RealtimeChannelPromise | null>(null);
-
-  useEffect(() => {
-    setUserChannel(
-      sdk.channels.get(`notifications-user-${props.currentUser._id}`)
+  const channel = useMemo(() => {
+    const channel = sdk.channels.get(
+      `notifications-user-${props.currentUser._id}`
     );
+    channel.attach();
+    return channel;
   }, []);
 
   const unSelectedTabColor = c.useColorModeValue('gray.600', 'white');
@@ -121,7 +109,7 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
                     <c.VStack>
                       {ctx.sessions.map((s: SessionDocumentObject, i) => (
                         <Session
-                          userChannel={userChannel}
+                          userChannel={channel}
                           isLatestCreated={i === 0}
                           key={s._id}
                           session={s}

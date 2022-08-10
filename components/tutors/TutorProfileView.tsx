@@ -4,8 +4,9 @@ import SessionsContext from '../../store/sessions-context';
 import PostsContext from '../../store/posts-context';
 import { useChannel } from '@ably-labs/react-hooks';
 import ApiHelper from '../../utils/api-helper';
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState } from 'react';
 import Session from '../sessions/Session';
+import sdk from '../../utils/ably-config';
 import colors from '../../theme/colors';
 import Review from '../reviews/Review';
 import * as c from '@chakra-ui/react';
@@ -15,19 +16,6 @@ import type { SessionDocumentObject } from '../../models/Session';
 import type { ReviewDocumentObject } from '../../models/Review';
 import type { UserDocument, UserDocumentObject } from '../../models/User';
 import type { PostDocumentObject } from '../../models/Post';
-
-import { Types } from 'ably';
-
-import { configureAbly } from '@ably-labs/react-hooks';
-
-const prefix = process.env.NEXT_PUBLIC_API_ROOT || '';
-const clientId =
-  Math.random().toString(36).substring(2, 15) +
-  Math.random().toString(36).substring(2, 15);
-const sdk: Types.RealtimePromise = configureAbly({
-  authUrl: `${prefix}/api/createTokenRequest?clientId=${clientId}`,
-  clientId: clientId,
-});
 
 interface Props {
   currentUser: UserDocumentObject;
@@ -83,35 +71,29 @@ const TutorProfileView: React.FC<Props> = ({
   const { addSession, sessions } = useContext(SessionsContext);
   const { addPost, posts } = useContext(PostsContext);
 
-  const [tutorChannel, ably] = useChannel(
-    `notifications-tutor-${currentUser._id}`,
-    message => {
-      if (message.name === 'new-session') {
-        setSuccessAlert('You Just received a session request');
-        addSession(message.data as SessionDocumentObject);
-        return;
-      }
-      if (message.name === 'new-post') {
-        setSuccessAlert('You Just received a new post');
-        addPost(message.data as PostDocumentObject);
-        return;
-      }
+  useChannel(`notifications-tutor-${currentUser._id}`, message => {
+    if (message.name === 'new-session') {
+      setSuccessAlert('You Just received a session request');
+      addSession(message.data as SessionDocumentObject);
+      return;
     }
-  );
+    if (message.name === 'new-post') {
+      setSuccessAlert('You Just received a new post');
+      addPost(message.data as PostDocumentObject);
+      return;
+    }
+  });
 
-  const [globalPostsChannel] = useChannel(
-    'notification-global-posts',
-    message => {
-      if (
-        message.name === 'new-global-post' &&
-        currentUser.subjects.includes(message.data.subject)
-      ) {
-        setSuccessAlert('New global post for you');
-        addPost(message.data as PostDocumentObject);
-        return;
-      }
+  useChannel('notification-global-posts', message => {
+    if (
+      message.name === 'new-global-post' &&
+      currentUser.subjects.includes(message.data.subject)
+    ) {
+      setSuccessAlert('New global post for you');
+      addPost(message.data as PostDocumentObject);
+      return;
     }
-  );
+  });
 
   const [lowerThan690] = c.useMediaQuery('(max-height: 690px)');
   const [higherThan840] = c.useMediaQuery('(min-height: 840px)');
@@ -384,19 +366,21 @@ const TutorProfileView: React.FC<Props> = ({
                   {getNotApprovedSessions(sessions).length ? (
                     <c.VStack width={['90%', null, '100%']} mx="auto" pb="2">
                       {getNotApprovedSessions(sessions).map(
-                        (s: SessionDocumentObject, i) => (
-                          <Session
-                            userChannel={sdk.channels.get(
-                              `notifications-user-${
-                                (s.user as UserDocument)._id
-                              }`
-                            )}
-                            isLatestCreated={i === 0}
-                            key={s._id}
-                            session={s}
-                            viewAsTutor
-                          />
-                        )
+                        (s: SessionDocumentObject, i) => {
+                          const channel = sdk.channels.get(
+                            `notifications-user-${(s.user as UserDocument)._id}`
+                          );
+                          channel.attach();
+                          return (
+                            <Session
+                              userChannel={channel}
+                              isLatestCreated={i === 0}
+                              key={s._id}
+                              session={s}
+                              viewAsTutor
+                            />
+                          );
+                        }
                       )}
                     </c.VStack>
                   ) : (
@@ -411,19 +395,21 @@ const TutorProfileView: React.FC<Props> = ({
                   {getApprovedSessions(sessions).length ? (
                     <c.VStack width={['90%', null, '100%']} mx="auto" pb="2">
                       {getApprovedSessions(sessions).map(
-                        (s: SessionDocumentObject, i) => (
-                          <Session
-                            userChannel={sdk.channels.get(
-                              `notifications-user-${
-                                (s.user as UserDocument)._id
-                              }`
-                            )}
-                            isLatestCreated={i === 0}
-                            key={s._id}
-                            session={s}
-                            viewAsTutor
-                          />
-                        )
+                        (s: SessionDocumentObject, i) => {
+                          const channel = sdk.channels.get(
+                            `notifications-user-${(s.user as UserDocument)._id}`
+                          );
+                          channel.attach();
+                          return (
+                            <Session
+                              userChannel={channel}
+                              isLatestCreated={i === 0}
+                              key={s._id}
+                              session={s}
+                              viewAsTutor
+                            />
+                          );
+                        }
                       )}
                     </c.VStack>
                   ) : (
@@ -438,19 +424,21 @@ const TutorProfileView: React.FC<Props> = ({
                   {getRejectedSessions(sessions).length ? (
                     <c.VStack width={['90%', null, '100%']} mx="auto" pb="2">
                       {getRejectedSessions(sessions).map(
-                        (s: SessionDocumentObject, i) => (
-                          <Session
-                            userChannel={sdk.channels.get(
-                              `notifications-user-${
-                                (s.user as UserDocument)._id
-                              }`
-                            )}
-                            isLatestCreated={i === 0}
-                            key={s._id}
-                            session={s}
-                            viewAsTutor
-                          />
-                        )
+                        (s: SessionDocumentObject, i) => {
+                          const channel = sdk.channels.get(
+                            `notifications-user-${(s.user as UserDocument)._id}`
+                          );
+                          channel.attach();
+                          return (
+                            <Session
+                              userChannel={channel}
+                              isLatestCreated={i === 0}
+                              key={s._id}
+                              session={s}
+                              viewAsTutor
+                            />
+                          );
+                        }
                       )}
                     </c.VStack>
                   ) : (

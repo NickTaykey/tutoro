@@ -1,11 +1,10 @@
-import { FaArchive, FaArrowUp, FaCheck, FaStar } from 'react-icons/fa';
 import AuthenticatedUserContext from '../../store/authenticated-user-context';
+import { FaArchive, FaArrowUp, FaCheck, FaStar } from 'react-icons/fa';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import type { SessionDocumentObject } from '../../models/Session';
 import type { UserDocumentObject } from '../../models/User';
 import SessionsContext from '../../store/sessions-context';
-import { useChannel } from '@ably-labs/react-hooks';
 import { SessionStatus } from '../../utils/types';
-import { useCallback, useContext, useEffect, useState } from 'react';
 import { MdError } from 'react-icons/md';
 import colors from '../../theme/colors';
 import * as c from '@chakra-ui/react';
@@ -28,37 +27,49 @@ const Session: React.FC<Props> = ({
   const { setSessionStatus } = useContext(SessionsContext);
   const { updateTutorProfile } = useContext(AuthenticatedUserContext);
   const [showFullTopic, setShowFullTopic] = useState<boolean>(false);
-  let { tutor, user } = session;
-
-  tutor = tutor as UserDocumentObject;
-  user = user as UserDocumentObject;
-
-  const { _id: tutorId, sessionEarnings } = tutor;
   const [sessionStatus, setSessionStatusState] = useState<SessionStatus>(
     session.status
   );
 
+  let { tutor, user } = session;
+  tutor = tutor as UserDocumentObject;
+  user = user as UserDocumentObject;
+
+  const { _id: tutorId, sessionEarnings } = tutor;
+
+  useEffect(() => {
+    if (!viewAsTutor && userChannel) {
+      userChannel.subscribe(message => {
+        if (message.name === `update-session-${session._id}-status`) {
+          setSessionStatusState(message.data);
+        }
+      });
+    }
+    return () => {
+      userChannel?.unsubscribe();
+    };
+  }, []);
+
   const channelHandler = useCallback(
     (publisher: () => void, onAttachedCb: () => void) => {
-      if (userChannel?.state === 'attached') {
-        publisher();
-        userChannel.detach();
-        userChannel.on('detached', onAttachedCb);
-      }
+      publisher();
+      // userChannel?.detach();
+      // userChannel?.on('detached', onAttachedCb);
+      onAttachedCb();
     },
     []
   );
 
   const approveSessionHandler = () => {
     channelHandler(
-      () => {
-        userChannel!.publish(
+      async () => {
+        await userChannel!.publish(
           `update-session-${session._id}-status`,
           SessionStatus.APPROVED
         );
       },
       () => {
-        if (session.status !== SessionStatus.APPROVED) {
+        if (sessionStatus !== SessionStatus.APPROVED) {
           Promise.all([
             setSessionStatus(
               session._id,
@@ -76,14 +87,14 @@ const Session: React.FC<Props> = ({
 
   const rejectSessionHandler = () => {
     channelHandler(
-      () => {
-        userChannel!.publish(
+      async () => {
+        await userChannel!.publish(
           `update-session-${session._id}-status`,
           SessionStatus.REJECTED
         );
       },
       () => {
-        if (session.status !== SessionStatus.REJECTED) {
+        if (sessionStatus !== SessionStatus.REJECTED) {
           setSessionStatus(
             session._id,
             tutorId.toString(),
@@ -96,14 +107,14 @@ const Session: React.FC<Props> = ({
 
   const resetSessionHandler = () => {
     channelHandler(
-      () => {
-        userChannel!.publish(
+      async () => {
+        await userChannel!.publish(
           `update-session-${session._id}-status`,
           SessionStatus.NOT_APPROVED
         );
       },
       () => {
-        if (session.status !== SessionStatus.NOT_APPROVED) {
+        if (sessionStatus !== SessionStatus.NOT_APPROVED) {
           setSessionStatus(
             session._id,
             tutorId.toString(),
