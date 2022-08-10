@@ -53,8 +53,6 @@ const Session: React.FC<Props> = ({
   const channelHandler = useCallback(
     (publisher: () => void, onAttachedCb: () => void) => {
       publisher();
-      // userChannel?.detach();
-      // userChannel?.on('detached', onAttachedCb);
       onAttachedCb();
     },
     []

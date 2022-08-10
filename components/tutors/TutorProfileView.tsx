@@ -84,7 +84,7 @@ const TutorProfileView: React.FC<Props> = ({
     }
   });
 
-  useChannel('notification-global-posts', message => {
+  useChannel('notifications-global-posts', message => {
     if (
       message.name === 'new-global-post' &&
       currentUser.subjects.includes(message.data.subject)

@@ -27,7 +27,7 @@ router
         client.channels
           .get(
             postDocument.answeredBy
-              ? postDocument.answeredBy.toString()
+              ? 'notifications-tutor-' + postDocument.answeredBy.toString()
               : 'notifications-global-posts'
           )
           .publish(
