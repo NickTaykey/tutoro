@@ -184,15 +184,24 @@ const TutorProfileView: React.FC<Props> = ({
                   {getNotAnsweredPosts(getSpecificPosts(posts)).length ? (
                     <c.VStack width={['90%', null, '100%']} mx="auto" pb="2">
                       {getNotAnsweredPosts(getSpecificPosts(posts)).map(
-                        (p: PostDocumentObject, i) => (
-                          <Post
-                            isLatestCreated={i === 0}
-                            key={p._id}
-                            post={p}
-                            viewAsTutor
-                            setSuccessAlert={setSuccessAlert}
-                          />
-                        )
+                        (p: PostDocumentObject, i) => {
+                          const channel = sdk.channels.get(
+                            `notifications-user-${
+                              (p.creator as UserDocument)._id
+                            }`
+                          );
+                          channel.attach();
+                          return (
+                            <Post
+                              userChannel={channel}
+                              isLatestCreated={i === 0}
+                              key={p._id}
+                              post={p}
+                              viewAsTutor
+                              setSuccessAlert={setSuccessAlert}
+                            />
+                          );
+                        }
                       )}
                     </c.VStack>
                   ) : (
@@ -207,15 +216,24 @@ const TutorProfileView: React.FC<Props> = ({
                   {getAnsweredByMePosts(posts).length ? (
                     <c.VStack width={['90%', null, '100%']} mx="auto" pb="2">
                       {getAnsweredPosts(getAnsweredByMePosts(posts)).map(
-                        (p: PostDocumentObject, i) => (
-                          <Post
-                            key={p._id}
-                            isLatestCreated={i === 0}
-                            post={p}
-                            viewAsTutor
-                            setSuccessAlert={setSuccessAlert}
-                          />
-                        )
+                        (p: PostDocumentObject, i) => {
+                          const channel = sdk.channels.get(
+                            `notifications-user-${
+                              (p.creator as UserDocument)._id
+                            }`
+                          );
+                          channel.attach();
+                          return (
+                            <Post
+                              userChannel={channel}
+                              key={p._id}
+                              isLatestCreated={i === 0}
+                              post={p}
+                              viewAsTutor
+                              setSuccessAlert={setSuccessAlert}
+                            />
+                          );
+                        }
                       )}
                     </c.VStack>
                   ) : (
@@ -230,15 +248,24 @@ const TutorProfileView: React.FC<Props> = ({
                   {getClosedPosts(getSpecificPosts(posts)).length ? (
                     <c.VStack width={['90%', null, '100%']} mx="auto" pb="2">
                       {getClosedPosts(getSpecificPosts(posts)).map(
-                        (p: PostDocumentObject, i) => (
-                          <Post
-                            isLatestCreated={i === 0}
-                            key={p._id}
-                            post={p}
-                            viewAsTutor
-                            setSuccessAlert={setSuccessAlert}
-                          />
-                        )
+                        (p: PostDocumentObject, i) => {
+                          const channel = sdk.channels.get(
+                            `notifications-user-${
+                              (p.creator as UserDocument)._id
+                            }`
+                          );
+                          channel.attach();
+                          return (
+                            <Post
+                              userChannel={channel}
+                              isLatestCreated={i === 0}
+                              key={p._id}
+                              post={p}
+                              viewAsTutor
+                              setSuccessAlert={setSuccessAlert}
+                            />
+                          );
+                        }
                       )}
                     </c.VStack>
                   ) : (
@@ -285,15 +312,24 @@ const TutorProfileView: React.FC<Props> = ({
                     {getNotAnsweredPosts(getGlobalPosts(posts)).length ? (
                       <c.VStack width={['90%', null, '100%']} mx="auto" pb="2">
                         {getNotAnsweredPosts(getGlobalPosts(posts)).map(
-                          (p: PostDocumentObject, i) => (
-                            <Post
-                              isLatestCreated={i === 0}
-                              key={p._id}
-                              post={p}
-                              viewAsTutor
-                              setSuccessAlert={setSuccessAlert}
-                            />
-                          )
+                          (p: PostDocumentObject, i) => {
+                            const channel = sdk.channels.get(
+                              `notifications-user-${
+                                (p.creator as UserDocument)._id
+                              }`
+                            );
+                            channel.attach();
+                            return (
+                              <Post
+                                userChannel={channel}
+                                isLatestCreated={i === 0}
+                                key={p._id}
+                                post={p}
+                                viewAsTutor
+                                setSuccessAlert={setSuccessAlert}
+                              />
+                            );
+                          }
                         )}
                       </c.VStack>
                     ) : (
@@ -308,15 +344,24 @@ const TutorProfileView: React.FC<Props> = ({
                     {getClosedPosts(getGlobalPosts(posts)).length ? (
                       <c.VStack width={['90%', null, '100%']} mx="auto" pb="2">
                         {getClosedPosts(getGlobalPosts(posts)).map(
-                          (p: PostDocumentObject, i) => (
-                            <Post
-                              isLatestCreated={i === 0}
-                              key={p._id}
-                              post={p}
-                              viewAsTutor
-                              setSuccessAlert={setSuccessAlert}
-                            />
-                          )
+                          (p: PostDocumentObject, i) => {
+                            const channel = sdk.channels.get(
+                              `notifications-user-${
+                                (p.creator as UserDocument)._id
+                              }`
+                            );
+                            channel.attach();
+                            return (
+                              <Post
+                                userChannel={channel}
+                                isLatestCreated={i === 0}
+                                key={p._id}
+                                post={p}
+                                viewAsTutor
+                                setSuccessAlert={setSuccessAlert}
+                              />
+                            );
+                          }
                         )}
                       </c.VStack>
                     ) : (

@@ -1,43 +1,83 @@
-import { useContext, useRef } from 'react';
+import AuthenticatedUserContext from '../../store/authenticated-user-context';
+import { useContext, useRef, useEffect, useState, useCallback } from 'react';
+import { PostType, PostStatus, CloudFile } from '../../utils/types';
+import { MdError, MdOutlineAttachment } from 'react-icons/md';
 import PostsContext from '../../store/posts-context';
+import AnswerPostModal from './AnswerPostModal';
 import { useSession } from 'next-auth/react';
+import colors from '../../theme/colors';
 import * as c from '@chakra-ui/react';
 import * as fa from 'react-icons/fa';
-import { MdError, MdOutlineAttachment } from 'react-icons/md';
-import AnswerPostModal from './AnswerPostModal';
 import Link from 'next/link';
-import colors from '../../theme/colors';
-import AuthenticatedUserContext from '../../store/authenticated-user-context';
+
 import type { AnswerPostModalHandler } from './AnswerPostModal';
 import type { UserDocumentObject } from '../../models/User';
-import type { APIError } from '../../store/posts-context';
 import type { PostDocumentObject } from '../../models/Post';
-import { PostType, PostStatus, CloudFile } from '../../utils/types';
+import type { APIError } from '../../store/posts-context';
+import type { Types } from 'ably';
 
 interface Props {
   post: PostDocumentObject;
   isLatestCreated: boolean;
   viewAsTutor?: boolean;
   setSuccessAlert?: (alertContent: string) => void;
+  userChannel: Types.RealtimeChannelPromise | null;
 }
 
 const Post: React.FC<Props> = ({
   post,
   viewAsTutor,
+  userChannel,
   setSuccessAlert,
   isLatestCreated,
 }) => {
   const { isOpen, onOpen, onClose } = c.useDisclosure();
   const { updateTutorProfile, user } = useContext(AuthenticatedUserContext);
   const { updatedPostStatus, answerPost } = useContext(PostsContext);
+  const [postStatus, setPostStatusState] = useState<PostStatus>(post.status);
   const { data } = useSession();
 
+  const channelHandler = useCallback(
+    (publisher: () => void, onAttachedCb: () => void) => {
+      publisher();
+      onAttachedCb();
+    },
+    []
+  );
+
   const updatePostStatusHandler = () => {
-    updatedPostStatus(
-      post._id,
-      post.answeredBy ? (post.answeredBy as UserDocumentObject)._id : 'global'
+    channelHandler(
+      async () => {
+        await userChannel!.publish(
+          `update-post-${post._id}-status`,
+          post.status === PostStatus.CLOSED
+            ? PostStatus.NOT_ANSWERED
+            : PostStatus.CLOSED
+        );
+      },
+      () => {
+        updatedPostStatus(
+          post._id,
+          post.answeredBy
+            ? (post.answeredBy as UserDocumentObject)._id
+            : 'global'
+        );
+      }
     );
   };
+
+  useEffect(() => {
+    if (!viewAsTutor && userChannel) {
+      userChannel.subscribe(message => {
+        if (message.name === `update-post-${post._id}-status`) {
+          setPostStatusState(message.data);
+        }
+      });
+    }
+    return () => {
+      userChannel?.unsubscribe();
+    };
+  }, []);
 
   const answerPostHandler = async (formData: FormData) => {
     const res = await answerPost(post._id, formData, currentUser._id);
@@ -156,7 +196,7 @@ const Post: React.FC<Props> = ({
             )}
             {!viewAsTutor &&
               post.type === PostType.GLOBAL &&
-              post.status === PostStatus.ANSWERED && (
+              postStatus === PostStatus.ANSWERED && (
                 <c.Avatar
                   src={(post.answeredBy as UserDocumentObject).avatar?.url}
                   name={(post.answeredBy as UserDocumentObject).fullname}
@@ -167,7 +207,7 @@ const Post: React.FC<Props> = ({
               {viewAsTutor ? (
                 creator.fullname
               ) : post.type === PostType.GLOBAL &&
-                post.status !== PostStatus.ANSWERED ? (
+                postStatus !== PostStatus.ANSWERED ? (
                 <c.Flex alignItems="center">
                   <fa.FaGlobe size="50" />
                   <c.Text ml="3">Global</c.Text>
@@ -196,17 +236,17 @@ const Post: React.FC<Props> = ({
             <c.Badge
               fontSize="0.8em"
               colorScheme={
-                post.status === PostStatus.ANSWERED
+                postStatus === PostStatus.ANSWERED
                   ? 'green'
-                  : post.status === PostStatus.CLOSED
+                  : postStatus === PostStatus.CLOSED
                   ? 'red'
                   : 'gray'
               }
               ml="3"
             >
-              {post.status === PostStatus.ANSWERED
+              {postStatus === PostStatus.ANSWERED
                 ? 'Answered!'
-                : post.status === PostStatus.CLOSED
+                : postStatus === PostStatus.CLOSED
                 ? 'Closed'
                 : 'Not answered!'}
             </c.Badge>
@@ -271,7 +311,7 @@ const Post: React.FC<Props> = ({
               {post.attachments.length} given attachments
             </c.Text>
           </c.Flex>
-          {post.status === PostStatus.ANSWERED && (
+          {postStatus === PostStatus.ANSWERED && (
             <c.Flex mb="1">
               <MdOutlineAttachment size={25} fontWeight="light" />
               <c.Text ml="2" fontWeight="bold">
@@ -293,10 +333,10 @@ const Post: React.FC<Props> = ({
           />
         </c.Show>
       )}
-      {post.status !== PostStatus.ANSWERED && (
+      {postStatus !== PostStatus.ANSWERED && (
         <>
           <c.Flex mt="3" direction={['column', 'row']}>
-            {viewAsTutor && post.status === PostStatus.CLOSED && (
+            {viewAsTutor && postStatus === PostStatus.CLOSED && (
               <c.IconButton
                 onClick={updatePostStatusHandler}
                 aria-label="re-open post"
@@ -304,7 +344,7 @@ const Post: React.FC<Props> = ({
                 icon={<fa.FaArrowUp />}
               />
             )}
-            {viewAsTutor && post.status !== PostStatus.CLOSED && (
+            {viewAsTutor && postStatus !== PostStatus.CLOSED && (
               <>
                 <c.IconButton
                   variant="success"

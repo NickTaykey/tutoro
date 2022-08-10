@@ -1,15 +1,16 @@
 import AuthenticatedUserContext from '../../store/authenticated-user-context';
 import { FaArchive, FaArrowUp, FaCheck, FaStar } from 'react-icons/fa';
 import { useCallback, useContext, useEffect, useState } from 'react';
-import type { SessionDocumentObject } from '../../models/Session';
-import type { UserDocumentObject } from '../../models/User';
 import SessionsContext from '../../store/sessions-context';
 import { SessionStatus } from '../../utils/types';
 import { MdError } from 'react-icons/md';
 import colors from '../../theme/colors';
 import * as c from '@chakra-ui/react';
 import Link from 'next/link';
-import { Types } from 'ably';
+
+import type { SessionDocumentObject } from '../../models/Session';
+import type { UserDocumentObject } from '../../models/User';
+import type { Types } from 'ably';
 
 interface Props {
   session: SessionDocumentObject;

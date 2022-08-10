@@ -10,12 +10,11 @@ import type { SessionDocumentObject } from '../../models/Session';
 import type { ReviewDocumentObject } from '../../models/Review';
 import type { UserDocumentObject } from '../../models/User';
 import type { PostDocumentObject } from '../../models/Post';
-import type { Types } from 'ably';
 
 import { FaHandsHelping } from 'react-icons/fa';
-import { useState, useEffect, useMemo } from 'react';
 import * as c from '@chakra-ui/react';
 import Post from '../posts/Post';
+import { useMemo } from 'react';
 import Link from 'next/link';
 
 interface Props {
@@ -81,6 +80,7 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
                     <c.VStack>
                       {ctx.posts.map((p: PostDocumentObject, i) => (
                         <Post
+                          userChannel={channel}
                           key={p._id}
                           post={p}
                           viewAsTutor={false}
