@@ -3,13 +3,12 @@ import { PostStatus, PostType, SessionStatus } from '../../utils/types';
 import SessionsContext from '../../store/sessions-context';
 import PostsContext from '../../store/posts-context';
 import { useChannel } from '@ably-labs/react-hooks';
-import ApiHelper from '../../utils/api-helper';
-import { useContext, useState } from 'react';
 import Session from '../sessions/Session';
 import sdk from '../../utils/ably-config';
 import colors from '../../theme/colors';
 import Review from '../reviews/Review';
 import * as c from '@chakra-ui/react';
+import { useContext } from 'react';
 import Post from '../posts/Post';
 
 import type { SessionDocumentObject } from '../../models/Session';
@@ -101,36 +100,8 @@ const TutorProfileView: React.FC<Props> = ({
   const hourGlassIconBgColor = 'gray.100';
   const hourGlassIconColor = c.useColorModeValue('gray.800', 'white.50');
 
-  const [globalPostsEnabled, setGlobalPostsEnabled] = useState<boolean>(
-    currentUser.globalPostsEnabled
-  );
-
-  const handlerGlobalPostsSwitch = () => {
-    setGlobalPostsEnabled(prevState => !prevState);
-    ApiHelper(
-      `/api/tutors/${currentUser._id}`,
-      { globalPostsEnabled: !globalPostsEnabled },
-      'PUT'
-    );
-  };
-
   return (
     <c.Tabs isFitted variant="soft-rounded">
-      <c.Flex
-        alignItems="center"
-        justifyContent={['center', null, 'start']}
-        my={[1, null, 0]}
-      >
-        <c.FormLabel htmlFor="global-posts-enabled" mr="3" mb="0" fontSize="lg">
-          Show global posts
-        </c.FormLabel>
-        <c.Switch
-          id="global-posts-enabled"
-          isChecked={globalPostsEnabled}
-          size="lg"
-          onChange={handlerGlobalPostsSwitch}
-        />
-      </c.Flex>
       <c.TabList
         m="0"
         flexDirection={['column', null, 'row']}
@@ -141,11 +112,9 @@ const TutorProfileView: React.FC<Props> = ({
         <c.Tab m="0" fontSize="sm" color={unSelectedTabColor}>
           ({getNotAnsweredPosts(getSpecificPosts(posts)).length}) Posts
         </c.Tab>
-        {globalPostsEnabled && (
-          <c.Tab m="0" fontSize="sm" color={unSelectedTabColor}>
-            ({getNotAnsweredPosts(getGlobalPosts(posts)).length}) Global Posts
-          </c.Tab>
-        )}
+        <c.Tab m="0" fontSize="sm" color={unSelectedTabColor}>
+          ({getNotAnsweredPosts(getGlobalPosts(posts)).length}) Global Posts
+        </c.Tab>
         <c.Tab m="0" fontSize="sm" color={unSelectedTabColor}>
           ({getNotApprovedSessions(sessions).length}) Sessions
         </c.Tab>
@@ -286,103 +255,101 @@ const TutorProfileView: React.FC<Props> = ({
             </c.Flex>
           )}
         </c.TabPanel>
-        {globalPostsEnabled && (
-          <c.TabPanel p="0" height="100%">
-            {getGlobalPosts(posts).length ? (
-              <c.Tabs isFitted variant="soft-rounded" height="100%">
-                <c.TabList mb="1em" width={['95%', null, '100%']} mx="auto">
-                  <c.Tab
-                    color={hourGlassIconColor}
-                    _selected={{
-                      color: 'gray.800',
-                      bgColor: hourGlassIconBgColor,
-                    }}
-                  >
-                    <FaHourglassHalf size="25" />
-                  </c.Tab>
-                  <c.Tab color="red.500" _selected={{ bg: 'red.100' }}>
-                    <FaArchive color={colors.dangerV1} size="25" />
-                  </c.Tab>
-                </c.TabList>
-                <c.TabPanels
-                  overflowY="auto"
-                  height={lowerThan690 ? '80%' : '90%'}
+        <c.TabPanel p="0" height="100%">
+          {getGlobalPosts(posts).length ? (
+            <c.Tabs isFitted variant="soft-rounded" height="100%">
+              <c.TabList mb="1em" width={['95%', null, '100%']} mx="auto">
+                <c.Tab
+                  color={hourGlassIconColor}
+                  _selected={{
+                    color: 'gray.800',
+                    bgColor: hourGlassIconBgColor,
+                  }}
                 >
-                  <c.TabPanel p="0" height="100%">
-                    {getNotAnsweredPosts(getGlobalPosts(posts)).length ? (
-                      <c.VStack width={['90%', null, '100%']} mx="auto" pb="2">
-                        {getNotAnsweredPosts(getGlobalPosts(posts)).map(
-                          (p: PostDocumentObject, i) => {
-                            const channel = sdk.channels.get(
-                              `notifications-user-${
-                                (p.creator as UserDocument)._id
-                              }`
-                            );
-                            channel.attach();
-                            return (
-                              <Post
-                                userChannel={channel}
-                                isLatestCreated={i === 0}
-                                key={p._id}
-                                post={p}
-                                viewAsTutor
-                                setSuccessAlert={setSuccessAlert}
-                              />
-                            );
-                          }
-                        )}
-                      </c.VStack>
-                    ) : (
-                      <c.Flex justify="center" align="center" height="100%">
-                        <c.Heading as="h2" size="md" textAlign="center">
-                          No Posts waiting to be answered!
-                        </c.Heading>
-                      </c.Flex>
-                    )}
-                  </c.TabPanel>
-                  <c.TabPanel p="0" height="100%">
-                    {getClosedPosts(getGlobalPosts(posts)).length ? (
-                      <c.VStack width={['90%', null, '100%']} mx="auto" pb="2">
-                        {getClosedPosts(getGlobalPosts(posts)).map(
-                          (p: PostDocumentObject, i) => {
-                            const channel = sdk.channels.get(
-                              `notifications-user-${
-                                (p.creator as UserDocument)._id
-                              }`
-                            );
-                            channel.attach();
-                            return (
-                              <Post
-                                userChannel={channel}
-                                isLatestCreated={i === 0}
-                                key={p._id}
-                                post={p}
-                                viewAsTutor
-                                setSuccessAlert={setSuccessAlert}
-                              />
-                            );
-                          }
-                        )}
-                      </c.VStack>
-                    ) : (
-                      <c.Flex justify="center" align="center" height="100%">
-                        <c.Heading as="h2" size="md" textAlign="center">
-                          No closed posts!
-                        </c.Heading>
-                      </c.Flex>
-                    )}
-                  </c.TabPanel>
-                </c.TabPanels>
-              </c.Tabs>
-            ) : (
-              <c.Flex justify="center" align="center" height="100%">
-                <c.Heading as="h2" size="md" textAlign="center">
-                  No global posts for now!
-                </c.Heading>
-              </c.Flex>
-            )}
-          </c.TabPanel>
-        )}
+                  <FaHourglassHalf size="25" />
+                </c.Tab>
+                <c.Tab color="red.500" _selected={{ bg: 'red.100' }}>
+                  <FaArchive color={colors.dangerV1} size="25" />
+                </c.Tab>
+              </c.TabList>
+              <c.TabPanels
+                overflowY="auto"
+                height={lowerThan690 ? '80%' : '90%'}
+              >
+                <c.TabPanel p="0" height="100%">
+                  {getNotAnsweredPosts(getGlobalPosts(posts)).length ? (
+                    <c.VStack width={['90%', null, '100%']} mx="auto" pb="2">
+                      {getNotAnsweredPosts(getGlobalPosts(posts)).map(
+                        (p: PostDocumentObject, i) => {
+                          const channel = sdk.channels.get(
+                            `notifications-user-${
+                              (p.creator as UserDocument)._id
+                            }`
+                          );
+                          channel.attach();
+                          return (
+                            <Post
+                              userChannel={channel}
+                              isLatestCreated={i === 0}
+                              key={p._id}
+                              post={p}
+                              viewAsTutor
+                              setSuccessAlert={setSuccessAlert}
+                            />
+                          );
+                        }
+                      )}
+                    </c.VStack>
+                  ) : (
+                    <c.Flex justify="center" align="center" height="100%">
+                      <c.Heading as="h2" size="md" textAlign="center">
+                        No Posts waiting to be answered!
+                      </c.Heading>
+                    </c.Flex>
+                  )}
+                </c.TabPanel>
+                <c.TabPanel p="0" height="100%">
+                  {getClosedPosts(getGlobalPosts(posts)).length ? (
+                    <c.VStack width={['90%', null, '100%']} mx="auto" pb="2">
+                      {getClosedPosts(getGlobalPosts(posts)).map(
+                        (p: PostDocumentObject, i) => {
+                          const channel = sdk.channels.get(
+                            `notifications-user-${
+                              (p.creator as UserDocument)._id
+                            }`
+                          );
+                          channel.attach();
+                          return (
+                            <Post
+                              userChannel={channel}
+                              isLatestCreated={i === 0}
+                              key={p._id}
+                              post={p}
+                              viewAsTutor
+                              setSuccessAlert={setSuccessAlert}
+                            />
+                          );
+                        }
+                      )}
+                    </c.VStack>
+                  ) : (
+                    <c.Flex justify="center" align="center" height="100%">
+                      <c.Heading as="h2" size="md" textAlign="center">
+                        No closed posts!
+                      </c.Heading>
+                    </c.Flex>
+                  )}
+                </c.TabPanel>
+              </c.TabPanels>
+            </c.Tabs>
+          ) : (
+            <c.Flex justify="center" align="center" height="100%">
+              <c.Heading as="h2" size="md" textAlign="center">
+                No global posts for now!
+              </c.Heading>
+            </c.Flex>
+          )}
+        </c.TabPanel>
         <c.TabPanel p="0" height="100%">
           {sessions.length ? (
             <c.Tabs isFitted variant="soft-rounded" height="100%">

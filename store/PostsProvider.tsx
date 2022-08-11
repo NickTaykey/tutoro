@@ -1,7 +1,7 @@
 import React, { useReducer } from 'react';
 import PostsContext, { APIError } from './posts-context';
 import ApiHelper from '../utils/api-helper';
-import { PostStatus, PostType } from '../utils/types';
+import { CloudFile, PostStatus, PostType } from '../utils/types';
 import type { PostDocumentObject } from '../models/Post';
 import { UserDocumentObject } from '../models/User';
 
@@ -27,6 +27,7 @@ type AnswerPostAction = {
     postId: string;
     answer: string;
     answeredBy: UserDocumentObject;
+    answerAttachments: CloudFile[];
   };
 };
 
@@ -52,6 +53,7 @@ function reducer(
               ...p,
               type: PostType.SPECIFIC,
               status: PostStatus.ANSWERED,
+              answerAttachments: action.payload.answerAttachments,
               answer: action.payload.answer!,
               answeredBy: action.payload.answeredBy!,
             }
@@ -112,6 +114,7 @@ const PostsContextProvider: React.FC<{
                 postId,
                 answer: apiResponse.answer,
                 answeredBy: apiResponse.answeredBy,
+                answerAttachments: apiResponse.answerAttachments,
               },
             });
           }

@@ -61,11 +61,7 @@ const ProfilePage: NextPage<Props> = ({
       )}
       {currentUser.isTutor && (
         <PostsContextProvider
-          posts={
-            currentUser.globalPostsEnabled
-              ? [...pertinentGlobalPosts, ...currentUser.posts]
-              : currentUser.posts
-          }
+          posts={[...pertinentGlobalPosts, ...currentUser.posts]}
         >
           <SessionsContextProvider sessions={currentUser.requestedSessions}>
             <TutorProfileView
@@ -106,18 +102,16 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
   if (user?.isTutor) {
     const currentUser = getUserDocumentObject(user);
     let [pertinentGlobalPosts] = await Promise.all([
-      user.globalPostsEnabled
-        ? models.Post.find({
-            type: PostType.GLOBAL,
-            status: { $ne: PostStatus.ANSWERED },
-            subject: { $in: user.subjects },
-            creator: { $ne: currentUser._id },
-          })
-            .sort({ _id: -1 })
-            .populate({ path: 'creator', model: models.User })
-            .populate({ path: 'answeredBy', model: models.User })
-            .exec()
-        : null,
+      models.Post.find({
+        type: PostType.GLOBAL,
+        status: { $ne: PostStatus.ANSWERED },
+        subject: { $in: user.subjects },
+        creator: { $ne: currentUser._id },
+      })
+        .sort({ _id: -1 })
+        .populate({ path: 'creator', model: models.User })
+        .populate({ path: 'answeredBy', model: models.User })
+        .exec(),
       user.populate({
         path: 'reviews',
         model: models.Review,

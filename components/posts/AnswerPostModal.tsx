@@ -1,11 +1,12 @@
-import * as c from '@chakra-ui/react';
-import { useForm } from 'react-hook-form';
 import { FaArrowRight, FaBroom, FaFile, FaImage } from 'react-icons/fa';
-import { MdOutlineAttachment } from 'react-icons/md';
 import React, { useState, useImperativeHandle } from 'react';
+import { MdOutlineAttachment } from 'react-icons/md';
+import { useForm } from 'react-hook-form';
+import * as c from '@chakra-ui/react';
+
+import type { AnswerFormFields, CloudFile } from '../../utils/types';
 import type { Dispatch, SetStateAction, ChangeEvent } from 'react';
 import type { PostDocumentObject } from '../../models/Post';
-import type { AnswerFormFields, CloudFile } from '../../utils/types';
 
 export type AnswerPostModalHandler = {
   onClose: () => void;

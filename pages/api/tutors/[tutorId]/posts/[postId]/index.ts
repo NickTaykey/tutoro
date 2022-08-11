@@ -34,7 +34,7 @@ router
   )
   .put(async (req, res) => {
     const [post, { files, fields }] = await Promise.all([
-      req.models.Post.findById(req.query.postId),
+      req.models.Post.findById(req.query.postId).populate('answeredBy'),
       parseForm(req, filesUploadConfig),
     ]);
     const postDocument = post as PostDocument;
@@ -82,7 +82,7 @@ router
     );
 
     if (postDocument.type === PostType.GLOBAL && postIndex === -1) {
-      postDocument.answeredBy = req.sessionUser._id;
+      postDocument.answeredBy = req.sessionUser;
       postDocument.type = PostType.SPECIFIC;
       req.sessionUser.posts.push(postDocument._id);
     }

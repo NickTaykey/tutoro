@@ -17,20 +17,8 @@ const router = createRouter<ExtendedRequest, NextApiResponse>();
 router.put(
   requireAuth('You have to be authenticated to update your profile'),
   async (req, res) => {
-    const {
-      globalPostsEnabled,
-      bio,
-      subjects,
-      location,
-      sessionPricePerHour,
-      pricePerPost,
-    } = sanitize(req.body);
-
-    if (typeof globalPostsEnabled !== 'undefined') {
-      req.sessionUser.globalPostsEnabled = eval(globalPostsEnabled);
-      req.sessionUser.save();
-      return res.status(200).end();
-    }
+    const { bio, subjects, location, sessionPricePerHour, pricePerPost } =
+      sanitize(req.body);
 
     if (
       bio &&

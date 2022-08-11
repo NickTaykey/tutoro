@@ -1,26 +1,38 @@
 import AuthenticatedUserContext from '../../store/authenticated-user-context';
-import { useContext, useRef, useEffect, useState, useCallback } from 'react';
+import {
+  useContext,
+  useRef,
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+} from 'react';
 import { PostType, PostStatus, CloudFile } from '../../utils/types';
 import { MdError, MdOutlineAttachment } from 'react-icons/md';
 import PostsContext from '../../store/posts-context';
 import AnswerPostModal from './AnswerPostModal';
-import { useSession } from 'next-auth/react';
 import colors from '../../theme/colors';
 import * as c from '@chakra-ui/react';
 import * as fa from 'react-icons/fa';
 import Link from 'next/link';
 
+import type { PostDocument, PostDocumentObject } from '../../models/Post';
 import type { AnswerPostModalHandler } from './AnswerPostModal';
 import type { UserDocumentObject } from '../../models/User';
-import type { PostDocumentObject } from '../../models/Post';
 import type { APIError } from '../../store/posts-context';
 import type { Types } from 'ably';
+
+type PostAnswer = {
+  answer: string;
+  answeredBy: { fullname?: string; avatar?: CloudFile } | null;
+  answerAttachments: CloudFile[];
+};
 
 interface Props {
   post: PostDocumentObject;
   isLatestCreated: boolean;
   viewAsTutor?: boolean;
-  setSuccessAlert?: (alertContent: string) => void;
+  setSuccessAlert: (alertContent: string) => void;
   userChannel: Types.RealtimeChannelPromise | null;
 }
 
@@ -31,11 +43,28 @@ const Post: React.FC<Props> = ({
   setSuccessAlert,
   isLatestCreated,
 }) => {
+  const { user: currentUser } = useContext(AuthenticatedUserContext);
+  const creator = post.creator as UserDocumentObject;
+  const answeredBy = post.answeredBy
+    ? (post.answeredBy as UserDocumentObject)
+    : null;
+  const tutorId = answeredBy ? answeredBy._id : null;
+  const imperativeHandlingRef = useRef<AnswerPostModalHandler>(null);
+
+  const {
+    isOpen: showFullPostDescription,
+    onOpen: setShowFullPostDescription,
+  } = c.useDisclosure();
+
   const { isOpen, onOpen, onClose } = c.useDisclosure();
   const { updateTutorProfile, user } = useContext(AuthenticatedUserContext);
   const { updatedPostStatus, answerPost } = useContext(PostsContext);
   const [postStatus, setPostStatusState] = useState<PostStatus>(post.status);
-  const { data } = useSession();
+  const [postAnswer, setPostAnswerState] = useState<PostAnswer>({
+    answer: post.answer,
+    answeredBy: { fullname: answeredBy?.fullname, avatar: answeredBy?.avatar },
+    answerAttachments: post.answerAttachments,
+  });
 
   const channelHandler = useCallback(
     (publisher: () => void, onAttachedCb: () => void) => {
@@ -50,7 +79,7 @@ const Post: React.FC<Props> = ({
       async () => {
         await userChannel!.publish(
           `update-post-${post._id}-status`,
-          post.status === PostStatus.CLOSED
+          postStatus === PostStatus.CLOSED
             ? PostStatus.NOT_ANSWERED
             : PostStatus.CLOSED
         );
@@ -71,6 +100,18 @@ const Post: React.FC<Props> = ({
       userChannel.subscribe(message => {
         if (message.name === `update-post-${post._id}-status`) {
           setPostStatusState(message.data);
+          return;
+        }
+        if (message.name === `post-${post._id}-answer`) {
+          setSuccessAlert('One of your posts has been answered!');
+          setPostStatusState(PostStatus.ANSWERED);
+          const { fullname, avatar } = message.data.answeredBy;
+          setPostAnswerState({
+            answer: message.data.answer,
+            answeredBy: { fullname, avatar },
+            answerAttachments: message.data.answerAttachments,
+          });
+          return;
         }
       });
     }
@@ -79,33 +120,39 @@ const Post: React.FC<Props> = ({
     };
   }, []);
 
+  const postCreatedAt = useMemo(
+    () => new Date(post.createdAt!.toString()).toLocaleDateString(),
+    [post.createdAt]
+  );
+
   const answerPostHandler = async (formData: FormData) => {
-    const res = await answerPost(post._id, formData, currentUser._id);
+    const res = await answerPost(post._id, formData, currentUser!._id);
     const { errorMessage } = res as APIError;
     if (errorMessage) {
       imperativeHandlingRef.current?.setValidationError(errorMessage);
     } else {
+      const updatedPost = res as PostDocumentObject;
+      const { answer, answerAttachments } = updatedPost;
+      const answeredBy = updatedPost.answeredBy as UserDocumentObject;
       updateTutorProfile({
-        postEarnings: user?.postEarnings! + (res as PostDocumentObject).price,
+        postEarnings: user?.postEarnings! + (res as PostDocument).price,
+      });
+      userChannel?.publish(`post-${post._id}-answer`, {
+        answerAttachments,
+        answeredBy: {
+          fullname: answeredBy.fullname,
+          avatar: answeredBy.avatar,
+        },
+        answer,
       });
     }
-    if (setSuccessAlert) setSuccessAlert('Post successfully answered!');
+    setSuccessAlert('Post successfully answered!');
     imperativeHandlingRef.current?.onClose();
   };
 
-  const currentUser = data?.user as unknown as UserDocumentObject;
-  const creator = post.creator as UserDocumentObject;
-  const answeredBy = post.answeredBy as UserDocumentObject;
-  const tutorId = answeredBy ? answeredBy._id : null;
-  const imperativeHandlingRef = useRef<AnswerPostModalHandler>(null);
-  const {
-    isOpen: showFullPostDescription,
-    onOpen: setShowFullPostDescription,
-  } = c.useDisclosure();
-
   return (
     <c.Box shadow="md" borderWidth="1px" p="6" width="100%" borderRadius="md">
-      {post.answer ? (
+      {postAnswer.answer ? (
         <c.Modal isOpen={isOpen} onClose={onClose} isCentered>
           <c.ModalOverlay />
           <c.ModalContent py="6" width="90%">
@@ -124,10 +171,10 @@ const Post: React.FC<Props> = ({
                   overflowY="auto"
                   textAlign="justify"
                 >
-                  {post.answer}
+                  {postAnswer.answer}
                 </c.Text>
               </c.Box>
-              {post.answerAttachments.length > 0 && (
+              {postAnswer.answerAttachments.length > 0 && (
                 <c.Box mb="3">
                   <c.Heading as="h2" size="md" mb="2">
                     <c.Flex>
@@ -136,24 +183,26 @@ const Post: React.FC<Props> = ({
                     </c.Flex>
                   </c.Heading>
                   <c.Flex direction="column">
-                    {post.answerAttachments.map((f: CloudFile, i: number) => (
-                      <Link href={f.url} key={f.public_id} passHref>
-                        <c.Button
-                          mb="3"
-                          as="a"
-                          textTransform="capitalize"
-                          leftIcon={
-                            f.url.includes('raw') ? (
-                              <fa.FaFile size={18} />
-                            ) : (
-                              <fa.FaImage size={18} />
-                            )
-                          }
-                        >
-                          <>Attachment {i + 1}</>
-                        </c.Button>
-                      </Link>
-                    ))}
+                    {postAnswer.answerAttachments.map(
+                      (f: CloudFile, i: number) => (
+                        <Link href={f.url} key={f.public_id} passHref>
+                          <c.Button
+                            mb="3"
+                            as="a"
+                            textTransform="capitalize"
+                            leftIcon={
+                              f.url.includes('raw') ? (
+                                <fa.FaFile size={18} />
+                              ) : (
+                                <fa.FaImage size={18} />
+                              )
+                            }
+                          >
+                            <>Attachment {i + 1}</>
+                          </c.Button>
+                        </Link>
+                      )
+                    )}
                   </c.Flex>
                 </c.Box>
               )}
@@ -178,11 +227,11 @@ const Post: React.FC<Props> = ({
           justify="space-between"
         >
           <c.Flex alignItems="center">
-            {!viewAsTutor && post.type === PostType.SPECIFIC && (
+            {!viewAsTutor && postAnswer.answeredBy?.fullname && (
               <Link href={`/tutors/${tutorId}`}>
                 <c.Avatar
-                  src={answeredBy.avatar?.url}
-                  name={answeredBy.fullname}
+                  src={postAnswer.answeredBy?.avatar?.url}
+                  name={postAnswer.answeredBy?.fullname}
                   mx={[0, 2]}
                 />
               </Link>
@@ -194,15 +243,6 @@ const Post: React.FC<Props> = ({
                 name={creator.fullname}
               />
             )}
-            {!viewAsTutor &&
-              post.type === PostType.GLOBAL &&
-              postStatus === PostStatus.ANSWERED && (
-                <c.Avatar
-                  src={(post.answeredBy as UserDocumentObject).avatar?.url}
-                  name={(post.answeredBy as UserDocumentObject).fullname}
-                  mx={[0, 2]}
-                />
-              )}
             <c.Heading as="h3" size="md" mx="2">
               {viewAsTutor ? (
                 creator.fullname
@@ -213,7 +253,7 @@ const Post: React.FC<Props> = ({
                   <c.Text ml="3">Global</c.Text>
                 </c.Flex>
               ) : (
-                answeredBy?.fullname
+                postAnswer?.answeredBy?.fullname
               )}
             </c.Heading>
             <c.Show below="sm">
@@ -274,7 +314,7 @@ const Post: React.FC<Props> = ({
               </c.Tooltip>
             )}
           </c.Show>
-          {post.answer && (
+          {postAnswer.answer && (
             <c.Show above="sm">
               <c.IconButton
                 width={['100%', 'auto']}
@@ -300,9 +340,7 @@ const Post: React.FC<Props> = ({
       <c.Flex justifyContent="space-between" direction={['column', 'row']}>
         <c.Box>
           <strong>Date: </strong>
-          <time dateTime={post.createdAt!.toString()}>
-            {post.createdAt!.toString()}
-          </time>
+          <time dateTime={postCreatedAt}>{postCreatedAt}</time>
         </c.Box>
         <c.Flex direction="column" mt={[4, 0]}>
           <c.Flex mb="1">
@@ -315,13 +353,13 @@ const Post: React.FC<Props> = ({
             <c.Flex mb="1">
               <MdOutlineAttachment size={25} fontWeight="light" />
               <c.Text ml="2" fontWeight="bold">
-                {post.answerAttachments.length} answer attachments
+                {postAnswer.answerAttachments.length} answer attachments
               </c.Text>
             </c.Flex>
           )}
         </c.Flex>
       </c.Flex>
-      {post.answer && (
+      {postAnswer.answer && (
         <c.Show below="sm">
           <c.IconButton
             width="100%"

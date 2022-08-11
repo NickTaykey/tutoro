@@ -85,6 +85,7 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
                           post={p}
                           viewAsTutor={false}
                           isLatestCreated={i === 0}
+                          setSuccessAlert={props.setSuccessAlert}
                         />
                       ))}
                     </c.VStack>

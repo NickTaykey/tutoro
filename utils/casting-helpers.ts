@@ -32,7 +32,6 @@ export const getUserDocumentObject = (
     createdReviews: [],
     bookedSessions: [],
     requestedSessions: [],
-    globalPostsEnabled: user.globalPostsEnabled,
   };
   if (user.isTutor) {
     userObject.geometry = {
