@@ -1,9 +1,10 @@
-import React, { useReducer } from 'react';
+import { Answer, CloudFile, PostStatus, PostType } from '../utils/types';
 import PostsContext, { APIError } from './posts-context';
 import ApiHelper from '../utils/api-helper';
-import { CloudFile, PostStatus, PostType } from '../utils/types';
+import React, { useReducer } from 'react';
+
 import type { PostDocumentObject } from '../models/Post';
-import { UserDocumentObject } from '../models/User';
+import type { UserDocumentObject } from '../models/User';
 
 enum PostActionTypes {
   UPDATE_STATUS,
@@ -98,14 +99,13 @@ const PostsContextProvider: React.FC<{
         },
         async answerPost(
           postId: string,
-          formData: FormData,
+          answer: Answer,
           tutorId: string = 'global'
         ): Promise<PostDocumentObject | APIError> {
           const apiResponse = await ApiHelper(
             `/api/tutors/${tutorId}/posts/${postId}`,
-            formData,
-            'PUT',
-            false
+            answer,
+            'PUT'
           );
           if (!apiResponse.errorMessage) {
             dispatchPostsAction({

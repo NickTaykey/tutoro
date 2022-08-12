@@ -7,7 +7,7 @@ import {
   useCallback,
   useMemo,
 } from 'react';
-import { PostType, PostStatus, CloudFile } from '../../utils/types';
+import { PostType, PostStatus, CloudFile, Answer } from '../../utils/types';
 import { MdError, MdOutlineAttachment } from 'react-icons/md';
 import PostsContext from '../../store/posts-context';
 import AnswerPostModal from './AnswerPostModal';
@@ -125,8 +125,8 @@ const Post: React.FC<Props> = ({
     [post.createdAt]
   );
 
-  const answerPostHandler = async (formData: FormData) => {
-    const res = await answerPost(post._id, formData, currentUser!._id);
+  const answerPostHandler = async (answer: Answer) => {
+    const res = await answerPost(post._id, answer, currentUser!._id);
     const { errorMessage } = res as APIError;
     if (errorMessage) {
       imperativeHandlingRef.current?.setValidationError(errorMessage);

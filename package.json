@@ -7,8 +7,6 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest --watch",
-    "test:ci": "jest --ci",
     "seed": "ts-node --project ./seeds/tsconfig.seeder.json ./seeds/seeder.ts --users 2 --tutors 60"
   },
   "dependencies": {
@@ -20,7 +18,6 @@
     "@sendgrid/mail": "^7.7.0",
     "ably": "^1.2.5-beta.1",
     "cloudinary": "^1.30.0",
-    "formidable": "^2.0.1",
     "framer-motion": "^6.4.3",
     "mapbox-gl": "^2.8.2",
     "mime": "^3.0.0",
@@ -39,23 +36,15 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^7.3.0",
-    "@testing-library/jest-dom": "^5.16.4",
-    "@testing-library/react": "^13.3.0",
-    "@testing-library/user-event": "^14.2.0",
-    "@types/dotenv-flow": "^3.2.0",
     "@types/formidable": "^2.0.5",
     "@types/mapbox__mapbox-sdk": "^0.13.4",
-    "@types/mime": "^2.0.3",
     "@types/node": "18.0.0",
     "@types/react": "18.0.13",
     "@types/react-datepicker": "^4.4.2",
     "@types/react-dom": "18.0.5",
     "dotenv": "^16.0.1",
-    "dotenv-flow": "^3.2.0",
     "eslint": "8.17.0",
     "eslint-config-next": "12.1.6",
-    "jest": "^28.1.0",
-    "jest-environment-jsdom": "^28.1.0",
     "typescript": "4.7.3"
   }
 }

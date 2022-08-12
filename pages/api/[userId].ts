@@ -1,21 +1,11 @@
-import { parseForm, FormidableError } from '../../utils/parse-form';
 import onError from '../../middleware/server-error-handler';
 import cloudinary from '../../utils/cloudinary-config';
-import fs from 'fs';
 
 import type { ExtendedRequest } from '../../utils/types';
-import type { File, Part } from 'formidable';
 import type { NextApiResponse } from 'next';
 
-const avatarUploadConfig = {
-  maxFiles: 1,
-  dir: '/avatars',
-  filter: (part: Part) => part.name === 'avatar' || false,
-  multiple: false,
-};
-
-import { createRouter } from 'next-connect';
 import requireAuth from '../../middleware/require-auth';
+import { createRouter } from 'next-connect';
 
 const router = createRouter<ExtendedRequest, NextApiResponse>();
 
@@ -23,10 +13,9 @@ router.put(
   requireAuth('You have to be authenticated to update your avatar'),
   async (req, res) => {
     try {
-      const { files } = await parseForm(req, avatarUploadConfig);
-      const file = files.avatar as File;
+      const { public_id, url } = req.body;
 
-      if (file) {
+      if (public_id && url) {
         if (
           !!req.sessionUser.avatar?.public_id &&
           !!req.sessionUser.avatar?.url
@@ -34,19 +23,11 @@ router.put(
           cloudinary.uploader.destroy(req.sessionUser.avatar.public_id);
         }
 
-        const cloudinaryResponse = await cloudinary.uploader.upload(
-          file.filepath,
-          {
-            folder: 'tutoro/avatars/',
-          }
-        );
-
         req.sessionUser.avatar = {
-          public_id: cloudinaryResponse.public_id,
-          url: cloudinaryResponse.secure_url,
+          public_id,
+          url,
         };
         req.sessionUser.save();
-        fs.unlink(file.filepath, () => {});
 
         return res.status(200).json({
           error: null,
@@ -69,11 +50,6 @@ router.put(
         newAvatar: req.sessionUser.avatar,
       });
     } catch (e) {
-      if (e instanceof FormidableError) {
-        return res
-          .status(e.httpCode || 400)
-          .json({ error: e.message, newAvatar: null });
-      }
       return res
         .status(500)
         .json({ error: 'Internal Server Error', newAvatar: null });
@@ -84,9 +60,3 @@ router.put(
 export default router.handler({
   onError,
 });
-
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};

@@ -3,6 +3,7 @@ import * as c from '@chakra-ui/react';
 import { FaBroom, FaFileUpload, FaTrash } from 'react-icons/fa';
 import ClusterMapContext from '../../store/cluster-map-context';
 import AuthenticatedUserContext from '../../store/authenticated-user-context';
+import ApiHelper from '../../utils/api-helper';
 
 const UpdateAvatarForm: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -35,21 +36,34 @@ const UpdateAvatarForm: React.FC = () => {
     setPreviewUrl(null);
   };
 
-  const onUploadFile = (e: MouseEvent<HTMLButtonElement>) => {
+  const onUploadFile = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (!file) return;
     const formData = new FormData();
-    formData.append('avatar', file);
+    formData.append('file', file);
+    formData.append('api_key', process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY!);
+    formData.append('upload_preset', 'client-side-upload');
     setIsUploading(true);
-    updateAvatar(formData)
-      .then(() => {
-        closeUpdateAvatarMenu();
-        if (user!.isTutor) {
-          clusterMapCtx.updateAuthenticatedTutorAvatar(user!.avatar!);
-        }
-        setIsUploading(false);
-      })
-      .catch(({ errorMessage }) => setErrorAlert(errorMessage));
+    try {
+      let res = await ApiHelper(
+        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+        formData,
+        'POST',
+        false
+      );
+      await updateAvatar({
+        public_id: res.public_id,
+        url: res.secure_url,
+      });
+      closeUpdateAvatarMenu();
+      if (user!.isTutor) {
+        clusterMapCtx.updateAuthenticatedTutorAvatar(user!.avatar!);
+      }
+    } catch (err) {
+      setErrorAlert('Internal server error, avatar upload failed');
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const resetDefaultAvatar = async () => {

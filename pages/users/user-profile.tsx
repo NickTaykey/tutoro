@@ -1,5 +1,12 @@
+import {
+  Box,
+  Heading,
+  Alert,
+  AlertIcon,
+  CloseButton,
+  Flex,
+} from '@chakra-ui/react';
 import UserProfileView from '../../components/users/UserProfileView';
-import { Box, Heading, Alert, AlertIcon } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
@@ -19,6 +26,7 @@ const ProfilePage: NextPage<Props> = ({ currentUser }) => {
   const [errorAlert, setErrorAlert] = useState<string | null>(
     query.errorAlert ? query.errorAlert.toString() : null
   );
+  const { push } = useRouter();
 
   return (
     <Box width={['100%', null, '80%']} mx="auto">
@@ -31,10 +39,24 @@ const ProfilePage: NextPage<Props> = ({ currentUser }) => {
           status="success"
           mx="auto"
           fontWeight="bold"
+          display="flex"
+          justifyContent="space-between"
           width={['90%', null, '100%']}
         >
-          <AlertIcon />
-          {successAlert}
+          <Flex>
+            <AlertIcon />
+            {successAlert}
+          </Flex>
+          <CloseButton
+            alignSelf="flex-start"
+            position="relative"
+            right={-1}
+            top={-1}
+            onClick={() => {
+              setSuccessAlert(null);
+              push('/users/user-profile');
+            }}
+          />
         </Alert>
       )}
       {errorAlert && (

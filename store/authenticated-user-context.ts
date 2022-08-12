@@ -1,5 +1,6 @@
 import React from 'react';
 import type { UserDocumentObject } from '../models/User';
+import type { CloudFile } from '../utils/types';
 
 export interface UpdateTutorObject {
   location?: string;
@@ -31,7 +32,7 @@ interface AuthenticatedUserContextObject {
   openDeleteAccountMenu(): void;
   closeDeleteAccountMenu(): void;
   deleteAccount(): Promise<null>;
-  updateAvatar(formData: FormData): Promise<null | UserUpdateError>;
+  updateAvatar(cloudinaryResponse: CloudFile): Promise<null | UserUpdateError>;
   resetAvatar(): Promise<null | UserUpdateError>;
   becomeTutor(
     formData: Record<string, string | string[]>
@@ -62,7 +63,7 @@ const AuthenticatedUserContext =
     deleteAccount() {
       return Promise.resolve(null);
     },
-    updateAvatar(formData: FormData) {
+    updateAvatar(cloudinaryResponse: CloudFile) {
       return Promise.resolve(null);
     },
     resetAvatar() {

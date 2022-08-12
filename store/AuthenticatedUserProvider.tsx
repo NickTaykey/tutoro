@@ -130,7 +130,7 @@ const AuthenticatedUserProvider: React.FC<{
         closeDeleteAccountMenu,
         user: authenticatedUserState,
         deleteAccount,
-        updateAvatar(formData: FormData) {
+        updateAvatar(cloudinaryResponse: CloudFile) {
           return new Promise(async (resolve, reject) => {
             if (authenticatedUserState) {
               const {
@@ -141,14 +141,13 @@ const AuthenticatedUserProvider: React.FC<{
                 newAvatar: CloudFile | null;
               } = await ApiHelper(
                 `/api/${authenticatedUserState._id}`,
-                formData,
-                'PUT',
-                false
+                cloudinaryResponse,
+                'PUT'
               );
               if (error || !newAvatar)
                 return reject({
                   errorMessage:
-                    'Unexpected server error, impossible to upload your avatr, try again later...',
+                    'Unexpected server error, impossible to upload your avatar, try again later...',
                 });
               dispatchAuthenticatedUserAction({
                 type: AuthenticatedUserActionTypes.UPDATE_AVATAR,
@@ -195,7 +194,7 @@ const AuthenticatedUserProvider: React.FC<{
               if (error) {
                 return reject({
                   errorMessage:
-                    'Unexpected server side error, impossible to rest your avatar, try again later...',
+                    'Unexpected server side error, impossible to reset your avatar, try again later...',
                 });
               }
               dispatchAuthenticatedUserAction({

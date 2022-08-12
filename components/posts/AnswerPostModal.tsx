@@ -4,9 +4,10 @@ import { MdOutlineAttachment } from 'react-icons/md';
 import { useForm } from 'react-hook-form';
 import * as c from '@chakra-ui/react';
 
-import type { AnswerFormFields, CloudFile } from '../../utils/types';
+import type { Answer, AnswerFormFields, CloudFile } from '../../utils/types';
 import type { Dispatch, SetStateAction, ChangeEvent } from 'react';
 import type { PostDocumentObject } from '../../models/Post';
+import ApiHelper from '../../utils/api-helper';
 
 export type AnswerPostModalHandler = {
   onClose: () => void;
@@ -17,7 +18,7 @@ export type AnswerPostModalHandler = {
 const AnswerPostModal = React.forwardRef<
   AnswerPostModalHandler,
   {
-    setAnswer: (formData: FormData) => Promise<void>;
+    setAnswer: (answer: Answer) => Promise<void>;
     post: PostDocumentObject;
   }
 >((props, ref) => {
@@ -42,24 +43,43 @@ const AnswerPostModal = React.forwardRef<
   };
 
   const formSubmitHandler = async (data: AnswerFormFields) => {
-    const formData = new FormData();
-
+    setIsUploading(true);
+    let cloudinaryResponses: CloudFile[] = [];
     if (filesList) {
       const allowedFileRegExp = new RegExp(
         'image|pdf|wordprocessing|spreadsheetml|presentationml'
       );
-      const fileListArray = Array.from(filesList);
-      for (let i = 0; i < fileListArray.length; i++) {
-        if (!allowedFileRegExp.test(fileListArray[i].type)) {
-          return setValidationError(`Invalid file, ${fileListArray[i].type}`);
-        }
-        formData.append(`attachment-${i}`, fileListArray[i]);
-      }
-    }
+      const cloudinaryPromises: Promise<any>[] = [];
 
-    formData.append('text', data.text);
-    setIsUploading(true);
-    await props.setAnswer(formData);
+      for (let i = 0; i < filesList.length; i++) {
+        if (!allowedFileRegExp.test(filesList[i].type)) {
+          return setValidationError(
+            `Invalid file ${filesList[i].type ? filesList[i].type : 'type'}`
+          );
+        }
+        const formData = new FormData();
+        formData.append('file', filesList[i]);
+        formData.append('api_key', process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY!);
+        formData.append('upload_preset', 'client-side-upload');
+        cloudinaryPromises.push(
+          ApiHelper(
+            `https://api.cloudinary.com/v1_1/${
+              process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
+            }/${filesList[i].type === 'image' ? 'image' : 'raw'}/upload`,
+            formData,
+            'POST',
+            false
+          )
+        );
+      }
+      cloudinaryResponses = (await Promise.all(cloudinaryPromises)).map(
+        res => ({ url: res.secure_url, public_id: res.public_id } as CloudFile)
+      );
+    }
+    await props.setAnswer({
+      answer: data.text,
+      answerAttachments: cloudinaryResponses,
+    });
     setIsUploading(false);
   };
 

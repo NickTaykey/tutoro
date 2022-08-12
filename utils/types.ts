@@ -92,3 +92,5 @@ export interface ExtendedRequest extends NextApiRequest {
   tutor?: UserDocument;
   user?: UserDocument;
 }
+
+export type Answer = { answer: string; answerAttachments: CloudFile[] };

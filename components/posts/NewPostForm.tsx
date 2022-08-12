@@ -1,4 +1,4 @@
-import type { NewPostFormFields } from '../../utils/types';
+import type { CloudFile, NewPostFormFields } from '../../utils/types';
 import type { UserDocumentObject } from '../../models/User';
 import Banner404 from '../global/404';
 import { ChangeEvent, useState } from 'react';
@@ -41,31 +41,61 @@ const NewPostForm: React.FC<Props> = props => {
   };
 
   const formSubmitHandler = async (data: NewPostFormFields) => {
-    const formData = new FormData();
-    formData.append('description', data.description);
-    formData.append('subject', data.subject);
+    let attachments: CloudFile[] = [];
     if (filesList) {
       const allowedFileRegExp = new RegExp(
         'image|pdf|wordprocessing|spreadsheetml|presentationml'
       );
       const fileListArray = Array.from(filesList);
-      for (let i = 0; i < fileListArray.length; i++) {
-        if (!allowedFileRegExp.test(fileListArray[i].type)) {
-          return setValidationError(`Invalid file, ${fileListArray[i].type}`);
+      const cloudinaryPromises: Promise<any>[] = [];
+      setIsUploading(true);
+      try {
+        for (let i = 0; i < fileListArray.length; i++) {
+          if (!allowedFileRegExp.test(fileListArray[i].type)) {
+            setIsUploading(false);
+            return setValidationError(
+              `Invalid file ${
+                fileListArray[i].type ? fileListArray[i].type : 'type'
+              }`
+            );
+          }
+          const formData = new FormData();
+          formData.append('file', fileListArray[i]);
+          formData.append(
+            'api_key',
+            process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY!
+          );
+          formData.append('upload_preset', 'client-side-upload');
+          cloudinaryPromises.push(
+            ApiHelper(
+              `https://api.cloudinary.com/v1_1/${
+                process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
+              }/${fileListArray[i].type === 'image' ? 'image' : 'raw'}/upload`,
+              formData,
+              'POST',
+              false
+            )
+          );
         }
-        formData.append(`attachment-${i}`, fileListArray[i]);
+        attachments = (await Promise.all(cloudinaryPromises)).map(res => ({
+          url: res.secure_url,
+          public_id: res.public_id,
+        }));
+        const res = await ApiHelper(
+          `/api/${query.tutorId ? `/tutors/${query.tutorId}/posts` : '/posts'}`,
+          { subject: data.subject, description: data.description, attachments },
+          'POST',
+          true
+        );
+        setIsUploading(false);
+        if (res.errorMessage) return setValidationError(res.errorMessage);
+        window.location.assign(res.redirectUrl);
+      } catch (err) {
+        setValidationError('Internal server error attachments upload failed');
+      } finally {
+        setIsUploading(false);
       }
     }
-    setIsUploading(true);
-    const res = await ApiHelper(
-      `/api/${query.tutorId ? `/tutors/${query.tutorId}/posts` : '/posts'}`,
-      formData,
-      'POST',
-      false
-    );
-    setIsUploading(false);
-    if (res.errorMessage) return setValidationError(res.errorMessage);
-    window.location.assign(res.redirectUrl);
   };
 
   return (

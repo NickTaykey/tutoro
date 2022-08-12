@@ -1,30 +1,11 @@
 import onError from '../../../../../../middleware/server-error-handler';
 import { PostStatus, PostType } from '../../../../../../utils/types';
 import requireAuth from '../../../../../../middleware/require-auth';
-import cloudinary from '../../../../../../utils/cloudinary-config';
 import { ExtendedRequest } from '../../../../../../utils/types';
-import { parseForm } from '../../../../../../utils/parse-form';
 import { createRouter } from 'next-connect';
-import { unlink } from 'fs';
 
 import type { PostDocument } from '../../../../../../models/Post';
-import type { UploadApiResponse } from 'cloudinary';
-import type { File, Files } from 'formidable';
 import type { NextApiResponse } from 'next';
-
-const deleteFiles = (files: Files) => {
-  for (const value of Object.values(files)) {
-    const file = value as File;
-    unlink(file.filepath, () => {});
-  }
-};
-
-const filesUploadConfig = {
-  maxFiles: 4,
-  dir: '/attachments',
-  multiple: true,
-  filter: () => true,
-};
 
 const router = createRouter<ExtendedRequest, NextApiResponse>();
 
@@ -33,10 +14,9 @@ router
     requireAuth('You have to be authenticated to change the state of a Post')
   )
   .put(async (req, res) => {
-    const [post, { files, fields }] = await Promise.all([
-      req.models.Post.findById(req.query.postId).populate('answeredBy'),
-      parseForm(req, filesUploadConfig),
-    ]);
+    const post = await req.models.Post.findById(req.query.postId).populate(
+      'answeredBy'
+    );
     const postDocument = post as PostDocument;
 
     if (!req.sessionUser.isTutor) {
@@ -45,36 +25,9 @@ router
       });
     }
 
-    if (Object.keys(files).length > 4) {
-      deleteFiles(files);
-      return res.status(400).json({
-        errorMessage: 'You can provide at the most 4 attachments',
-      });
-    }
-
-    postDocument.answer = fields.text as string;
+    postDocument.answer = req.body.answer;
     postDocument.status = PostStatus.ANSWERED;
-
-    const cloudinaryPromises: Promise<UploadApiResponse>[] = [];
-    for (const value of Object.values(files)) {
-      const file = value as File;
-      cloudinaryPromises.push(
-        cloudinary.uploader.upload(file.filepath, {
-          folder: 'tutoro/attachments/',
-          use_filename: true,
-          resource_type: file.mimetype?.includes('image') ? 'image' : 'raw',
-        })
-      );
-    }
-
-    const responses = await Promise.all(cloudinaryPromises);
-
-    deleteFiles(files);
-
-    postDocument.answerAttachments = responses.map(r => ({
-      public_id: r.public_id,
-      url: r.secure_url,
-    }));
+    postDocument.answerAttachments = req.body.answerAttachments;
 
     const userPostDocuments = req.sessionUser.posts as PostDocument[];
     const postIndex = userPostDocuments.findIndex(
@@ -102,9 +55,3 @@ router
 export default router.handler({
   onError,
 });
-
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
