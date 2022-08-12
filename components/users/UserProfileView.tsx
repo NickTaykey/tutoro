@@ -38,7 +38,7 @@ const UserProfileView: React.FC<Props> = (props: Props) => {
     );
     channel.attach();
     return channel;
-  }, []);
+  }, [props.currentUser._id]);
 
   const unSelectedTabColor = c.useColorModeValue('gray.600', 'white');
 

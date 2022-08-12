@@ -118,7 +118,7 @@ const Post: React.FC<Props> = ({
     return () => {
       userChannel?.unsubscribe();
     };
-  }, []);
+  }, [post._id, setSuccessAlert, userChannel, viewAsTutor]);
 
   const postCreatedAt = useMemo(
     () => new Date(post.createdAt!.toString()).toLocaleDateString(),

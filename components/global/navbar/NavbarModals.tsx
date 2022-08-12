@@ -30,7 +30,7 @@ const NavbarModals: React.FC = () => {
 
   useEffect(() => {
     getProvidersList().then(list => setProvidersList(list));
-  }, [getProvidersList]);
+  }, []);
 
   return user ? (
     <>

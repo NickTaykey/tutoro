@@ -49,7 +49,7 @@ const Session: React.FC<Props> = ({
     return () => {
       userChannel?.unsubscribe();
     };
-  }, []);
+  }, [session._id, userChannel, viewAsTutor]);
 
   const channelHandler = useCallback(
     (publisher: () => void, onAttachedCb: () => void) => {

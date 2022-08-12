@@ -141,7 +141,7 @@ const LandingPage: NextPage = () => {
           Tutoro enables users to book tutoring sessions with their favorite
           tutors. Moreover, it allows tutors to expand their service further
           more, thanks to Posts. These enables Tutors to answer specific
-          questions or review users' homework. Posts do not target only specific
+          questions or review users homework. Posts do not target only specific
           tutors, in fact Tutoro allows users to create posts which are received
           by every tutor. In this way posts are reviewed and answered much more
           quickly.
