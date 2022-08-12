@@ -6,6 +6,7 @@ export default function Document() {
   return (
     <Html>
       <Head>
+        <link rel="manifest" href="/manifest.json" />
         <link
           href="https://api.mapbox.com/mapbox-gl-js/v2.8.2/mapbox-gl.css"
           rel="stylesheet"
