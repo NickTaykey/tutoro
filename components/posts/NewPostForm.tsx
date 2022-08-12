@@ -42,14 +42,14 @@ const NewPostForm: React.FC<Props> = props => {
 
   const formSubmitHandler = async (data: NewPostFormFields) => {
     let attachments: CloudFile[] = [];
-    if (filesList) {
-      const allowedFileRegExp = new RegExp(
-        'image|pdf|wordprocessing|spreadsheetml|presentationml'
-      );
-      const fileListArray = Array.from(filesList);
-      const cloudinaryPromises: Promise<any>[] = [];
-      setIsUploading(true);
-      try {
+    setIsUploading(true);
+    try {
+      if (filesList) {
+        const allowedFileRegExp = new RegExp(
+          'image|pdf|wordprocessing|spreadsheetml|presentationml'
+        );
+        const fileListArray = Array.from(filesList);
+        const cloudinaryPromises: Promise<any>[] = [];
         for (let i = 0; i < fileListArray.length; i++) {
           if (!allowedFileRegExp.test(fileListArray[i].type)) {
             setIsUploading(false);
@@ -81,20 +81,19 @@ const NewPostForm: React.FC<Props> = props => {
           url: res.secure_url,
           public_id: res.public_id,
         }));
-        const res = await ApiHelper(
-          `/api/${query.tutorId ? `/tutors/${query.tutorId}/posts` : '/posts'}`,
-          { subject: data.subject, description: data.description, attachments },
-          'POST',
-          true
-        );
-        setIsUploading(false);
-        if (res.errorMessage) return setValidationError(res.errorMessage);
-        window.location.assign(res.redirectUrl);
-      } catch (err) {
-        setValidationError('Internal server error attachments upload failed');
-      } finally {
-        setIsUploading(false);
       }
+      const res = await ApiHelper(
+        `/api/${query.tutorId ? `/tutors/${query.tutorId}/posts` : '/posts'}`,
+        { subject: data.subject, description: data.description, attachments },
+        'POST',
+        true
+      );
+      setIsUploading(false);
+      if (res.errorMessage) return setValidationError(res.errorMessage);
+      window.location.assign(res.redirectUrl);
+    } catch (err) {
+      setIsUploading(false);
+      setValidationError('Internal server error attachments upload failed');
     }
   };
 
